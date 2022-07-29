@@ -1,0 +1,97 @@
+.{$px}Comments
+    display: block
+    &-footer
+        margin-top: 30px
+        &_center
+            text-align: center
+    &-addComment
+        margin-bottom: 50px
+        +b(form)
+            margin-top: 0
+    &-sendReview
+        display: flex
+        justify-content: flex-end
+    &-title
+        display: block
+        font-weight: 500
+        font-size: font-md
+        margin-bottom: 20px
+    & &-review
+        min-height: 200px !important
+        max-width: 100%
+        border: 1px solid #d7d7d7;
+        border-radius: 3px;
+        padding: 10px !important
+    &-successSend
+        color: clr-success
+        text-align: right
+
+
+.{$px}Comment
+    position: relative
+    display: flex
+    & + &
+        margin-top: 50px
+    &-column
+        & + &
+            margin-left: 23px
+            +m('phone')
+                margin-left: 0
+                margin-top: 30px
+    +m('phone')
+        display: block
+        padding: 25px 25px 35px
+    &-title
+        color: text-main;
+        font-size: font-md;
+        font-weight: 500;
+        line-height: 1.2em
+        letter-spacing: 1.1px;
+        display: block
+    &-date
+        color: #8f959f;
+        font-size: font-nr;
+        font-weight: 300;
+        line-height: 1.2em
+        display: block
+        margin-top: 7px
+        +m('phone')
+            margin-left: 0
+            margin-top: 1rem
+            display: block
+    &-appeal
+        margin-right: auto
+        +b(btn)
+            margin-right: 10px
+    &-header
+        margin-bottom: 1.5rem
+        display: flex
+        justify-content: space-between
+        +m('phone')
+            align-items: flex-start
+            margin-bottom: 1.3rem
+    &-content
+        color: #6a6a6a;
+        font-size: font-nr;
+        font-weight: 300;
+        line-height: 1.5em
+    &-avatar
+        width: 84px
+        height: 84px
+        border-radius: 100px
+        background: lighten(clr-primary, 80%) img('icons', 'login.svg') center center no-repeat
+    &-rating
+        display: inline-block
+        vertical-align: middle
+        margin-left: 20px
+        +m('phone')
+            margin-left: 0
+            display: block
+        
+    &-footer
+        margin-top: 20px
+        display: flex
+        
+
+
+

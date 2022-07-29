@@ -1,0 +1,130 @@
+.{$px}trigger
+    visibility: visible
+    position: relative
+    display: inline-block
+    &:focus
+        outline: none
+    button&
+        border: none
+        background: none
+        padding: 0
+    &_dropdown
+        position: relative
+
+.{$px}Site
+    &_modalOPEN
+        +m('tablet')
+            overflow: hidden
+
+.{$px}modal
+    justify-content: center
+    align-items: center
+    display: none
+    position: fixed
+    left: 0
+    right: 0
+    top: 0
+    bottom: 0
+    z-index: 1010
+    padding-bottom: 20px
+    padding-top: 20px
+    overflow: auto
+    +m('tablet')
+        overflow: scroll
+        align-items: start
+    &_OPEN
+        display: flex
+    &-window
+        box-shadow: 0 0 5px 1px rgba(0, 0, 0, 0.32);
+        border-radius: 10px;
+        padding: 35px 60px
+        background-color: #fff;
+        width: 600px
+        position: relative
+        max-width: 95%
+        +m('phone')
+            padding: 35px
+    &_dropdown
+        position: absolute
+        left: 50%
+        transform: translateX(-50%)
+        padding-top: 30px
+        top: 0
+        right: auto
+        bottom: auto
+        padding-left: 10px
+        &{e(_OPEN)}
+            display: block
+
+    &_full
+        //display: flex !important
+        align-items: flex-start
+        padding: 0
+        justify-content: center
+        +e(-window)
+            width: 100%
+            height: 100%
+            padding: 50px
+            box-shadow: none
+            border-radius: 0
+            max-width: none
+    &_center
+        +e(-window)
+            display: flex
+            align-items: center
+            justify-content: center
+    &_compression
+        +e(-window)
+            width: auto
+
+
+
+
+    &-title
+        font-size: font-nrp
+        font-weight: bold
+        display: block
+        letter-spacing: -0.8px
+        line-height: 1.2em
+        margin-bottom: 20px
+        +m('phone')
+            font-size: font-nrp
+
+    &-mark
+        color: clr-primary
+        text-decoration: underline
+
+    &-dark
+        color: #02071d
+        font-size: 34px
+        +m('phone')
+            font-size: 28px
+
+    &-close
+        position: absolute
+        right: 13px
+        top: 13px
+        display: block
+        width: 23px
+        height: 19px
+        span
+            display: block
+            height: 3px
+            width: 20px
+            border-radius: 100px
+            background: clr-primary
+            opacity:1
+            position: absolute
+            top: 45%
+            margin-top: 0px
+            transform: rotate(45deg)
+            box-shadow: none
+            transition: all 0.3s
+            pointer-events: none;
+            + span
+                transform: rotate(-45deg)
+                margin-top: 0
+        &:hover
+            position: absolute
+            border-bottom-color: transparent
+        

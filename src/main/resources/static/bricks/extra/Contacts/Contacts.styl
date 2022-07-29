@@ -1,0 +1,32 @@
+.{$px}Contacts
+    margin-top: 30px
+    &-prop
+        display: block
+        & + &
+            margin-top: 10px
+            +m('phone')
+                margin-top: 30px
+        &Title
+            font-weight: 600
+            display: inline-block
+            width: 150px
+            margin-right: 10px
+            max-width: 50%
+            font-size: font-nr
+            +m('phone')
+                display: block
+                margin-bottom: 10px
+        &Content
+            font-size: font-md
+    
+    &-form
+        +b(form)
+            margin-top: 0
+        +m('tablet')
+            margin-top: 50px
+        +e(-message)
+            height: 45px
+            padding: 10px 0 5px
+            overflow: hidden
+
+

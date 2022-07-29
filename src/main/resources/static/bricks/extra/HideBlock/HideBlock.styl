@@ -1,0 +1,70 @@
+.{$px}HideBlock
+    position: relative
+    padding: 0 30px
+    background-color: #fafafa;
+    +m('phone')
+        padding: 0px 20px
+    &-title
+        color: #5e5e5e;
+        font-size: font-mdm;
+        font-weight: 500;
+        line-height: 1.2em
+        letter-spacing: 0.51px;
+        display: inline-block
+    &-header
+        display: flex
+        justify-content: space-between
+        align-items: center
+        padding: 20px 30px
+        background-color: #f1f1f1;
+        margin-left: -30px
+        margin-right: -30px
+        +m('phone')
+            padding: 20px 20px
+            margin-left: -20px
+            margin-right: -20px
+    
+    &-content
+        line-height: 1.2em
+        padding: 30px 0
+        overflow: hidden
+        transition: height 200ms, padding 150ms 50ms
+        color: #505050;
+        font-size: font-nr;
+        font-weight: 400
+        letter-spacing: 0.42px;
+        +m('phone')
+            padding: 20px 0
+    
+    &-footer
+        text-align: center
+        margin-top: 3.8rem
+        
+    &-trigger
+        cursor: pointer
+
+    &-btn
+        border: none
+        font-weight: 600
+        color: clr-primary
+        width: 30px
+        cursor: pointer
+        min-width: 30px
+        height: 30px
+        background: img('icons', 'arrow_hide.svg') center center no-repeat
+        background-size: 20px 10px
+        transform: rotate(180deg)
+        transition: transform 200ms
+        margin-left: 20px
+        &:focus
+            outline: none
+    
+    
+    &_CLOSE
+        +e(-content)
+            height: 0 !important
+            padding: 0
+            transition: height 200ms, padding 150ms 50ms
+        +e(-btn)
+            transform: rotate(0deg)
+            transition: transform 200ms

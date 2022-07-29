@@ -1,0 +1,119 @@
+.{$px}Header
+    position: relative
+    margin-bottom: 0
+    //+m('phone')
+    //    position: relative
+    //    display: block
+    //    padding-top: 20px
+
+    &-end
+    &-start
+        width: 53px
+
+    &-center
+        display: flex
+        align-items: center
+        justify-content: center
+        width: 100%
+        max-width: $maxWidth
+
+    &-menuOne
+    &-menuTwo
+        width: 30%
+        +m('tablet')
+            display: none
+    &-menu
+        box-shadow: 0 0 11px 2px rgba(0, 0, 0, 0.2);
+        z-index: 3
+        position: relative
+    
+    &-trigger
+        display: none
+        margin-left: 30px
+        +m('tablet')
+            display: flex
+            height: 100%
+            align-items: center
+            width: auto
+    &-rowMain
+        box-shadow: 0 0 13px 1px rgba(0, 0, 0, 0.09);
+        background-color: #fff
+        z-index: 10
+        position: relative
+        padding: 20px 0 15px
+        +m('tablet')
+            +b(row)
+                display: flex
+                &-block
+                    margin-top: 0
+                    margin-left: 30px
+                    &:first-child
+                        margin-left: 0
+        +m('phone')
+            +b(row)
+                flex-wrap: wrap
+
+    &-cart
+        position: relative
+        display: flex
+        width: auto
+        
+        +m('tablet')
+            transform: scale(.8)
+            margin-left: auto !important
+        &Label
+            position: absolute
+            right: 10px
+            top: -7px
+    &-search
+        +m('tablet')
+            display: none
+        &Wrap
+            width: 100%
+            +m('tablet')
+                width: auto
+                display: flex
+                align-items: center
+            +m('phone')
+                margin-left: 0 !important
+            &_open
+                position: absolute
+                left: 0
+                right: 0
+                top: 0px
+                bottom: 0
+                margin-left: 0 !important
+                padding: 0px 20px
+                background: clr-white
+                z-index: 1100
+                +e(-search)
+                    display: block
+                    width: 100%
+        &Link
+            display: none
+            margin-right: 15px
+            +m('tablet')
+                display: block
+            
+    &-logo
+        flex-shrink: 4
+        display: flex
+        align-items: center
+        a
+            border: none !important
+        +m('phone')
+            width: 100%
+            margin-bottom: 20px
+    &-btn
+        display: flex
+        align-items: center
+        margin-left: 43px
+
+    &-contacts
+        padding: 15px 0 12px
+        border-bottom: 3px solid clr-primary
+        font-size: font-sm
+        +m('tablet')
+            display: none
+
+

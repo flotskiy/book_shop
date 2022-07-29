@@ -1,0 +1,128 @@
+.{$px}Article
+    padding: 30px 0 40px
+    clearfix()
+    overflow: hidden
+    color: #757575;
+
+    > {b(pict)}:first-child
+        margin-top: 0
+
+    +b(Cards)
+        margin-top: 45px
+
+
+    h1
+    h2
+    h3
+    h4
+    h5
+    h6
+        color: #484848;
+        font-size: 24px;
+        font-weight: 500
+        line-height: 1.2em;
+        margin-top: 23px
+        margin-bottom: 20px
+        &:first-child
+            margin-top: 0
+
+    h1
+        font-size: 36px
+
+    h2
+        font-size: font-xl
+    h3
+        font-size: 24px;
+
+    h4
+        font-size: font-md;
+    h5
+        font-size: font-nr
+    h6
+        font-size: font-sm
+        
+    blockquote
+        color: #2d2d2d;
+        font-size: 26px;
+        font-weight: 300;
+        line-height: 1.4em
+        padding: 0 0 0 42px
+        margin: 20px 0
+        border-left: 5px solid #8a8989
+        +m('phone')
+            padding-left: 20px
+            font-size: 22px
+            border-left-width: 3px
+            
+    {b(Toc)} + h2
+        margin-top: 0
+
+    ul
+    ol
+        padding-left: 0
+        margin-top: 23px
+        margin-bottom: 27px
+        line-height: 1.4em
+        font-size: font-nrp
+        color: #8a8989;
+        li
+            position: relative
+            padding-left: 36px
+            list-style: none
+            &:after
+                position: absolute
+                content: ''
+                display: block
+                width: 12px
+                height: 12px
+                background: clr-white
+                left: 0px
+                top: 4px
+                border-radius: 100px;
+                border: 2px solid clr-primary;
+            + li
+                margin-top: 25px
+    ol
+        counter-reset: list
+        li
+            list-style: none
+            position: relative
+            &:after
+                background: none
+                height: 20px
+                width: 26px
+                text-align: right
+                position: absolute
+                left: 0px
+                top: 0px
+                border-radius: 0
+                border: none
+                counter-increment: list
+                content: counter(list)'.'
+    
+
+    img
+        margin-top: 20px
+
+    +b(pict)
+        img
+            margin-top: 0
+
+    p
+        line-height: 1.5em
+        color: #757575
+        margin-bottom: 10px
+
+    table
+        margin-top: 50px
+        &:last-child
+            margin-bottom: 0
+    +b(clearfix)
+        clearfix()
+    &_ins
+        font-size: font-sm
+        line-height: 1.6em
+
+
+
+

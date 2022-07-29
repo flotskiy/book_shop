@@ -1,0 +1,240 @@
+.{$px}Cart
+    margin-top: 30px
+    margin-bottom: 0
+    &-product
+        display: flex
+        align-items: center
+        border-top: 1px solid #e0e0e0
+        padding-top: 20px
+        padding-bottom: 20px
+        +m('tablet')
+            display: block
+    &-total
+        border-top: 1px solid #e0e0e0
+        padding-top: 20px
+        padding-bottom: 20px
+        display: flex
+        align-items: center
+        +e(-price_old)
+            display: inline-block
+            margin-left: 10px
+        +e(-price)
+            margin-left: 10px
+        +e(-title)
+            display: inline-block
+            margin-right: 10px
+        +m('phone')
+            display: block
+            text-align: center
+            +e(-title)
+                margin-right: 0
+                margin-bottom: 20px
+        
+    &-author
+        a
+            font-size: font-nr
+            font-weight: 500
+            color: text-muted
+            transition: color 300ms
+            display: inline-block
+            margin-bottom: 3px
+            +m('desktop')
+                &:hover
+                    color: clr-primary
+                    transition: color 300ms
+    &-title
+        a
+            font-size: font-mdm
+            font-weight: 500
+            color: text-main
+            transition: color 300ms
+            display: inline-block
+            margin-bottom: 10px
+            +m('desktop')
+                &:hover
+                    color: clr-primary
+                    transition: color 300ms
+    &-buttons
+        margin-top: 30px
+        
+    &-btn
+        display: inline-block
+        +m('tablet')
+            display: block
+            +b(btn)
+                display: flex
+        & + &
+            margin-left: 20px
+            +m('tablet')
+                margin-left: 0
+                margin-top: 20px
+    &-rating
+        +m(600px)
+            display: flex
+            justify-content: center
+
+    &-desc
+        font-size: font-nrm
+        display: block
+        margin-top: 5px
+        color: clr-muted
+    
+    &-block
+        & + &
+            margin-left: 20px
+            +m('large')
+                margin-left: 30px
+        &_info
+            width: 100%
+            +m('tablet')
+                width: auto
+                margin-right: auto
+            +m('phone')
+                margin-left: 0 !important
+                max-width: none
+                text-align: center
+                width: 100%
+        &_price
+            white-space: nowrap
+            text-align: right
+            +m('phone')
+                justify-content: center
+                +e(-price)
+                    margin-left: 0
+            
+            
+        &_row
+            display: flex
+            align-items: flex-start
+            width: 100%
+            &:first-child
+                width: 100%
+            +m(600px)
+                & &
+                    display: block
+                    +e(-block_price)
+                        text-align: left
+                        margin-left: 0
+                        margin-top: 20px
+                +e(-price)
+                    display: inline-block
+                    &Title
+                    &_old
+                        display: inline-block
+                    &_old
+                        margin-left: 5px
+                +e(-sale)
+                    display: inline-block
+                    margin-left: 10px
+            +m('phone')
+                margin-left: 0 !important
+                display: block
+                +e(-block_price)
+                    display: block
+                    text-align: center !important
+        &_amount
+            min-width: 200px
+            +m(600px)
+                margin-left: 0 !important
+                margin-right: auto
+        &_total
+            margin-right: auto
+        &_pict
+            +m('phone')
+                width: 100%
+                display: flex
+                justify-content: center
+                margin-bottom: 20px
+        &_seller
+            +b(form-select)
+                min-width: 200px
+                +m('large')
+                    min-width: 250px
+            +m('tablet')
+                margin-left: 0 !important
+                width: 100%
+            +m(600px)
+                margin-bottom: 20px
+    
+    &-pict
+        max-height: 150px
+        display: flex
+        justify-content: center
+        align-items: center
+        width: 160px
+        +m('desktop')
+            &:hover
+                border-bottom-color: transparent
+    &-price
+        font-size: font-lgm
+        font-weight: 500
+        color: clr-primary
+        &Title
+            font-weight: 500
+            display: block
+            margin-bottom: 6px
+    
+    &-price_old
+        color: #999;
+        text-decoration: line-through;
+        display: block
+        margin-bottom: 10px
+        +m(600px)
+            margin-right: 10px
+            margin-bottom: 0
+    &-sale
+        display: inline-block
+        padding: 8px 15px
+        display: flex
+        margin-top: 10px
+        align-items: center
+        justify-content: center
+        box-shadow: -4px 3px 5px 1px rgba(0, 0, 0, 0.2);
+        background-color: clr-joy;
+        color: clr-dk;
+        font-size: font-mdm;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.36px;
+    
+    &-img
+        max-height: 150px
+        max-width: 100%
+    &-amount
+        max-width: 200px
+    &-delete
+        display: flex
+        width: 56px
+        height: 56px
+        background-color: #ebebeb;
+        justify-content: center
+        align-items: center
+        border: 1px solid transparent
+        transition: all 300ms
+        +m('desktop')
+            &:hover
+                background-color: lighten(clr-danger, 55%)
+                border-color: clr-danger
+                transition: all 300ms
+    &-messageInfo
+        font-size: font-xl
+        text-align: center
+        padding-top: 50px
+        padding-bottom: 80px
+        font-weight: 500
+        color: clr-primary
+        
+    &_order
+        +e(-block)
+            &_amount
+                min-width: auto
+                width: 50px
+                +m(600px)
+                    margin-right: 0
+                    margin-left: auto !important
+            &_seller
+                width: 120px
+                +m('tablet')
+                    margin-right: auto
+                +m(600px)
+                    margin-bottom: 0

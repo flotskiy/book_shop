@@ -1,0 +1,72 @@
+.{$px}CartBlock
+    display: flex
+    align-items: center
+    +m('tablet')
+        height: auto
+    &-block
+        position: relative
+        display: flex
+        align-items: center
+        +m('desktop')
+            &:hover
+                border-bottom-color: transparent
+        +m('tablet')
+            height: auto
+        + {e(-block)}
+            margin-left: 23px
+        &_text
+            min-width: 150px
+            +m('tablet')
+                min-width: auto
+            +e(-img)
+                min-width: 30px
+                +m('tablet')
+                    min-width: auto
+            +e(-budget)
+                position: absolute
+                top: 100%
+                width: 100%
+                margin-top: 3px
+            
+            
+    
+
+    
+    &-text
+        color: text-main
+        font-weight: 500
+        margin-left: 10px
+        font-size: font-nrp
+        +m('tablet')
+            display: none
+    &-budget
+        +m('tablet')
+            display: none
+    
+    
+    &-amount
+        background: clr-primary
+        position: absolute
+        right: -14px
+        top: 0px
+        min-width: 23px
+        font-size: font-xs
+        letter-spacing: -0.6px
+        color: clr-white
+        padding: 2px
+        line-height: 1.2em
+        display: flex
+        align-items: center
+        justify-content: center
+        border: 3px solid clr-white;
+        border-radius: 100px
+        
+    &-price
+        font-size: font-sm;
+        color: #777777;
+        font-weight: 500;
+        text-transform: uppercase;
+        letter-spacing: 1.3px;
+        display: block
+    &-img
+        max-height: 23px

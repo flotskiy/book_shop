@@ -28,6 +28,17 @@
   <link rel="stylesheet" href="/assets/css/basic.min.css?v=64223515">
   <link rel="stylesheet" href="/assets/css/extra.min.css?v=64223515"><!--[if lt IE 9]>
   <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+  <script type="text/javascript">
+    $(document).ready(function () {
+      $("#locales").change(function () {
+        var selectedOption = $('#locales').val();
+        if (selectedOption != '') {
+          window.location.replace('?lang=' + selectedOption);
+        }
+      });
+    });
+  </script>
   <script defer src="/assets/js/scripts.min.js?v=64223515"></script>
 </head>
 <body class="Site">
@@ -52,7 +63,9 @@
             <div class="Header-search">
               <div class="search">
                 <form class="form form_search" action="#" method="post" data-searchlimit="20">
-                  <input class="search-input" id="query" name="query" type="text" placeholder="Search over 30 million book titles" value=""/>
+                  <input class="search-input" id="query" name="query" type="text"
+                         th:placeholder="#{searchbar.placeholder}"
+                         placeholder="Search over 30 million book titles" value=""/>
                   <button class="search-button" type="submit" name="search" id="search">Поиск
                   </button>
                 </form>
@@ -77,15 +90,20 @@
       <div class="wrap">
         <nav class="menuModal" id="navigate">
           <ul class="menu menu_main">
-            <li class="menu-item menu-item_ACTIVE"><a class="menu-link" href="/bookshop/main">Главная</a>
+            <li class="menu-item menu-item_ACTIVE"><a class="menu-link" href="/bookshop/main"
+                                                      th:text="#{topbar.main}">Главная</a>
             </li>
-            <li class="menu-item"><a class="menu-link" href="/genres">Жанры</a>
+            <li class="menu-item"><a class="menu-link" href="/genres"
+                                     th:text="#{topbar.genres}">Жанры</a>
             </li>
-            <li class="menu-item"><a class="menu-link" href="/books/recent.html">Новинки</a>
+            <li class="menu-item"><a class="menu-link" href="/books/recent.html"
+                                     th:text="#{topbar.recent}">Новинки</a>
             </li>
-            <li class="menu-item"><a class="menu-link" href="/books/popular.html">Популярное</a>
+            <li class="menu-item"><a class="menu-link" href="/books/popular.html"
+                                     th:text="#{topbar.popular}">Популярное</a>
             </li>
-            <li class="menu-item"><a class="menu-link" href="/authors">Авторы</a>
+            <li class="menu-item"><a class="menu-link" href="/authors"
+                                     th:text="#{topbar.authors}">Авторы</a>
             </li>
           </ul>
         </nav>
@@ -544,6 +562,14 @@
             <li class="menu-item"><a class="menu-link" href="/books/popular.html">Популярное</a>
             </li>
             <li class="menu-item"><a class="menu-link" href="/authors">Авторы</a>
+            </li>
+            <li class="menu-item">
+              <span>Выбор языка</span>
+              <select id="locales">
+                <option value=" "></option>
+                <option value=en>English</option>
+                <option value="ru">Русский</option>
+              </select>
             </li>
           </ul>
         </div>

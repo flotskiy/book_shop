@@ -3,7 +3,8 @@ package com.github.flotskiy.FlotskiyBookShopApp.data;
 public class Author {
 
     private Integer id;
-    private String author;
+    private String firstName;
+    private String lastName;
 
     public Integer getId() {
         return id;
@@ -13,19 +14,28 @@ public class Author {
         this.id = id;
     }
 
-    public String getAuthor() {
-        return author;
+    public String getFirstName() {
+        return firstName;
     }
 
-    public void setAuthor(String author) {
-        this.author = author;
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
+    }
+
+    public String getLastName() {
+        return lastName;
+    }
+
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
     }
 
     @Override
     public String toString() {
         return "Author{" +
                 "id=" + id +
-                ", name='" + author + '\'' +
+                ", firstName='" + firstName + '\'' +
+                ", lastName='" + lastName + '\'' +
                 '}';
     }
 }

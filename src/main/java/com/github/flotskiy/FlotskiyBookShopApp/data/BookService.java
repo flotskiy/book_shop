@@ -23,20 +23,24 @@ public class BookService {
     }
 
     public List<Book> getBooksData() {
-        Map<Integer, String> authorsMap = new HashMap<>();
-        for (Author author : authorsService.getAuthorsData()) {
-            Integer authorId = author.getId();
-            String authorName = author.getAuthor();
-            authorsMap.put(authorId, authorName);
+        Map<Integer, String> authors = new HashMap<>();
+        Map<String, List<Author>> authorsMapGrouped = authorsService.getAuthorsMap();
+        for (List<Author> authorsList : authorsMapGrouped.values()) {
+            for (Author author : authorsList) {
+                Integer authorId = author.getId();
+                String authorFirstName = author.getFirstName();
+                String authorLastName = author.getLastName();
+                authors.put(authorId, authorFirstName + " " + authorLastName);
+            }
         }
 
         List<Book> books = jdbcTemplate.query("SELECT * FROM books", (ResultSet rs, int rowNum) -> {
             Book book = new Book();
             book.setId(rs.getInt("id"));
-            String authorName = authorsMap.get(rs.getInt("author_id"));
+            String authorName = authors.get(rs.getInt("author_id"));
             book.setAuthor(authorName);
             book.setTitle(rs.getString("title"));
-            book.setPriceOld(rs.getString("priceOld"));
+            book.setPriceOld(rs.getString("price_old"));
             book.setPrice(rs.getString("price"));
             return book;
         });

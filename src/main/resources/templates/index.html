@@ -55,7 +55,9 @@
     <div class="Header-rowMain">
       <div class="wrap">
         <div class="row">
-          <div class="row-block Header-logo"><a class="logo" href="/"><img class="logo-image" src="/assets/img/logo.png" alt="logo.png"/><span class="logo-text">BOOKSHOP</span></a>
+          <div class="row-block Header-logo">
+            <a class="logo" href="/"><img class="logo-image" src="/assets/img/logo.png" alt="logo.png"/>
+              <span class="logo-text" th:text="${#strings.toUpperCase('bookshop ')} + ${#locale.getDisplayLanguage()}">BOOKSHOP</span></a>
           </div>
           <div class="Header-searchWrap row-block">
             <div class="Header-searchLink"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="19" viewBox="0 0 18 19"><g><g><path fill="#b8b8b8" d="M17.812 17.852c.25.268.25.69 0 .948a.622.622 0 0 1-.457.2.64.64 0 0 1-.457-.2l-5.364-5.494a7.07 7.07 0 0 1-4.32 1.47C3.232 14.777 0 11.457 0 7.389 0 3.321 3.232 0 7.214 0c3.983 0 7.214 3.32 7.214 7.388 0 1.94-.74 3.7-1.926 5.015zM7.214 13.44c3.264 0 5.909-2.708 5.909-6.05 0-3.344-2.655-6.052-5.909-6.052-3.264 0-5.908 2.72-5.908 6.051 0 3.332 2.644 6.051 5.908 6.051z"/></g></g></svg>
@@ -64,7 +66,9 @@
               <div class="search">
                 <form class="form form_search" action="#" method="post" data-searchlimit="20">
                   <input class="search-input" id="query" name="query" type="text"
-                         th:placeholder="#{searchbar.placeholder}"
+                         th:placeholder="#{${messageTemplate}(
+                         ${#dates.format(serverTime, 'hh:mm')}, #{searchbar.placeholderTextPart1}, ${placeHolderTextPart2}
+                         )}"
                          placeholder="Search over 30 million book titles" value=""/>
                   <button class="search-button" type="submit" name="search" id="search">Поиск
                   </button>
@@ -91,7 +95,7 @@
         <nav class="menuModal" id="navigate">
           <ul class="menu menu_main">
             <li class="menu-item menu-item_ACTIVE"><a class="menu-link" href="/bookshop/main"
-                                                      th:text="#{topbar.main}">Главная</a>
+                                                      th:text="${#messages.msg('topbar.main')}">Главная</a>
             </li>
             <li class="menu-item"><a class="menu-link" href="/genres"
                                      th:text="#{topbar.genres}">Жанры</a>
@@ -124,9 +128,9 @@
                 <div class="Slider-content">
                   <div class="Card"><a class="Card-picture" href="#"><img src="/assets/img/content/main/card.jpg" alt="card.jpg"/></a>
                     <div class="Card-content">
-                      <strong class="Card-title"><a href="#" th:text="${book.title}">Название книги</a>
+                      <strong class="Card-title"><a href="#" th:text="${#strings.toUpperCase(book.title)}">Название книги</a>
                       </strong>
-                      <div class="Card-description" th:text="${book.author}">Имя автора
+                      <div class="Card-description" th:text="${book.author.toUpperCase()}">Имя автора
                       </div>
                       <div class="Card-cost">
                         <span class="Card-priceOld" th:text="${book.priceOld}">₽2.00</span>
@@ -158,11 +162,13 @@
                       <div class="Card-sale">30% скидка
                       </div></a>
                     <div class="Card-content">
-                      <strong class="Card-title"><a href="/books/slug.html">Техника</a>
+                      <strong class="Card-title"><a href="/books/slug.html" th:text="${bookData[1]['title']}">Техника</a>
                       </strong>
-                      <div class="Card-description">Кондратенко Александр Петрович
+                      <div class="Card-description" th:text="${bookData[1]['author']}">Кондратенко Александр Петрович
                       </div>
-                      <div class="Card-cost"><span class="Card-priceOld">₽500.00</span><span class="Card-price">₽390.00</span>
+                      <div class="Card-cost">
+                        <span class="Card-priceOld" th:text="${bookData[1]['priceOld']}">₽500.00</span>
+                        <span class="Card-price" th:text="${bookData[1]['price']}">₽390.00</span>
                       </div>
                     </div>
                   </div>

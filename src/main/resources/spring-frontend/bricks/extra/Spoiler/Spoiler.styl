@@ -1,0 +1,17 @@
+.{$px}Spoiler
+    visibility: visible;
+    &-footer
+        margin-top: 20px
+        display: flex
+        justify-content: flex-end
+    &-hide
+        height: auto
+    &-trigger
+        &:after
+            content: attr(data-showtext)
+    &_CLOSE
+        +e(-hide)
+            display: none
+        +e(-trigger)
+            &:after
+                content: attr(data-hidetext)

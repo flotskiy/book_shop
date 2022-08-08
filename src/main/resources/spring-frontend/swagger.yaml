@@ -1,0 +1,914 @@
+---
+swagger: "2.0"
+info:
+    description: This is a simple API
+    version: 1.0.0
+    title: Books Api Server
+    contact:
+        email: mail@lunpully.com
+    license:
+        name: Apache 2.0
+        url: http://www.apache.org/licenses/LICENSE-2.0.html
+host: virtserver.swaggerhub.com
+basePath: /lunpully/bookshop/1.0.0
+schemes:
+    - https
+    - http
+consumes:
+    - application/json
+produces:
+    - application/json
+paths:
+    /books/recommended:
+        get:
+            tags:
+                - recomended
+            summary: Show recommended books
+            operationId: recomended
+            parameters:
+                -   name: offset
+                    in: query
+                    description: The number of items to skip before starting to collect the result set.
+                    required: false
+                    type: integer
+                -   name: limit
+                    in: query
+                    description: The numbers of items to return.
+                    required: false
+                    type: integer
+            responses:
+                "200":
+                    description: OK
+                    schema:
+                        $ref: '#/definitions/Data'
+                "400":
+                    description: Error
+                    schema:
+                        $ref: '#/definitions/Error'
+    /books/recent:
+        get:
+            tags:
+                - recent
+            summary: Show recent books
+            operationId: recent
+            parameters:
+                -   name: from
+                    in: query
+                    required: false
+                    type: string
+                    format: date-time
+                -   name: to
+                    in: query
+                    required: false
+                    type: string
+                    format: date-time
+                -   name: offset
+                    in: query
+                    description: The number of items to skip before starting to collect the result set.
+                    required: false
+                    type: integer
+                -   name: limit
+                    in: query
+                    description: The numbers of items to return.
+                    required: false
+                    type: integer
+            responses:
+                "200":
+                    description: OK
+                    schema:
+                        $ref: '#/definitions/Data'
+                "400":
+                    description: Error
+                    schema:
+                        $ref: '#/definitions/Error'
+    /books/popular:
+        get:
+            tags:
+                - popular
+            summary: Show popular books
+            operationId: popular
+            parameters:
+                -   name: offset
+                    in: query
+                    description: The number of items to skip before starting to collect the result set.
+                    required: false
+                    type: integer
+                -   name: limit
+                    in: query
+                    description: The numbers of items to return.
+                    required: false
+                    type: integer
+            responses:
+#                "200":
+#                    description: Successful response
+#                    schema:
+#                        $ref: '#/definitions/Data'
+                "400":
+                    description: Error
+                    schema:
+                        $ref: '#/definitions/Error'
+    /books/genre/{id}:
+        get:
+            tags:
+                - genreID
+            summary: Show sort by genre ID
+            operationId: genreID
+            parameters:
+                -   name: id
+                    in: path
+                    required: true
+                    type: string
+                -   name: query
+                    in: query
+                    description: Sort by ID of genre
+                    required: false
+                    type: integer
+                -   name: offset
+                    in: query
+                    description: The number of items to skip before starting to collect the result set.
+                    required: false
+                    type: integer
+                -   name: limit
+                    in: query
+                    description: The numbers of items to return.
+                    required: false
+                    type: integer
+            responses:
+                "200":
+                    description: Successful response
+                    schema:
+                        $ref: '#/definitions/Data'
+                "400":
+                    description: Error
+                    schema:
+                        $ref: '#/definitions/Error'
+    /books/author/{id}:
+        get:
+            tags:
+                - authorID
+            summary: Show sort by author ID
+            operationId: authorID
+            parameters:
+                -   name: id
+                    in: path
+                    required: true
+                    type: string
+                -   name: query
+                    in: query
+                    description: Sort by ID of author
+                    required: false
+                    type: integer
+                -   name: offset
+                    in: query
+                    description: The number of items to skip before starting to collect the result set.
+                    required: false
+                    type: integer
+                -   name: limit
+                    in: query
+                    description: The numbers of items to return.
+                    required: false
+                    type: integer
+            responses:
+                "200":
+                    description: Successful response
+                    schema:
+                        $ref: '#/definitions/Data'
+                "400":
+                    description: Error
+                    schema:
+                        $ref: '#/definitions/Error'
+    /requestContactConfirmation:
+        post:
+            tags:
+                - contactConfirm
+            summary: Request Contact Confirmation
+            operationId: contactConfirm
+            parameters:
+                -   in: body
+                    name: contact
+                    description: Phone number or email.
+                    required: false
+                    schema:
+                        $ref: '#/definitions/contact'
+            responses:
+                "200":
+                    description: OK
+                    schema:
+                        $ref: '#/definitions/inline_response_200'
+#                        $ref: '#/definitions/inline_response_200_2'
+                "400":
+                    description: Error
+                    schema:
+                        $ref: '#/definitions/inline_response_400'
+    /approveContact:
+        post:
+            tags:
+                - approveContact
+            summary: Request Approve Contact
+            operationId: approveContact
+            parameters:
+                -   in: body
+                    name: contact
+                    description: Phone number or email.
+                    required: false
+                    schema:
+                        $ref: '#/definitions/contact_1'
+            responses:
+                "200":
+                    description: OK
+                    schema:
+#                        $ref: '#/definitions/inline_response_200'
+                        $ref: '#/definitions/inline_response_200_1'
+                "400":
+                    description: Error
+                    schema:
+                        $ref: '#/definitions/inline_response_400_1'
+    /bookReview:
+        post:
+            tags:
+                - bookReview
+            summary: Book review
+            operationId: bookReview
+            parameters:
+                -   in: body
+                    name: review
+                    required: false
+                    schema:
+                        $ref: '#/definitions/review'
+            responses:
+                "200":
+                    description: OK
+                    schema:
+#                        $ref: '#/definitions/inline_response_200'
+                        $ref: '#/definitions/inline_response_200_3'
+                "400":
+                    description: Error
+                    schema:
+                        $ref: '#/definitions/inline_response_400_2'
+    /transactions:
+        get:
+            tags:
+                - transaction
+            summary: Show transaction
+            operationId: transaction
+            parameters:
+                -   name: sort
+                    in: query
+                    required: false
+                    type: string
+                    default: asc
+                -   name: offset
+                    in: query
+                    description: The number of items to skip before starting to collect the result set.
+                    required: false
+                    type: integer
+                -   name: limit
+                    in: query
+                    description: The numbers of items to return.
+                    required: false
+                    type: integer
+            responses:
+                "200":
+                    description: Successful response
+                    schema:
+                        $ref: '#/definitions/Transactions'
+                "400":
+                    description: Error
+                    schema:
+                        $ref: '#/definitions/Error'
+    /books/tag/{id}:
+        get:
+            tags:
+                - tagID
+            summary: Show book by tag ID
+            operationId: tagID
+            parameters:
+                -   name: id
+                    in: path
+                    required: true
+                    type: string
+                -   name: offset
+                    in: query
+                    description: The number of items to skip before starting to collect the result set.
+                    required: false
+                    type: integer
+                -   name: limit
+                    in: query
+                    description: The numbers of items to return.
+                    required: false
+                    type: integer
+            responses:
+                "200":
+                    description: Successful response
+                    schema:
+                        $ref: '#/definitions/Data'
+                "400":
+                    description: Error
+                    schema:
+                        $ref: '#/definitions/Error'
+    /changeBookStatus:
+        post:
+            tags:
+                - bookStatus
+            summary: Change Book Status
+            operationId: bookStatus
+            parameters:
+                -   in: body
+                    name: status
+                    required: false
+                    schema:
+                        $ref: '#/definitions/Status'
+            responses:
+                "200":
+                    description: OK
+                    schema:
+#                        $ref: '#/definitions/inline_response_200'
+                        $ref: '#/definitions/inline_response_200_4'
+                "400":
+                    description: Error
+                    schema:
+                        $ref: '#/definitions/inline_response_400_3'
+                        
+    /rateBook:
+        post:
+            tags:
+                - rateBook
+            summary: Change Book Rating
+            operationId: rateBook
+            parameters:
+                -   in: body
+                    name: status
+                    required: false
+                    schema:
+                        $ref: '#/definitions/Rating'
+            responses:
+                "200":
+                    description: OK
+                    schema:
+                        $ref: '#/definitions/inline_response_200'
+                "400":
+                    description: Error
+                    schema:
+                        $ref: '#/definitions/inline_response_400_5'
+                        
+    /rateBookReview:
+        post:
+            tags:
+                - rateBookReview
+            summary: Change Like Dislike Review
+            operationId: rateBookReview
+            parameters:
+                -   in: body
+                    name: status
+                    required: false
+                    schema:
+                        $ref: '#/definitions/Appeal'
+            responses:
+                "200":
+                    description: OK
+                    schema:
+                        $ref: '#/definitions/inline_response_200'
+                "400":
+                    description: Error
+                    schema:
+                        $ref: '#/definitions/inline_response_400_5'
+                        
+    /search/{query}:
+        get:
+            tags:
+                - search
+            summary: Search
+            operationId: search
+            parameters:
+                -   name: query
+                    in: path
+                    required: true
+                    type: string
+                -   name: offset
+                    in: query
+                    description: The number of items to skip before starting to collect the result set.
+                    required: false
+                    type: integer
+                -   name: limit
+                    in: query
+                    description: The numbers of items to return.
+                    required: false
+                    type: integer
+            responses:
+                "200":
+                    description: Successful response
+                    schema:
+                        $ref: '#/definitions/Data'
+                "400":
+                    description: Error
+                    schema:
+                        $ref: '#/definitions/Error'
+    /payment:
+        post:
+            tags:
+                - payment
+            summary: Show payments
+            operationId: payment
+            parameters:
+                -   in: body
+                    name: payment
+                    required: false
+                    schema:
+                        $ref: '#/definitions/payment'
+            responses:
+                "200":
+                    description: OK
+                    schema:
+                        $ref: '#/definitions/inline_response_200'
+                "400":
+                    description: Error
+                    schema:
+                        $ref: '#/definitions/inline_response_400_4'
+definitions:
+    Transactions:
+        type: object
+        properties:
+            count:
+                type: integer
+                format: int
+                example: 10
+            transactions:
+                type: array
+                items:
+                    $ref: '#/definitions/Transaction'
+    Transaction:
+        type: object
+        properties:
+            time:
+                type: string
+            value:
+                type: integer
+                format: int
+            description:
+                type: string
+        example:
+            time: "1595942297"
+            value: -300
+            description: Покупка книги Интервью Петра I телеканалу RTVI
+    Data:
+        type: object
+        properties:
+            count:
+                type: integer
+                format: int
+                example: 20
+            books:
+                $ref: '#/definitions/Book'
+#                type: array
+#                items:
+#                    $ref: '#/definitions/Book'
+    Book:
+        type: object
+        properties:
+            id:
+                type: integer
+                format: int
+            slug:
+                type: string
+            image:
+                type: string
+            authors:
+                type: string
+            title:
+                type: string
+            discount:
+                type: integer
+                format: int
+            isBestseller:
+                type: boolean
+            rating:
+                type: integer
+                format: int
+            status:
+                type: string
+            price:
+                type: integer
+                format: int
+            discountPrice:
+                type: integer
+                format: int
+        example:
+            -   id: 1
+                slug: 759144
+                title: 'Джой Уильямс: Подменыш'
+                image: /assets/img/content/main/card.jpg
+                authors: Уильямс Джой
+                discount: 18
+                isBestseller: true
+                rating: 5
+                status: KEPT
+                price: 624
+                discountPrice: 512
+            -   id: 2
+                slug: 764415
+                title: Python и наука о данных для чайников
+                authors: Диалектика
+                image: /assets/img/content/main/card.jpg
+                discount: 18
+                isBestseller: false
+                rating: 5
+                status: PAID
+                price: 1921
+                discountPrice: 1575
+            -   id: 3
+                slug: 764416
+                title: Тревожные расстройства и фобии. Когнитивный подход
+                authors:
+                image: /assets/img/content/main/card.jpg
+                discount: 18
+                isBestseller: false
+                rating: 5
+                status: false
+                price: 3200
+                discountPrice: 2624
+            -   id: 4
+                slug:  764416
+                title: 'Донни Кейтс: Серебряный Сёрфер. Тьма'
+                authors: Кейт Донни
+                image: /assets/img/content/main/card.jpg
+                discount: 18
+                isBestseller: false
+                rating: 5
+                status: CART
+                price: 978
+                discountPrice: 802
+            -   id: 5
+                slug: 764416
+                title: 'Rudyard Kipling: The Jungle (+CD)'
+                authors: Киплинг Редьярд Джозеф
+                image: /assets/img/content/main/card.jpg
+                discount: 40
+                isBestseller: false
+                rating: 5
+                status: false
+                price: 429
+                discountPrice: 257
+            -   id: 6
+                slug: 764416
+                title: "L. Alexander: K's First Case"
+                authors: Alexander L. G.
+                image: /assets/img/content/main/card.jpg
+                discount: 40
+                isBestseller: false
+                rating: 5
+                status: KEPT
+                price: 329
+                discountPrice: 197
+    
+            -   id: 7
+                slug: 764416
+                title: "Bernard Smith: The Last Photo"
+                authors: Smith Bernard
+                image: /assets/img/content/main/card.jpg
+                discount: 40
+                isBestseller: true
+                rating: 5
+                status: false
+                price: 329
+                discountPrice: 197
+            -   id: 8
+                slug: 759144
+                title: 'Джой Уильямс: Подменыш'
+                image: /assets/img/content/main/card.jpg
+                authors: Уильямс Джой
+                discount: 18
+                isBestseller: true
+                rating: 5
+                status: KEPT
+                price: 624
+                discountPrice: 512
+            -   id: 9
+                slug: 764415
+                title: Python и наука о данных для чайников
+                authors: Диалектика
+                image: /assets/img/content/main/card.jpg
+                discount: 18
+                isBestseller: false
+                rating: 5
+                status: PAID
+                price: 1921
+                discountPrice: 1575
+            -   id: 10
+                slug: 764416
+                title: Тревожные расстройства и фобии. Когнитивный подход
+                authors:
+                image: /assets/img/content/main/card.jpg
+                discount: 18
+                isBestseller: false
+                rating: 5
+                status: false
+                price: 3200
+                discountPrice: 2624
+            -   id: 11
+                slug:  764416
+                title: 'Донни Кейтс: Серебряный Сёрфер. Тьма'
+                authors: Кейт Донни
+                image: /assets/img/content/main/card.jpg
+                discount: 18
+                isBestseller: false
+                rating: 5
+                status: CART
+                price: 978
+                discountPrice: 802
+            -   id: 12
+                slug: 764416
+                title: 'Rudyard Kipling: The Jungle (+CD)'
+                authors: Киплинг Редьярд Джозеф
+                image: /assets/img/content/main/card.jpg
+                discount: 40
+                isBestseller: false
+                rating: 5
+                status: false
+                price: 429
+                discountPrice: 257
+            -   id: 13
+                slug: 764416
+                title: "L. Alexander: K's First Case"
+                authors: Alexander L. G.
+                image: /assets/img/content/main/card.jpg
+                discount: 40
+                isBestseller: false
+                rating: 5
+                status: KEPT
+                price: 329
+                discountPrice: 197
+    
+            -   id: 14
+                slug: 764416
+                title: "Bernard Smith: The Last Photo"
+                authors: Smith Bernard
+                image: /assets/img/content/main/card.jpg
+                discount: 40
+                isBestseller: true
+                rating: 5
+                status: false
+                price: 329
+                discountPrice: 197
+            -   id: 15
+                slug: 759144
+                title: 'Джой Уильямс: Подменыш'
+                image: /assets/img/content/main/card.jpg
+                authors: Уильямс Джой
+                discount: 18
+                isBestseller: true
+                rating: 5
+                status: KEPT
+                price: 624
+                discountPrice: 512
+            -   id: 16
+                slug: 764415
+                title: Python и наука о данных для чайников
+                authors: Диалектика
+                image: /assets/img/content/main/card.jpg
+                discount: 18
+                isBestseller: false
+                rating: 5
+                status: PAID
+                price: 1921
+                discountPrice: 1575
+            -   id: 17
+                slug: 764416
+                title: Тревожные расстройства и фобии. Когнитивный подход
+                authors:
+                image: /assets/img/content/main/card.jpg
+                discount: 18
+                isBestseller: false
+                rating: 5
+                status: false
+                price: 3200
+                discountPrice: 2624
+            -   id: 18
+                slug:  764416
+                title: 'Донни Кейтс: Серебряный Сёрфер. Тьма'
+                authors: Кейт Донни
+                image: /assets/img/content/main/card.jpg
+                discount: 18
+                isBestseller: false
+                rating: 5
+                status: CART
+                price: 978
+                discountPrice: 802
+            -   id: 19
+                slug: 764416
+                title: 'Rudyard Kipling: The Jungle (+CD)'
+                authors: Киплинг Редьярд Джозеф
+                image: /assets/img/content/main/card.jpg
+                discount: 40
+                isBestseller: false
+                rating: 5
+                status: false
+                price: 429
+                discountPrice: 257
+            -   id: 20
+                slug: 764416
+                title: "L. Alexander: K's First Case"
+                authors: Alexander L. G.
+                image: /assets/img/content/main/card.jpg
+                discount: 40
+                isBestseller: false
+                rating: 5
+                status: KEPT
+                price: 329
+                discountPrice: 197
+    Status:
+        type: object
+        required:
+            - status
+        properties:
+            status:
+                type: string
+                example: KEPT
+            array:
+                type: array
+                items:
+                    $ref: '#/definitions/BooksID'
+                    
+    BooksID:
+        type: array
+        items:
+            type: integer
+            format: int
+            example: ""
+    Error:
+        type: object
+        properties:
+            result:
+                type: boolean
+                example: true
+            error:
+                type: string
+                example: Какая-то ошибка
+    contact:
+        type: object
+        required:
+            - contact
+        properties:
+            contact:
+                type: string
+                example: cryptocoin62@gmail.com
+    inline_response_200:
+        type: object
+        properties:
+            result:
+                type: boolean
+                example: true
+    inline_response_200_1:
+        type: object
+        properties:
+            result:
+                type: boolean
+                example: false
+            return:
+                type: boolean
+                example: true
+            error:
+                type: string
+                example: Код подтверждения устарел. Запросите новый
+    inline_response_200_2:
+        type: object
+        properties:
+            result:
+                type: boolean
+                example: false
+            error:
+                type: string
+                example: E-mail или номер указан неверно
+    inline_response_400:
+        type: object
+        properties:
+            result:
+                type: boolean
+                example: false
+            error:
+                type: string
+                example: E-mail или номер указан неверно
+    contact_1:
+        type: object
+        required:
+            - code
+            - contact
+        properties:
+            contact:
+                type: string
+                example: cryptocoin62@gmail.com
+            code:
+                type: string
+                example: "123456"
+    inline_response_400_1:
+        type: object
+        properties:
+            result:
+                type: boolean
+                example: false
+            return:
+                type: boolean
+                example: true
+            error:
+                type: string
+                example: Код подтверждения устарел. Запросите новый
+    review:
+        type: object
+        required:
+            - BookID
+            - Text
+        properties:
+            BookID:
+                type: string
+            Text:
+                type: string
+    inline_response_200_3:
+        type: object
+        properties:
+            result:
+                type: boolean
+                example: false
+            error:
+                type: string
+                example: Отзыв слишком короткий. Напишите, пожалуйста, более развёрнутый отзыв
+    inline_response_400_2:
+        type: object
+        properties:
+            result:
+                type: boolean
+                example: false
+            error:
+                type: string
+                example: Отзыв слишком короткий. Напишите, пожалуйста, более развёрнутый отзыв
+    inline_response_400_3:
+        type: object
+        properties:
+            result:
+                type: boolean
+                example: false
+            error:
+                type: string
+                example: Нельзя отложить купленную книгу
+    inline_response_200_4:
+        type: object
+        properties:
+            result:
+                type: boolean
+                example: false
+            error:
+                type: string
+                example: Нельзя отложить купленную книгу
+    payment:
+        type: object
+        properties:
+            Hash:
+                type: string
+                example: qiyh4XPJGsOZ2MEAyLkfWqeQ
+            Summ:
+                type: integer
+                format: int
+                example: 12345
+            Time:
+                type: string
+                format: date-time
+                example: 2020-09-02T14:36:29.590Z
+    Appeal:
+        type: object
+        properties:
+            reviewId:
+                type: string
+                example: 1111
+            value:
+                type: integer
+                format: int
+                example: 1
+                
+    Rating:
+        type: object
+        properties:
+            bookId:
+                type: string
+                example: 1111
+            value:
+                type: integer
+                format: int
+                example: 1
+                
+    inline_response_400_4:
+        type: object
+        properties:
+            result:
+                type: boolean
+                example: false
+            error:
+                type: string
+                example: Указанный тэг не найден
+                
+    inline_response_400_5:
+        type: object
+        properties:
+            result:
+                type: boolean
+                example: false
+            error:
+                type: string
+                example: Неверный id книги

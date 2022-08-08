@@ -1,0 +1,40 @@
+.{$px}Authors
+    visibility: visible;
+    &-links
+        display: flex
+        margin-bottom: 30px
+        +m('tablet')
+            flex-wrap: wrap
+    &-link
+        font-size: font-md
+        font-weight: 600
+        margin-right: 5px
+        margin-bottom: 10px
+        
+    &-title
+        font-size: font-mdp
+        margin-bottom: 10px
+        a
+            cursor: default
+            color: text-main
+            display: inline-block
+            border: none
+            &:hover
+                border: none
+    &-letter
+        margin-top: 30px
+        columns: 3
+        columns-gap: 20px
+        text-align: left
+        +m('tablet')
+            columns: 2
+        +m('phone')
+            columns: 1
+    &-blank
+        opacity: 0
+    &-item
+        display:block
+        a
+            margin-bottom: 3px
+            display: inline-block
+

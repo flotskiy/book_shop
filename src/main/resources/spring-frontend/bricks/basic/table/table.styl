@@ -1,0 +1,59 @@
+.{$px}table
+    visibility: visible;
+    margin-top: 20px
+    margin-bottom: 20px
+    border: none
+    border-collapse: separate
+    &Wrap
+        overflow:auto
+        +e()
+            min-width: 500px
+    &_noMargin
+        margin: 0
+    th
+    td
+        background: none
+        border: none
+        padding: 10px
+        text-align: left
+        transition: all 200ms
+        &:first-child
+            border-left: 1px solid transparent
+    th
+        font-size: 17px;
+        font-weight: 700;
+    td
+        font-size: font-nrm;
+    thead
+        th
+        td
+            padding-bottom: 18px
+            border-bottom: 27px solid transparent
+            position: relative
+            &:after
+                content: ''
+                position: absolute
+                left: 0
+                bottom: 0
+                right: 0
+                height: 2px
+                background: #e8ecee
+    tbody
+        td
+        th
+            background: transparent
+            transition: all 200ms
+        tr
+            &:first-child
+                th
+                td
+                    border-top: none
+            +m('desktop')
+                &:hover
+                    th
+                    td
+                        background-color: #eef2fb;
+                        transition: all 200ms
+                        &:first-child
+                            border-left: 1px solid clr-primary
+                            transition: all 200ms

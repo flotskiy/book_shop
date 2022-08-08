@@ -1,0 +1,52 @@
+.{$px}Documents
+    visibility: visible;
+    &-item
+        display: flex
+        align-items: center
+        overflow: hidden
+        a&
+            +m('desktop')
+                &:hover
+                    border-color: transparent
+        & + &
+            margin-top: 30px
+        +m(700px)
+            display: block
+    &-image
+        max-width: 200px
+        min-width: 200px
+        //height: 320px
+        margin-right: 30px
+        max-height: 100%
+        display: flex
+        justify-content: center
+        align-items: center
+        overflow: hidden
+        //position: relative
+        img
+            max-width: 100%
+            max-height: 100%
+            height: auto
+            width: auto
+            position: relative
+            display: block
+        +m(700px)
+            margin-bottom: 30px
+            margin-right: 0
+            width: 100%
+            max-width: none
+            height: 250px
+    &-title
+        font-size: 23px;
+        display: block
+        margin-bottom: 20px
+        font-weight: 600
+        line-height: 1.2em
+        letter-spacing: 0.9px;
+    &-content
+        visibility: visible
+        color: text-main
+        +m('desktop')
+            &:hover
+                color: clr-primary
+        

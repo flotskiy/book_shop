@@ -1,0 +1,47 @@
+/*-----------  media  -----------*/
+.{$px}media
+    $headerBottom = 10px    // Отступ у блока header снизу
+    $titleFz = font-mdm     // Размер шрифта у заголовка
+    $contentPd = 12px       // Отступ блока content от картинки
+    $imageVtBottom = 10px   // Отступ у картинки снизу, при вертикальном положении
+    
+    display: flex
+    
+    &_middle
+        align-items: center
+    &-header
+        display: block
+        margin-bottom: $headerBottom
+
+    &-title
+        font-weight: bold
+        font-size: $titleFz
+        display: block
+        
+    &-image
+        display: block
+        line-height: 0
+        
+    &-content
+        padding-left: $contentPd
+        padding-right: $contentPd
+        display: block
+        flex-grow: 8
+        flex-basis: 60px
+        flex-shrink: 0
+        &:first-child
+            padding-left: 0
+        &:last-child
+            padding-right: 0
+        
+    &_vt
+        display: block
+        text-align: center
+        +e(-image)
+            margin-bottom: $imageVtBottom
+        +e(-content)
+            padding-left: 0
+        +e(-header)
+            border-right: none
+            padding-right: 0
+

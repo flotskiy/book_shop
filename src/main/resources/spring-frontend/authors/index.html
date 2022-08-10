@@ -11,7 +11,7 @@
 <![endif]-->
 <!--[if gt IE 9]><!--> <html lang="ru" xmlns:th="http://www.thymeleaf.org"> <!--<![endif]-->
 <head>
-  <title>Тут название страницы написать</title>
+  <title>Авторы - Flotskiy Bookshop</title>
   <meta name="description" content="Описание страницы">
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0">
@@ -39,7 +39,7 @@
           | браузера здесь&nbsp;
       | для правильного отображения сайта.
   -->
-  <header th:replace="~{fragments/header_fragment :: headFragment}"></header>
+  <header th:replace="~{fragments/common_header_fragment :: headFragment ('authors')}"></header>
   <div class="Middle">
     <div class="wrap">
       <main class="Middle-main">
@@ -66,7 +66,7 @@
       </main>
     </div>
   </div>
-  <footer th:replace="~{fragments/footer_fragment :: footFragment}">
+  <footer th:replace="~{fragments/common_footer_fragment :: footFragment}">
   </footer>
   <script src="/assets/plg/jQuery/jquery-3.5.1.min.js"></script>
   <!--+menu(-->

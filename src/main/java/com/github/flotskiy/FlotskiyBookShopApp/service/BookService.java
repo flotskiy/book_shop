@@ -38,6 +38,7 @@ public class BookService {
         List<BookDto> booksDto = bookShopRepo.getJdbcTemplate()
                 .query("SELECT * FROM books", (ResultSet rs, int rowNum) -> {
             BookDto bookDto = new BookDto();
+            bookDto.setId(rs.getInt("id"));
             String authorName = authors.get(rs.getInt("author_id"));
             bookDto.setAuthor(authorName);
             bookDto.setTitle(rs.getString("title"));

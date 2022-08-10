@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<body>
+  <div th:fragment="sliderFragment (cardName, booksList)">
+    <div class="Section-header">
+      <h2 class="Section-title" th:text="${cardName}">Имя карточки
+      </h2>
+    </div>
+    <div class="Slider Slider_carousel">
+      <div class="Slider-box Cards" th:dat data-loadoffset="8" data-loadlimit="20">
+        <div class="Slider-item" th:each="book : ${booksList}">
+          <div class="Slider-content">
+            <div class="Card">
+              <a class="Card-picture" href="/books/slug.html"><img src="/assets/img/content/main/card.jpg" alt="card.jpg"/>
+                <div th:if="${book.price} lt ${book.priceOld}">
+                  <div class="Card-sale">Скидка
+                  </div>
+                </div>
+              </a>
+              <div class="Card-content">
+                <strong class="Card-title"><a href="/books/slug.html" th:text="${book.title}">Книга</a>
+                </strong>
+                <div class="Card-description" th:text="${book.author}">Автор
+                </div>
+                <div class="Card-cost">
+                  <div th:if="${book.price} lt ${book.priceOld}">
+                    <span class="Card-priceOld" th:text="${book.priceOld}">Старая цена</span>
+                  </div>
+                  <span class="Card-price" th:text="${book.price}">Новая цена</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="Slider-navigateWrap">
+        <div class="Slider-navigate">
+        </div>
+      </div>
+      <div class="Slider-load">
+        <div class="Slider-load-text">Идет загрузка данных
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

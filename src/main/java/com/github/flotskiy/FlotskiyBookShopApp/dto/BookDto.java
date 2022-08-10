@@ -2,10 +2,19 @@ package com.github.flotskiy.FlotskiyBookShopApp.dto;
 
 public class BookDto {
 
+    private Integer id;
     private String author;
     private String title;
     private String priceOld;
     private String price;
+
+    public Integer getId() {
+        return id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
+    }
 
     public String getAuthor() {
         return author;
@@ -42,7 +51,8 @@ public class BookDto {
     @Override
     public String toString() {
         return "BookDto{" +
-                "author='" + author + '\'' +
+                "id=" + id +
+                ", author='" + author + '\'' +
                 ", title='" + title + '\'' +
                 ", priceOld='" + priceOld + '\'' +
                 ", price='" + price + '\'' +

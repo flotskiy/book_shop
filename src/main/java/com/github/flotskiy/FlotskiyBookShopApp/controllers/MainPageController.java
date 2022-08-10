@@ -24,8 +24,23 @@ public class MainPageController {
         return bookService.getBooksData().subList(0, 20);
     }
 
+    @ModelAttribute("recentBooks")
+    public List<BookDto> recentBooks() {
+        return bookService.getBooksData().subList(20, 40);
+    }
+
+    @ModelAttribute("popularBooks")
+    public List<BookDto> popularBooks() {
+        return bookService.getBooksData().subList(40, 60);
+    }
+
     @GetMapping({"/"})
     public String mainPage() {
-        return "index";
+        return "/index";
+    }
+
+    @GetMapping("/postponed")
+    public String postponedPage() {
+        return "/postponed";
     }
 }

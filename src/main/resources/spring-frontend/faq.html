@@ -9,9 +9,9 @@
 <!--[if IE 9]>
 <html class="ie9" lang="ru">
 <![endif]-->
-<!--[if gt IE 9]><!--> <html lang="ru"> <!--<![endif]-->
+<!--[if gt IE 9]><!--> <html lang="ru" xmlns:th="http://www.thymeleaf.org"> <!--<![endif]-->
 <head>
-  <title>Помощь - Flotskiy Bookshop</title>
+  <title th:text="#{title.faq}">Помощь - Flotskiy Bookshop</title>
   <meta name="description" content="Описание страницы">
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0">
@@ -27,6 +27,8 @@
   <link rel="stylesheet" href="/assets/css/basic.min.css?v=77124975">
   <link rel="stylesheet" href="/assets/css/extra.min.css?v=77124975"><!--[if lt IE 9]>
   <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+  <script src="/assets/js/locale.js"></script>
   <script defer src="/assets/js/scripts.min.js?v=77124975"></script>
 </head>
 <body class="Site">
@@ -44,68 +46,69 @@
     <div class="wrap">
       <main class="Middle-main">
         <ul class="breadcrumbs">
-          <li class="breadcrumbs-item"><a href="/index.html">Главная</a>
+          <li class="breadcrumbs-item"><a href="/index.html" th:text="#{menu.main}">Главная</a>
           </li>
-          <li class="breadcrumbs-item breadcrumbs-item_current"><span>Помощь</span>
+          <li class="breadcrumbs-item breadcrumbs-item_current"><span th:text="#{menu.faq}">Помощь</span>
           </li>
         </ul>
-        <h1 class="Middle-title">Помощь
+        <h1 class="Middle-title" th:text="#{menu.faq}">Помощь
         </h1>
         <div class="FAQ">
-          <strong class="FAQ-title">Наиболее частые вопросы:
+          <strong class="FAQ-title" th:text="#{page.faq.faq}">Наиболее частые вопросы:
           </strong>
           <div class="HideBlock FAQ-block">
             <header class="HideBlock-header HideBlock-trigger">
-              <strong class="HideBlock-title">Что делать, если я не нашел нужный товар
+              <strong class="HideBlock-title" th:text="#{page.faq.question1}">Что делать, если я не нашел нужный товар
               </strong>
               <button class="HideBlock-btn" type="button">
               </button>
             </header>
             <div class="HideBlock-content">
-              <p>Если вы ввели в строке поиска название товара и увидели сообщение «Простите, по вашему запросу товаров сейчас нет», это значит, что такого товара у нас в ассортименте пока нет.
+              <p th:text="#{page.faq.answer1_1}">Если вы ввели в строке поиска название товара и увидели сообщение «Простите, по вашему запросу товаров сейчас нет», это значит, что такого товара у нас в ассортименте пока нет.
               </p>
-              <p>В этом случае, вы можете добавить ссылку на искомый товар, нажав Не нашли, что искали?. Мы передадим информацию менеджерам соответствующей категории и постараемся добавить товар в ассортимент.
-              </p>
-            </div>
-          </div>
-          <div class="HideBlock FAQ-block">
-            <header class="HideBlock-header HideBlock-trigger">
-              <strong class="HideBlock-title">Товара нет в наличии
-              </strong>
-              <button class="HideBlock-btn" type="button">
-              </button>
-            </header>
-            <div class="HideBlock-content">
-              <p>Мы регулярно пополняем запасы товаров на складах. Чтобы узнать о поступлении товара, подпишитесь на уведомления, нажав кнопку Узнать о поступлении.
+              <p th:text="#{page.faq.answer1_2}">В этом случае, вы можете добавить ссылку на искомый товар, нажав Не нашли, что искали?. Мы передадим информацию менеджерам соответствующей категории и постараемся добавить товар в ассортимент.
               </p>
             </div>
           </div>
           <div class="HideBlock FAQ-block">
             <header class="HideBlock-header HideBlock-trigger">
-              <strong class="HideBlock-title">У товара слишком высокая цена
+              <strong class="HideBlock-title" th:text="#{page.faq.question2}">Товара нет в наличии
               </strong>
               <button class="HideBlock-btn" type="button">
               </button>
             </header>
             <div class="HideBlock-content">
-              <p>Вы можете дождаться скидки на интересующий товар. Чтобы не пропустить снижение цены, нажмите кнопку Это дорого? на карточке товара. Когда цена снизится, мы пришлем вам уведомление.
+              <p th:text="#{page.faq.answer2}">Мы регулярно пополняем запасы товаров на складах. Чтобы узнать о поступлении товара, подпишитесь на уведомления, нажав кнопку Узнать о поступлении.
               </p>
             </div>
           </div>
           <div class="HideBlock FAQ-block">
             <header class="HideBlock-header HideBlock-trigger">
-              <strong class="HideBlock-title">У меня есть вопрос про товар продавца
+              <strong class="HideBlock-title" th:text="#{page.faq.question3}">У товара слишком высокая цена
               </strong>
               <button class="HideBlock-btn" type="button">
               </button>
             </header>
             <div class="HideBlock-content">
-              <p>С некоторыми продавцами можно связаться через чат. Чтобы задать интересующий вас вопрос, на карточке товара под его фотографиями нажмите Спросить продавца о товаре, далее введите ваше сообщение и дождитесь ответа.
+              <p th:text="#{page.faq.answer3}">Вы можете дождаться скидки на интересующий товар. Чтобы не пропустить снижение цены, нажмите кнопку Это дорого? на карточке товара. Когда цена снизится, мы пришлем вам уведомление.
+              </p>
+            </div>
+          </div>
+          <div class="HideBlock FAQ-block">
+            <header class="HideBlock-header HideBlock-trigger">
+              <strong class="HideBlock-title" th:text="#{page.faq.question4}">У меня есть вопрос про товар продавца
+              </strong>
+              <button class="HideBlock-btn" type="button">
+              </button>
+            </header>
+            <div class="HideBlock-content">
+              <p th:text="#{page.faq.answer4}">С некоторыми продавцами можно связаться через чат. Чтобы задать интересующий вас вопрос, на карточке товара под его фотографиями нажмите Спросить продавца о товаре, далее введите ваше сообщение и дождитесь ответа.
               </p>
             </div>
           </div>
           <div class="FAQ-footer">
-            <p class="FAQ-link">Или&#32;<a href="/contacts.html">свяжитесь с нами</a>
+            <p class="FAQ-link"><span th:text="#{page.faq.or}">Или&#32;</span>
+              <a href="/contacts.html" th:text="#{page.faq.contact}">свяжитесь с нами</a>
             </p>
           </div>
         </div>
@@ -114,4 +117,5 @@
   </div>
   <footer th:replace="~{fragments/common_footer_fragment :: footFragment}"></footer>
   <script src="/assets/plg/jQuery/jquery-3.5.1.min.js"></script>
-</body></html>
+</body>
+</html>

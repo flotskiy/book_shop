@@ -11,7 +11,7 @@
 <![endif]-->
 <!--[if gt IE 9]><!--> <html lang="ru" xmlns:th="http://www.thymeleaf.org"> <!--<![endif]-->
 <head>
-  <title>Документы - Flotskiy Bookshop</title>
+  <title th:text="#{title.documents}">Документы - Flotskiy Bookshop</title>
   <meta name="description" content="Описание страницы">
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0">
@@ -27,6 +27,8 @@
   <link rel="stylesheet" href="/assets/css/basic.min.css?v=16590401">
   <link rel="stylesheet" href="/assets/css/extra.min.css?v=16590401"><!--[if lt IE 9]>
   <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+  <script src="/assets/js/locale.js"></script>
   <script defer src="/assets/js/scripts.min.js?v=16590401"></script>
 </head>
 <body class="Site">
@@ -43,7 +45,7 @@
   <div class="Middle">
     <div class="wrap">
       <main class="Middle-main">
-        <h1 class="Middle-title">Документы
+        <h1 class="Middle-title" th:text="#{menu.documents}">Документы
         </h1>
         <div class="Section">
           <div class="Documents">
@@ -51,19 +53,19 @@
                 <div class="Documents-image"><img src="/assets/img/content/documents/1.jpg" alt="1.jpg"/>
                 </div>
                 <div class="Documents-content">
-                  <strong class="Documents-title">Публичная оферта
+                  <strong class="Documents-title" th:text="#{page.documents.offer.title}">Публичная оферта
                   </strong>
-                  <p>Согласно закону, публичная оферта – это предложение, которое, во-первых, адресовано неопределенному кругу лиц, во-вторых, содержит все существенные условия договора, и, в-третьих, достаточно определенно выражает намерение предприятия-оферента считать себя заключившим договор с любым
+                  <p th:text="#{page.documents.offer.text1}">Согласно закону, публичная оферта – это предложение, которое, во-первых, адресовано неопределенному кругу лиц, во-вторых, содержит все существенные условия договора, и, в-третьих, достаточно определенно выражает намерение предприятия-оферента считать себя заключившим договор с любым
                   </p>
-                  <p>Согласно закону, публичная оферта – это предложение, которое, во-первых, адресовано неопределенному кругу лиц, во-вторых, содержит все существенные условия договора, и, в-третьих, достаточно определенно выражает намерение предприятия-оферента считать себя заключившим договор с любым
+                  <p th:text="#{page.documents.offer.text2}">Согласно закону, публичная оферта – это предложение, которое, во-первых, адресовано неопределенному кругу лиц, во-вторых, содержит все существенные условия договора, и, в-третьих, достаточно определенно выражает намерение предприятия-оферента считать себя заключившим договор с любым
                   </p>
                 </div></a><a class="Documents-item" href="/documents/slug.html">
                 <div class="Documents-image"><img src="/assets/img/content/documents/2.jpg" alt="2.jpg"/>
                 </div>
                 <div class="Documents-content">
-                  <strong class="Documents-title">Политика обработки персональных данных
+                  <strong class="Documents-title" th:text="#{page.documents.policy.title}">Политика обработки персональных данных
                   </strong>
-                  <p>Согласно закону, публичная оферта – это предложение, которое, во-первых, адресовано неопределенному кругу лиц, во-вторых, содержит все существенные условия договора, и, в-третьих, достаточно определенно выражает намерение предприятия-оферента считать себя заключившим договор с любым
+                  <p th:text="#{page.documents.policy.text}">Согласно закону, публичная оферта – это предложение, которое, во-первых, адресовано неопределенному кругу лиц, во-вторых, содержит все существенные условия договора, и, в-третьих, достаточно определенно выражает намерение предприятия-оферента считать себя заключившим договор с любым
                   </p>
                 </div></a>
             </div>

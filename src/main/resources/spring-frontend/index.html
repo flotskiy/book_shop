@@ -10,7 +10,7 @@
 <![endif]-->
 <!--[if gt IE 9]><!--> <html lang="ru" xmlns:th="http://www.thymeleaf.org"> <!--<![endif]-->
 <head>
-  <title>Главная - Flotskiy Bookshop</title>
+  <title th:text="#{title.main}">Главная - Flotskiy Bookshop</title>
   <meta name="description" content="Описание страницы">
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0">
@@ -26,6 +26,8 @@
   <link rel="stylesheet" href="/assets/css/basic.min.css?v=64223515">
   <link rel="stylesheet" href="/assets/css/extra.min.css?v=64223515"><!--[if lt IE 9]>
   <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+  <script src="/assets/js/locale.js"></script>
   <script defer src="/assets/js/scripts.min.js?v=64223515"></script>
 </head>
 <body class="Site">
@@ -43,11 +45,11 @@
     <div class="wrap">
       <main class="Middle-main">
         <div class="Section">
-          <div th:replace="~{fragments/main_page_slider_card :: sliderFragment ('Рекомендуемое', ${recommendedBooks})}"></div>
-          <div th:replace="~{fragments/main_page_slider_card :: sliderFragment ('Новинки', ${recentBooks})}"></div>
-          <div th:replace="~{fragments/main_page_slider_card :: sliderFragment ('Популярное', ${popularBooks})}"></div>
+          <div th:replace="~{fragments/main_page_slider_card :: sliderFragment (#{main.recommended}, ${recommendedBooks})}"></div>
+          <div th:replace="~{fragments/main_page_slider_card :: sliderFragment (#{main.recent}, ${recentBooks})}"></div>
+          <div th:replace="~{fragments/main_page_slider_card :: sliderFragment (#{main.popular}, ${popularBooks})}"></div>
         </div>
-        <h2 class="Middle-title">Книги по тегам
+        <h2 class="Middle-title" th:text="#{main.tag}">Книги по тегам
         </h2>
         <div class="Tags" id="tags">
           <div class="Tag Tag_xs"><a href="/tags/index.html">современная литература</a>

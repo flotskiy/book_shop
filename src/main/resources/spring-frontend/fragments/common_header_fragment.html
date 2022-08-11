@@ -14,8 +14,8 @@
                         <div class="Header-search">
                             <div class="search">
                                 <form class="form form_search" action="#" method="post" data-searchlimit="20">
-                                    <input class="search-input" id="query" name="query" type="text" placeholder="Search over 30 million book titles" value=""/>
-                                    <button class="search-button" type="submit" name="search" id="search">Поиск
+                                    <input class="search-input" id="query" name="query" type="text" placeholder="Search over 30 million book titles" th:placeholder="#{header.placeholder}" value=""/>
+                                    <button class="search-button" type="submit" name="search" id="search" th:text="#{menu.search}">Поиск
                                     </button>
                                 </form>
                             </div>
@@ -40,19 +40,19 @@
                 <nav class="menuModal" id="navigate">
                     <ul class="menu menu_main">
                         <li th:class="${#strings.equals(activeMenuItem, 'main')} ? 'menu-item menu-item_ACTIVE' : 'menu-item'" class="menu-item">
-                            <a class="menu-link" href="/index.html" th:href="@{/}" th:text="#{topbar.main}">Главная</a>
+                            <a class="menu-link" href="/index.html" th:href="@{/}" th:text="#{menu.main}">Главная</a>
                         </li>
                         <li th:class="${#strings.equals(activeMenuItem, 'genres')} ? 'menu-item menu-item_ACTIVE' : 'menu-item'" class="menu-item">
-                            <a class="menu-link" href="/genres/index.html" th:href="@{/genres}" th:text="#{topbar.genres}">Жанры</a>
+                            <a class="menu-link" href="/genres/index.html" th:href="@{/genres}" th:text="#{menu.genres}">Жанры</a>
                         </li>
                         <li th:class="${#strings.equals(activeMenuItem, 'recent')} ? 'menu-item menu-item_ACTIVE' : 'menu-item'" class="menu-item">
-                            <a class="menu-link" href="/books/recent.html" th:href="@{/books/recent}" th:text="#{topbar.recent}">Новинки</a>
+                            <a class="menu-link" href="/books/recent.html" th:href="@{/books/recent}" th:text="#{menu.recent}">Новинки</a>
                         </li>
                         <li th:class="${#strings.equals(activeMenuItem, 'popular')} ? 'menu-item menu-item_ACTIVE' : 'menu-item'" class="menu-item">
-                            <a class="menu-link" href="/books/popular.html" th:href="@{/books/popular}" th:text="#{topbar.popular}">Популярное</a>
+                            <a class="menu-link" href="/books/popular.html" th:href="@{/books/popular}" th:text="#{menu.popular}">Популярное</a>
                         </li>
                         <li th:class="${#strings.equals(activeMenuItem, 'authors')} ? 'menu-item menu-item_ACTIVE' : 'menu-item'" class="menu-item">
-                            <a class="menu-link" href="/authors/index.html" th:href="@{/authors}" th:text="#{topbar.authors}">Авторы</a>
+                            <a class="menu-link" href="/authors/index.html" th:href="@{/authors}" th:text="#{menu.authors}">Авторы</a>
                         </li>
                     </ul>
                 </nav>

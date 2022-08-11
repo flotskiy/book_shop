@@ -11,7 +11,7 @@
 <![endif]-->
 <!--[if gt IE 9]><!--> <html lang="ru" xmlns:th="http://www.thymeleaf.org"> <!--<![endif]-->
 <head>
-  <title>Популярное - Flotskiy Bookshop</title>
+  <title th:text="#{title.popular}">Популярное - Flotskiy Bookshop</title>
   <meta name="description" content="Описание страницы">
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0">
@@ -27,6 +27,8 @@
   <link rel="stylesheet" href="/assets/css/basic.min.css?v=45035206">
   <link rel="stylesheet" href="/assets/css/extra.min.css?v=45035206"><!--[if lt IE 9]>
   <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+  <script src="/assets/js/locale.js"></script>
   <script defer src="/assets/js/scripts.min.js?v=45035206"></script>
 </head>
 <body class="Site">
@@ -44,16 +46,16 @@
     <div class="wrap">
       <main class="Middle-main">
         <ul class="breadcrumbs">
-          <li class="breadcrumbs-item"><a href="/index.html">Главная</a>
+          <li class="breadcrumbs-item"><a href="/index.html" th:text="#{menu.main}">Главная</a>
           </li>
-          <li class="breadcrumbs-item"><a href="/genres/index.html">Книги</a>
+          <li class="breadcrumbs-item"><a href="/genres/index.html" th:text="#{menu.books}">Книги</a>
           </li>
-          <li class="breadcrumbs-item breadcrumbs-item_current"><span>Популярное</span>
+          <li class="breadcrumbs-item breadcrumbs-item_current"><span th:text="#{menu.popular}">Популярное</span>
           </li>
         </ul>
         <div class="Section">
           <div class="Section-header">
-            <h1 class="Section-title">Популярное
+            <h1 class="Section-title" th:text="#{menu.popular}">Популярное
             </h1>
           </div>
           <div th:replace="~{fragments/books_pool_fragment :: cardFragment (${popularBooksPage})}"></div>

@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<body>
+    <header class="Header" th:fragment="headFragment (activeMenuItem)">
+        <div class="Header-rowMain">
+            <div class="wrap">
+                <div class="row">
+                    <div class="row-block Header-logo"><a class="logo" href="/"><img class="logo-image" src="/assets/img/logo.png" alt="logo.png"/><span class="logo-text">BOOKSHOP</span></a>
+                    </div>
+                    <div class="Header-searchWrap row-block">
+                        <div class="Header-searchLink"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="19" viewBox="0 0 18 19"><g><g><path fill="#b8b8b8" d="M17.812 17.852c.25.268.25.69 0 .948a.622.622 0 0 1-.457.2.64.64 0 0 1-.457-.2l-5.364-5.494a7.07 7.07 0 0 1-4.32 1.47C3.232 14.777 0 11.457 0 7.389 0 3.321 3.232 0 7.214 0c3.983 0 7.214 3.32 7.214 7.388 0 1.94-.74 3.7-1.926 5.015zM7.214 13.44c3.264 0 5.909-2.708 5.909-6.05 0-3.344-2.655-6.052-5.909-6.052-3.264 0-5.908 2.72-5.908 6.051 0 3.332 2.644 6.051 5.908 6.051z"/></g></g></svg>
+                        </div>
+                        <div class="Header-search">
+                            <div class="search">
+                                <form class="form form_search" action="#" method="post" data-searchlimit="20">
+                                    <input class="search-input" id="query" name="query" type="text" placeholder="Search over 30 million book titles" th:placeholder="#{header.placeholder}" value=""/>
+                                    <button class="search-button" type="submit" name="search" id="search" th:text="#{menu.search}">Поиск
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row-block Header-cart">
+                        <div class="CartBlock"><a class="CartBlock-block" href="/postponed.html" th:href="@{/postponed}">
+                            <svg class="CartBlock-img" xmlns="http://www.w3.org/2000/svg" height="23" width="23" viewBox="0 0 512 512"><g> <g> <path fill="#5e5e5e" d="M511.812,167.165c-1.702-36.088-16.232-70.306-40.914-96.353c-25.567-26.981-59.251-41.993-94.847-42.272 c-34.009-0.257-63.948,12.15-88.992,36.905c-14.257,14.091-24.699,30.11-32.057,44.104c-7.358-13.994-17.8-30.013-32.057-44.104 c-25.047-24.754-55.004-37.158-88.993-36.905c-35.545,0.278-68.917,15.336-93.967,42.4C16.029,96.82,1.896,130.993,0.19,167.165 c-4.464,94.635,70.036,158.12,182.806,254.216c19.824,16.893,40.324,34.362,62.129,53.441l9.877,8.643l9.877-8.643 c23.121-20.23,44.813-38.641,65.789-56.445C442.411,323.538,516.232,260.884,511.812,167.165z M439.818,275.475 c-29.97,36.353-73.478,73.279-128.562,120.03c-18.057,15.325-36.642,31.099-56.253,48.129 c-18.29-15.892-35.664-30.698-52.55-45.087c-55.77-47.524-99.819-85.061-130.02-121.835 c-30.986-37.731-44.024-71.079-42.276-108.133c2.89-61.271,48.585-109.605,104.029-110.039c0.271-0.002,0.533-0.003,0.803-0.003 c57.965,0,87.525,49.314,100.005,78.802c3.424,8.09,11.278,13.318,20.007,13.318c8.729,0,16.583-5.228,20.007-13.318 c12.48-29.49,42.033-78.801,100.004-78.801c0.267,0,0.535,0.001,0.803,0.003c55.624,0.435,103.188,49.799,106.029,110.039 C483.57,205.158,470.609,238.125,439.818,275.475z"/> </g> </g></svg><span class="CartBlock-amount">0</span></a><a class="CartBlock-block" href="/cart.html" th:href="@{/cart}">
+                            <svg class="CartBlock-img" xmlns="http://www.w3.org/2000/svg" width="30" height="23" viewBox="0 0 30 23"><g><g><path fill="#5e5e5e" d="M.676 0H6.41c.31 0 .58.242.656.542l.969 3.863c.463-.392 1.052-.694 1.683-.694H27.33c1.448 0 2.67 1.314 2.67 2.793 0 .033-.002.13-.007.162l-1.33 9.017a.659.659 0 0 1-.018.086c-.473 1.644-1.294 2.255-1.979 2.467.373.497.597 1.102.597 1.77 0 1.642-1.34 2.962-2.986 2.962-1.646 0-2.986-1.368-2.986-3.01 0-.622.193-1.067.52-1.742h-6.225c.327.675.52 1.12.52 1.741 0 1.643-1.34 3.043-2.986 3.043a2.986 2.986 0 0 1-2.985-2.98c0-.661.22-1.273.588-1.769-1.291-.37-1.763-1.797-1.98-2.457a.711.711 0 0 1-.022-.093L7.059 6.675a.86.86 0 0 1-.01-.138c0-.126.011-.281.028-.403L5.883 1.349H.676A.676.676 0 1 1 .676 0zm14.078 20.021a1.633 1.633 0 0 0-3.267 0 1.633 1.633 0 0 0 3.267 0zm11.157 0a1.633 1.633 0 0 0-3.267 0 1.633 1.633 0 0 0 3.267 0zM8.439 6.172c-.002.023-.005.1-.01.121-.012.067-.025.119-.028.189l1.642 8.873c.437 1.311.837 1.512 1.337 1.512h14.622c.718 0 1.119-.802 1.33-1.52l1.316-8.887c-.024-.729-.618-1.4-1.317-1.4H9.718c-.608 0-1.135.515-1.279 1.112z"/></g></g></svg><span class="CartBlock-amount">0</span></a><a class="CartBlock-block" href="/signin.html" th:href="@{/signin}">
+                            <svg class="CartBlock-img" xmlns="http://www.w3.org/2000/svg" width="22" height="23" viewBox="0 0 22 23"><g><g><path fill="#5e5e5e" d="M22 23h-1.472c-.284-3.64-2.704-6.69-6.035-7.971a8.196 8.196 0 0 1-3.493.784 8.198 8.198 0 0 1-3.493-.784c-3.33 1.28-5.75 4.331-6.035 7.97H0c.262-3.886 2.635-7.204 6.005-8.884-1.88-1.447-3.091-3.687-3.091-6.209C2.914 3.54 6.534 0 11 0s8.086 3.54 8.086 7.906c0 2.522-1.211 4.762-3.091 6.21C19.365 15.794 21.738 19.112 22 23zM17.616 7.906c0-3.573-2.962-6.469-6.616-6.469-3.654 0-6.616 2.896-6.616 6.47 0 3.572 2.962 6.468 6.616 6.468 3.654 0 6.616-2.896 6.616-6.469z"/></g></g></svg></a>
+                        </div>
+                    </div>
+                    <div class="row-block Header-trigger"><a class="menuTrigger" href="#navigate">
+                        <div class="menuTrigger-content">Показать навигацию
+                        </div><span></span><span></span><span></span></a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="Header-menu">
+            <div class="wrap">
+                <nav class="menuModal" id="navigate">
+                    <ul class="menu menu_main">
+                        <li th:class="${#strings.equals(activeMenuItem, 'main')} ? 'menu-item menu-item_ACTIVE' : 'menu-item'" class="menu-item">
+                            <a class="menu-link" href="/index.html" th:href="@{/}" th:text="#{menu.main}">Главная</a>
+                        </li>
+                        <li th:class="${#strings.equals(activeMenuItem, 'genres')} ? 'menu-item menu-item_ACTIVE' : 'menu-item'" class="menu-item">
+                            <a class="menu-link" href="/genres/index.html" th:href="@{/genres}" th:text="#{menu.genres}">Жанры</a>
+                        </li>
+                        <li th:class="${#strings.equals(activeMenuItem, 'recent')} ? 'menu-item menu-item_ACTIVE' : 'menu-item'" class="menu-item">
+                            <a class="menu-link" href="/books/recent.html" th:href="@{/books/recent}" th:text="#{menu.recent}">Новинки</a>
+                        </li>
+                        <li th:class="${#strings.equals(activeMenuItem, 'popular')} ? 'menu-item menu-item_ACTIVE' : 'menu-item'" class="menu-item">
+                            <a class="menu-link" href="/books/popular.html" th:href="@{/books/popular}" th:text="#{menu.popular}">Популярное</a>
+                        </li>
+                        <li th:class="${#strings.equals(activeMenuItem, 'authors')} ? 'menu-item menu-item_ACTIVE' : 'menu-item'" class="menu-item">
+                            <a class="menu-link" href="/authors/index.html" th:href="@{/authors}" th:text="#{menu.authors}">Авторы</a>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+        </div>
+    </header>
+</body>
+</html>

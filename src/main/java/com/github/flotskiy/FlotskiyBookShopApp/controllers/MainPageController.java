@@ -1,7 +1,7 @@
 package com.github.flotskiy.FlotskiyBookShopApp.controllers;
 
-import com.github.flotskiy.FlotskiyBookShopApp.data.Book;
-import com.github.flotskiy.FlotskiyBookShopApp.data.BookService;
+import com.github.flotskiy.FlotskiyBookShopApp.dto.BookDto;
+import com.github.flotskiy.FlotskiyBookShopApp.service.BookService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -20,12 +20,27 @@ public class MainPageController {
     }
 
     @ModelAttribute("recommendedBooks")
-    public List<Book> recommendedBooks() {
+    public List<BookDto> recommendedBooks() {
         return bookService.getBooksData().subList(0, 20);
+    }
+
+    @ModelAttribute("recentBooks")
+    public List<BookDto> recentBooks() {
+        return bookService.getBooksData().subList(20, 40);
+    }
+
+    @ModelAttribute("popularBooks")
+    public List<BookDto> popularBooks() {
+        return bookService.getBooksData().subList(40, 60);
     }
 
     @GetMapping({"/"})
     public String mainPage() {
-        return "index";
+        return "/index";
+    }
+
+    @GetMapping("/postponed")
+    public String postponedPage() {
+        return "/postponed";
     }
 }

@@ -22,7 +22,7 @@ public class AuthorsPageController {
 
     @ModelAttribute("authorsMap")
     public Map<String, List<AuthorDto>> authorsMap() {
-        return authorsService.getAuthorsMap();
+        return authorsService.getAuthorsGroupedMap();
     }
 
     @GetMapping("/authors")

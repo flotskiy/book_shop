@@ -1,11 +1,12 @@
 package com.github.flotskiy.FlotskiyBookShopApp.service;
 
+import com.github.flotskiy.FlotskiyBookShopApp.data.Author;
 import com.github.flotskiy.FlotskiyBookShopApp.dto.AuthorDto;
-import com.github.flotskiy.FlotskiyBookShopApp.repository.BookShopRepo;
+import com.github.flotskiy.FlotskiyBookShopApp.repository.AuthorRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.sql.ResultSet;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -13,25 +14,34 @@ import java.util.stream.Collectors;
 @Service
 public class AuthorsService {
 
-    private BookShopRepo bookShopRepo;
+    private final AuthorRepository authorRepository;
 
     @Autowired
-    public AuthorsService(BookShopRepo bookShopRepo) {
-        this.bookShopRepo = bookShopRepo;
+    public AuthorsService(AuthorRepository authorRepository) {
+        this.authorRepository = authorRepository;
     }
 
-    public Map<String, List<AuthorDto>> getAuthorsMap() {
-        List<AuthorDto> authors = bookShopRepo.getJdbcTemplate()
-                .query("SELECT * FROM authors", (ResultSet rs, int rowNum) -> {
+    public List<AuthorDto> getAuthorsMap() {
+        List<Author> authorList = authorRepository.findAll();
+        List<AuthorDto> authorDtoList = new ArrayList<>();
+        for (Author author : authorList) {
             AuthorDto authorDto = new AuthorDto();
-            authorDto.setId(rs.getInt("id"));
-            String firstName = rs.getString("first_name");
-            String lastName = rs.getString("last_name");
+            authorDto.setId(author.getId());
+            String firstName = author.getFirstName();
+            String lastName = author.getLastName();
             authorDto.setName(lastName + " " + firstName);
-            return authorDto;
-        });
+            authorDtoList.add(authorDto);
+        }
+        return authorDtoList;
+    }
 
-        return authors.stream()
-                .collect(Collectors.groupingBy((AuthorDto a) -> a.getName().substring(0,1).toUpperCase()));
+    public Map<String, List<AuthorDto>> getAuthorsGroupedMap() {
+        List<AuthorDto> authorDtoList = getAuthorsMap();
+        return authorDtoList.stream()
+                .peek(authorDto -> {
+                    String[] nameArray = authorDto.getName().split(" ", 2);
+                    authorDto.setName(nameArray[0] + " " + nameArray[1]);
+                })
+                .collect(Collectors.groupingBy((AuthorDto a) -> a.getName().substring(0, 1).toUpperCase()));
     }
 }

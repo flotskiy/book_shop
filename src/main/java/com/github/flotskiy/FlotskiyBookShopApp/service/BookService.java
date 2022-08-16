@@ -16,8 +16,8 @@ import java.util.Map;
 @Service
 public class BookService {
 
-    private BookRepository bookRepository;
-    private AuthorsService authorsService;
+    private final BookRepository bookRepository;
+    private final AuthorsService authorsService;
 
     @Autowired
     public BookService(BookRepository bookRepository, AuthorsService authorsService) {
@@ -27,7 +27,7 @@ public class BookService {
 
     public List<BookDto> getBooksData() {
         Map<Integer, String> authors = new HashMap<>();
-        Map<String, List<AuthorDto>> authorsMapGrouped = authorsService.getAuthorsMap();
+        Map<String, List<AuthorDto>> authorsMapGrouped = authorsService.getAuthorsGroupedMap();
         for (List<AuthorDto> authorsList : authorsMapGrouped.values()) {
             for (AuthorDto authorDto : authorsList) {
                 Integer authorId = authorDto.getId();

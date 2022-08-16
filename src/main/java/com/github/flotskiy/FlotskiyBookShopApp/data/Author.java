@@ -16,8 +16,7 @@ public class Author {
     @Column(name = "last_name")
     private String lastName;
 
-    @OneToMany
-    @JoinColumn(name = "author_id", referencedColumnName = "id")
+    @OneToMany(mappedBy = "author")
     private List<Book> bookList = new ArrayList<>();
 
     public Integer getId() {

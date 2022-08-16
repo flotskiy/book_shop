@@ -1,12 +1,13 @@
 package com.github.flotskiy.FlotskiyBookShopApp.service;
 
+import com.github.flotskiy.FlotskiyBookShopApp.data.Author;
+import com.github.flotskiy.FlotskiyBookShopApp.data.Book;
 import com.github.flotskiy.FlotskiyBookShopApp.dto.AuthorDto;
 import com.github.flotskiy.FlotskiyBookShopApp.dto.BookDto;
-import com.github.flotskiy.FlotskiyBookShopApp.repository.BookShopRepo;
+import com.github.flotskiy.FlotskiyBookShopApp.repository.BookRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -15,12 +16,12 @@ import java.util.Map;
 @Service
 public class BookService {
 
-    private BookShopRepo bookShopRepo;
+    private BookRepository bookRepository;
     private AuthorsService authorsService;
 
     @Autowired
-    public BookService(BookShopRepo bookShopRepo, AuthorsService authorsService) {
-        this.bookShopRepo = bookShopRepo;
+    public BookService(BookRepository bookRepository, AuthorsService authorsService) {
+        this.bookRepository = bookRepository;
         this.authorsService = authorsService;
     }
 
@@ -35,17 +36,20 @@ public class BookService {
             }
         }
 
-        List<BookDto> booksDto = bookShopRepo.getJdbcTemplate()
-                .query("SELECT * FROM books", (ResultSet rs, int rowNum) -> {
+        List<Book> booksList = bookRepository.findAll();
+        List<BookDto> booksDtoList = new ArrayList<>();
+        for (Book book : booksList) {
             BookDto bookDto = new BookDto();
-            bookDto.setId(rs.getInt("id"));
-            String authorName = authors.get(rs.getInt("author_id"));
+            bookDto.setId(book.getId());
+            Author author = book.getAuthor();
+            String authorName = author.getFirstName() + " " + author.getLastName();
             bookDto.setAuthor(authorName);
-            bookDto.setTitle(rs.getString("title"));
-            bookDto.setPriceOld(rs.getString("price_old"));
-            bookDto.setPrice(rs.getString("price"));
-            return bookDto;
-        });
-        return new ArrayList<>(booksDto);
+            bookDto.setTitle(book.getTitle());
+            bookDto.setPriceOld(book.getPriceOld());
+            bookDto.setPrice(book.getPrice());
+            booksDtoList.add(bookDto);
+        }
+
+        return booksDtoList;
     }
 }

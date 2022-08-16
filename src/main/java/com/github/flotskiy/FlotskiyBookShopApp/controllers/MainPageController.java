@@ -26,12 +26,12 @@ public class MainPageController {
 
     @ModelAttribute("recentBooks")
     public List<BookDto> recentBooks() {
-        return bookService.getBooksData().subList(20, 40);
+        return bookService.getBooksData().subList(0, 20);
     }
 
     @ModelAttribute("popularBooks")
     public List<BookDto> popularBooks() {
-        return bookService.getBooksData().subList(40, 60);
+        return bookService.getBooksData().subList(0, 20);
     }
 
     @GetMapping({"/"})

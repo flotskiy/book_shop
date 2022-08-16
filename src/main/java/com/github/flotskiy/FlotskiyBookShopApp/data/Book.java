@@ -1,10 +1,19 @@
 package com.github.flotskiy.FlotskiyBookShopApp.data;
 
+import javax.persistence.*;
+
+@Entity
+@Table(name = "books")
 public class Book {
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
-    private String author;
+
+    @Column(name = "author_id")
+    private Integer authorId;
     private String title;
+    @Column(name = "price_old")
     private String priceOld;
     private String price;
 
@@ -16,12 +25,12 @@ public class Book {
         this.id = id;
     }
 
-    public String getAuthor() {
-        return author;
+    public Integer getAuthorId() {
+        return authorId;
     }
 
-    public void setAuthor(String author) {
-        this.author = author;
+    public void setAuthorId(Integer authorId) {
+        this.authorId = authorId;
     }
 
     public String getTitle() {
@@ -52,7 +61,7 @@ public class Book {
     public String toString() {
         return "Book{" +
                 "id=" + id +
-                ", author='" + author + '\'' +
+                ", author='" + authorId + '\'' +
                 ", title='" + title + '\'' +
                 ", priceOld='" + priceOld + '\'' +
                 ", price='" + price + '\'' +

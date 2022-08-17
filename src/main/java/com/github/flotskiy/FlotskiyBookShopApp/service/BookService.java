@@ -1,9 +1,8 @@
 package com.github.flotskiy.FlotskiyBookShopApp.service;
 
-import com.github.flotskiy.FlotskiyBookShopApp.data.Author;
-import com.github.flotskiy.FlotskiyBookShopApp.data.Book;
-import com.github.flotskiy.FlotskiyBookShopApp.dto.AuthorDto;
-import com.github.flotskiy.FlotskiyBookShopApp.dto.BookDto;
+import com.github.flotskiy.FlotskiyBookShopApp.model.entity.book.BookEntity;
+import com.github.flotskiy.FlotskiyBookShopApp.model.dto.AuthorDto;
+import com.github.flotskiy.FlotskiyBookShopApp.model.dto.BookDto;
 import com.github.flotskiy.FlotskiyBookShopApp.repository.BookRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -36,17 +35,19 @@ public class BookService {
             }
         }
 
-        List<Book> booksList = bookRepository.findAll();
+        List<BookEntity> booksList = bookRepository.findAll();
         List<BookDto> booksDtoList = new ArrayList<>();
-        for (Book book : booksList) {
+        for (BookEntity book : booksList) {
             BookDto bookDto = new BookDto();
             bookDto.setId(book.getId());
-            Author author = book.getAuthor();
-            String authorName = author.getFirstName() + " " + author.getLastName();
-            bookDto.setAuthor(authorName);
+//            AuthorEntity author = book.getAuthor();
+//            String authorName = author.getFirstName() + " " + author.getLastName();
+            bookDto.setAuthor("DEFAULT NAME");
             bookDto.setTitle(book.getTitle());
-            bookDto.setPriceOld(book.getPriceOld());
-            bookDto.setPrice(book.getPrice());
+            int price = book.getPrice();
+            bookDto.setPrice(price);
+            int priceOld = (price * (100 + book.getDiscount())) / 100;
+            bookDto.setPriceOld(priceOld);
             booksDtoList.add(bookDto);
         }
 

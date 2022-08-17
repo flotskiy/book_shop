@@ -1,18 +1,18 @@
-package com.github.flotskiy.FlotskiyBookShopApp.dto;
+package com.github.flotskiy.FlotskiyBookShopApp.model.dto;
 
 public class BookDto {
 
-    private Integer id;
+    private int id;
     private String author;
     private String title;
-    private String priceOld;
-    private String price;
+    private int priceOld;
+    private int price;
 
-    public Integer getId() {
+    public int getId() {
         return id;
     }
 
-    public void setId(Integer id) {
+    public void setId(int id) {
         this.id = id;
     }
 
@@ -32,19 +32,19 @@ public class BookDto {
         this.title = title;
     }
 
-    public String getPriceOld() {
+    public int getPriceOld() {
         return priceOld;
     }
 
-    public void setPriceOld(String priceOld) {
+    public void setPriceOld(int priceOld) {
         this.priceOld = priceOld;
     }
 
-    public String getPrice() {
+    public int getPrice() {
         return price;
     }
 
-    public void setPrice(String price) {
+    public void setPrice(int price) {
         this.price = price;
     }
 

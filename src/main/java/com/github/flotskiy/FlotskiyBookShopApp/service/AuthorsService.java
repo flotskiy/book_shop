@@ -1,7 +1,7 @@
 package com.github.flotskiy.FlotskiyBookShopApp.service;
 
-import com.github.flotskiy.FlotskiyBookShopApp.data.Author;
-import com.github.flotskiy.FlotskiyBookShopApp.dto.AuthorDto;
+import com.github.flotskiy.FlotskiyBookShopApp.model.entity.author.AuthorEntity;
+import com.github.flotskiy.FlotskiyBookShopApp.model.dto.AuthorDto;
 import com.github.flotskiy.FlotskiyBookShopApp.repository.AuthorRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -22,14 +22,12 @@ public class AuthorsService {
     }
 
     public List<AuthorDto> getAuthorsMap() {
-        List<Author> authorList = authorRepository.findAll();
+        List<AuthorEntity> authorList = authorRepository.findAll();
         List<AuthorDto> authorDtoList = new ArrayList<>();
-        for (Author author : authorList) {
+        for (AuthorEntity author : authorList) {
             AuthorDto authorDto = new AuthorDto();
             authorDto.setId(author.getId());
-            String firstName = author.getFirstName();
-            String lastName = author.getLastName();
-            authorDto.setName(lastName + " " + firstName);
+            authorDto.setName(author.getName());
             authorDtoList.add(authorDto);
         }
         return authorDtoList;

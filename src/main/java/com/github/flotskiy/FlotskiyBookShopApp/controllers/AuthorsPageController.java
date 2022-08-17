@@ -1,6 +1,6 @@
 package com.github.flotskiy.FlotskiyBookShopApp.controllers;
 
-import com.github.flotskiy.FlotskiyBookShopApp.dto.AuthorDto;
+import com.github.flotskiy.FlotskiyBookShopApp.model.dto.AuthorDto;
 import com.github.flotskiy.FlotskiyBookShopApp.service.AuthorsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;

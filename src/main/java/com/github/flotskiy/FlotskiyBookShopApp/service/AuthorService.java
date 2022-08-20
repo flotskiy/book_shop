@@ -12,12 +12,12 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
-public class AuthorsService {
+public class AuthorService {
 
     private final AuthorRepository authorRepository;
 
     @Autowired
-    public AuthorsService(AuthorRepository authorRepository) {
+    public AuthorService(AuthorRepository authorRepository) {
         this.authorRepository = authorRepository;
     }
 

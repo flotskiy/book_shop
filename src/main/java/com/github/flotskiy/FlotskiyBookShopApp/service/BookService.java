@@ -16,17 +16,17 @@ import java.util.Map;
 public class BookService {
 
     private final BookRepository bookRepository;
-    private final AuthorsService authorsService;
+    private final AuthorService authorService;
 
     @Autowired
-    public BookService(BookRepository bookRepository, AuthorsService authorsService) {
+    public BookService(BookRepository bookRepository, AuthorService authorService) {
         this.bookRepository = bookRepository;
-        this.authorsService = authorsService;
+        this.authorService = authorService;
     }
 
     public List<BookDto> getBooksData() {
         Map<Integer, String> authors = new HashMap<>();
-        Map<String, List<AuthorDto>> authorsMapGrouped = authorsService.getAuthorsGroupedMap();
+        Map<String, List<AuthorDto>> authorsMapGrouped = authorService.getAuthorsGroupedMap();
         for (List<AuthorDto> authorsList : authorsMapGrouped.values()) {
             for (AuthorDto authorDto : authorsList) {
                 Integer authorId = authorDto.getId();

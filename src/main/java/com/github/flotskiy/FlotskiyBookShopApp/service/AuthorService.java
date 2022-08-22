@@ -42,4 +42,8 @@ public class AuthorService {
                 })
                 .collect(Collectors.groupingBy((AuthorDto a) -> a.getName().substring(0, 1).toUpperCase()));
     }
+
+    public List<AuthorEntity> getAuthorsEntity() {
+        return authorRepository.findAll();
+    }
 }

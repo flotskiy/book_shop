@@ -1,5 +1,7 @@
 package com.github.flotskiy.FlotskiyBookShopApp.model.entity.book;
 
+import com.github.flotskiy.FlotskiyBookShopApp.model.entity.author.AuthorEntity;
+
 import javax.persistence.*;
 import java.time.LocalDate;
 
@@ -34,6 +36,11 @@ public class BookEntity {
 
     @Column(columnDefinition = "SMALLINT NOT NULL DEFAULT 0")
     private short discount;
+
+    @Transient
+    @ManyToOne
+    @JoinColumn(name = "author_id", referencedColumnName = "id")
+    private AuthorEntity author;
 
     public int getId() {
         return id;
@@ -105,5 +112,13 @@ public class BookEntity {
 
     public void setDiscount(short discount) {
         this.discount = discount;
+    }
+
+    public AuthorEntity getAuthor() {
+        return author;
+    }
+
+    public void setAuthor(AuthorEntity author) {
+        this.author = author;
     }
 }

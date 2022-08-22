@@ -1,5 +1,6 @@
 package com.github.flotskiy.FlotskiyBookShopApp.service;
 
+import com.github.flotskiy.FlotskiyBookShopApp.model.entity.author.AuthorEntity;
 import com.github.flotskiy.FlotskiyBookShopApp.model.entity.book.BookEntity;
 import com.github.flotskiy.FlotskiyBookShopApp.model.dto.AuthorDto;
 import com.github.flotskiy.FlotskiyBookShopApp.model.dto.BookDto;
@@ -40,8 +41,6 @@ public class BookService {
         for (BookEntity book : booksList) {
             BookDto bookDto = new BookDto();
             bookDto.setId(book.getId());
-//            AuthorEntity author = book.getAuthor();
-//            String authorName = author.getFirstName() + " " + author.getLastName();
             bookDto.setAuthor("DEFAULT NAME");
             bookDto.setTitle(book.getTitle());
             int price = book.getPrice();

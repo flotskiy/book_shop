@@ -20,7 +20,7 @@ public class SpringfoxConfig {
         return new Docket(DocumentationType.SWAGGER_2)
                 .select()
                 .apis(RequestHandlerSelectors.withClassAnnotation(Api.class))
-                .paths(PathSelectors.ant("/api/*"))
+                .paths(PathSelectors.any())
                 .build()
                 .apiInfo(apiInfo());
     }

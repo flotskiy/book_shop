@@ -21,17 +21,17 @@ public class MainPageController {
 
     @ModelAttribute("recommendedBooks")
     public List<BookDto> recommendedBooks() {
-        return bookService.getBooksData().subList(0, 20);
+        return bookService.getAllBooksData().subList(0, 20);
     }
 
     @ModelAttribute("recentBooks")
     public List<BookDto> recentBooks() {
-        return bookService.getBooksData().subList(0, 20);
+        return bookService.getAllBooksData().subList(0, 20);
     }
 
     @ModelAttribute("popularBooks")
     public List<BookDto> popularBooks() {
-        return bookService.getBooksData().subList(0, 20);
+        return bookService.getAllBooksData().subList(0, 20);
     }
 
     @GetMapping({"/"})

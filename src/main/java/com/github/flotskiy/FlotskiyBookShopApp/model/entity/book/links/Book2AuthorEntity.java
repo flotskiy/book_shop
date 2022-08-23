@@ -10,13 +10,13 @@ public class Book2AuthorEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
-    @Column(columnDefinition = "INT NOT NULL")
+    @Column(name = "book_id", columnDefinition = "INT NOT NULL")
     private int bookId;
 
-    @Column(columnDefinition = "INT NOT NULL")
+    @Column(name = "author_id", columnDefinition = "INT NOT NULL")
     private int authorId;
 
-    @Column(columnDefinition = "INT NOT NULL DEFAULT 0")
+    @Column(name = "sort_index", columnDefinition = "INT NOT NULL DEFAULT 0")
     private int sortIndex;
 
     public int getId() {

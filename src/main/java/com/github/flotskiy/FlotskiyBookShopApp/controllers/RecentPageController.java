@@ -23,7 +23,7 @@ public class RecentPageController {
 
     @ModelAttribute("recentBooksPage")
     public List<BookDto> recentBooks() {
-        return bookService.getBooksData().subList(0, 20);
+        return bookService.getAllBooksData().subList(0, 20);
     }
 
     @GetMapping

@@ -3,10 +3,12 @@ package com.github.flotskiy.FlotskiyBookShopApp.model.dto;
 public class BookDto {
 
     private int id;
+    private short isBestseller;
     private String author;
     private String title;
     private int priceOld;
     private int price;
+    private short discount;
 
     public int getId() {
         return id;
@@ -14,6 +16,14 @@ public class BookDto {
 
     public void setId(int id) {
         this.id = id;
+    }
+
+    public short getIsBestseller() {
+        return isBestseller;
+    }
+
+    public void setIsBestseller(short isBestseller) {
+        this.isBestseller = isBestseller;
     }
 
     public String getAuthor() {
@@ -46,6 +56,14 @@ public class BookDto {
 
     public void setPrice(int price) {
         this.price = price;
+    }
+
+    public short getDiscount() {
+        return discount;
+    }
+
+    public void setDiscount(short discount) {
+        this.discount = discount;
     }
 
     @Override

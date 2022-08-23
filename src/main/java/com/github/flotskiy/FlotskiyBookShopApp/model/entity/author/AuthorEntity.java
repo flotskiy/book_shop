@@ -1,13 +1,11 @@
 package com.github.flotskiy.FlotskiyBookShopApp.model.entity.author;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.github.flotskiy.FlotskiyBookShopApp.model.entity.book.BookEntity;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
 import javax.persistence.*;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Set;
 
 @Entity
 @Table(name = "author")
@@ -36,10 +34,8 @@ public class AuthorEntity {
     @ApiModelProperty(value = "info about author", position = 5)
     private String description;
 
-    @Transient
-    @OneToMany(mappedBy = "author")
-    @JsonIgnore
-    private List<BookEntity> bookList = new ArrayList<>();
+    @ManyToMany(mappedBy="authorEntities")
+    private Set<BookEntity> books;
 
     public int getId() {
         return id;
@@ -79,5 +75,13 @@ public class AuthorEntity {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public Set<BookEntity> getBooks() {
+        return books;
+    }
+
+    public void setBooks(Set<BookEntity> books) {
+        this.books = books;
     }
 }

@@ -1,4 +1,4 @@
-package com.github.flotskiy.FlotskiyBookShopApp.controllers;
+package com.github.flotskiy.FlotskiyBookShopApp.controllers.page;
 
 import com.github.flotskiy.FlotskiyBookShopApp.model.dto.BookDto;
 import com.github.flotskiy.FlotskiyBookShopApp.service.BookService;
@@ -11,23 +11,23 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import java.util.List;
 
 @Controller
-@RequestMapping("/books/popular")
-public class PopularPageController {
+@RequestMapping("/books/recent")
+public class RecentPageController {
 
     private final BookService bookService;
 
     @Autowired
-    public PopularPageController(BookService bookService) {
+    public RecentPageController(BookService bookService) {
         this.bookService = bookService;
     }
 
-    @ModelAttribute("popularBooksPage")
+    @ModelAttribute("recentBooksPage")
     public List<BookDto> recentBooks() {
         return bookService.getAllBooksData().subList(0, 20);
     }
 
     @GetMapping
-    public String popularPage() {
-        return "/books/popular";
+    public String recentPage() {
+        return "/books/recent";
     }
 }

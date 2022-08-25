@@ -1,11 +1,11 @@
-package com.github.flotskiy.FlotskiyBookShopApp.controllers;
+package com.github.flotskiy.FlotskiyBookShopApp.controllers.page;
 
 import com.github.flotskiy.FlotskiyBookShopApp.model.dto.BookDto;
+import com.github.flotskiy.FlotskiyBookShopApp.model.dto.RecommendedBooksDto;
 import com.github.flotskiy.FlotskiyBookShopApp.service.BookService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -21,7 +21,7 @@ public class MainPageController {
 
     @ModelAttribute("recommendedBooks")
     public List<BookDto> recommendedBooks() {
-        return bookService.getAllBooksData().subList(0, 20);
+        return bookService.getPageOfRecommendedBooks(0, 6).getContent();
     }
 
     @ModelAttribute("recentBooks")
@@ -42,5 +42,11 @@ public class MainPageController {
     @GetMapping("/postponed")
     public String postponedPage() {
         return "/postponed";
+    }
+
+    @GetMapping("/books/recommended")
+    @ResponseBody
+    public RecommendedBooksDto getBooksPage(@RequestParam("offset") int offset, @RequestParam("limit") int limit) {
+        return new RecommendedBooksDto(bookService.getPageOfRecommendedBooks(offset, limit).getContent());
     }
 }

@@ -1,4 +1,4 @@
-package com.github.flotskiy.FlotskiyBookShopApp.controllers;
+package com.github.flotskiy.FlotskiyBookShopApp.controllers.page;
 
 import com.github.flotskiy.FlotskiyBookShopApp.model.dto.AuthorDto;
 import com.github.flotskiy.FlotskiyBookShopApp.model.entity.author.AuthorEntity;

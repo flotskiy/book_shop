@@ -1,15 +1,15 @@
-package com.github.flotskiy.FlotskiyBookShopApp.controllers;
+package com.github.flotskiy.FlotskiyBookShopApp.controllers.page;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 @Controller
-@RequestMapping("/faq")
-public class FaqPageController {
+@RequestMapping("/about")
+public class AboutPageController {
 
     @GetMapping
-    public String faqPage() {
-        return "/faq";
+    public String aboutPage() {
+        return "/about";
     }
 }

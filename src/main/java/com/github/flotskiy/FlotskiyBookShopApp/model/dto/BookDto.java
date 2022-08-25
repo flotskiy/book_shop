@@ -6,6 +6,7 @@ public class BookDto {
     private short isBestseller;
     private String author;
     private String title;
+    private String image;
     private int priceOld;
     private int price;
     private short discount;
@@ -40,6 +41,14 @@ public class BookDto {
 
     public void setTitle(String title) {
         this.title = title;
+    }
+
+    public String getImage() {
+        return image;
+    }
+
+    public void setImage(String image) {
+        this.image = image;
     }
 
     public int getPriceOld() {

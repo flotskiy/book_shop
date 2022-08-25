@@ -45,9 +45,9 @@
     <div class="wrap">
       <main class="Middle-main">
         <div class="Section">
-          <div th:replace="~{fragments/main_page_slider_card :: sliderFragment (#{main.recommended}, ${recommendedBooks})}"></div>
-          <div th:replace="~{fragments/main_page_slider_card :: sliderFragment (#{main.recent}, ${recentBooks})}"></div>
-          <div th:replace="~{fragments/main_page_slider_card :: sliderFragment (#{main.popular}, ${popularBooks})}"></div>
+          <div th:replace="~{fragments/main_page_slider_card :: sliderFragment ('recommended', #{main.recommended}, ${recommendedBooks})}"></div>
+          <div th:replace="~{fragments/main_page_slider_card :: sliderFragment ('recent', #{main.recent}, ${recentBooks})}"></div>
+          <div th:replace="~{fragments/main_page_slider_card :: sliderFragment ('popular', #{main.popular}, ${popularBooks})}"></div>
         </div>
         <h2 class="Middle-title" th:text="#{main.tag}">Книги по тегам
         </h2>

@@ -2,12 +2,12 @@ package com.github.flotskiy.FlotskiyBookShopApp.model.dto;
 
 import java.util.List;
 
-public class RecommendedBooksDto {
+public class CountedBooksDto {
 
     private int count;
     private List<BookDto> books;
 
-    public RecommendedBooksDto(List<BookDto> books) {
+    public CountedBooksDto(List<BookDto> books) {
         this.books = books;
         this.count = books.size();
     }

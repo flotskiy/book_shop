@@ -13,8 +13,10 @@
                         </div>
                         <div class="Header-search">
                             <div class="search">
-                                <form class="form form_search" action="#" method="post" data-searchlimit="20">
-                                    <input class="search-input" id="query" name="query" type="text" placeholder="Search over 30 million book titles" th:placeholder="#{header.placeholder}" value=""/>
+                                <form class="form form_search" action="#" method="post" data-searchlimit="20"
+                                      th:object="${searchWordDto}">
+                                    <input class="search-input" id="query" name="query" type="text"
+                                           th:placeholder="#{header.placeholder}" th:field="*{example}" value=""/>
                                     <button class="search-button" type="submit" name="search" id="search" th:text="#{menu.search}">Поиск
                                     </button>
                                 </form>

@@ -56,6 +56,12 @@ public class BookService {
         return convertBookEntitiesToBookDtoList(bookRepository.getBestsellers());
     }
 
+    public Page<BookDto> getPageOfSearchResultBooks(String searchWord, int offset, int limit) {
+        Pageable nextPage = PageRequest.of(offset, limit);
+        Page<BookEntity> bookEntities = bookRepository.findBookEntitiesByTitleContaining(searchWord, nextPage);
+        return bookEntities.map(this::convertBookEntityToBookDto);
+    }
+
     private List<BookDto> convertBookEntitiesToBookDtoList(List<BookEntity> booksListToConvert) {
         List<BookDto> booksDtoList = new ArrayList<>();
         for (BookEntity book : booksListToConvert) {

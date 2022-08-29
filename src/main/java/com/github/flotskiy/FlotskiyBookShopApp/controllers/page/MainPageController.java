@@ -1,12 +1,14 @@
 package com.github.flotskiy.FlotskiyBookShopApp.controllers.page;
 
 import com.github.flotskiy.FlotskiyBookShopApp.model.dto.BookDto;
-import com.github.flotskiy.FlotskiyBookShopApp.model.dto.RecommendedBooksDto;
+import com.github.flotskiy.FlotskiyBookShopApp.model.dto.CountedBooksDto;
+import com.github.flotskiy.FlotskiyBookShopApp.model.dto.SearchWordDto;
 import com.github.flotskiy.FlotskiyBookShopApp.service.BookService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Controller
@@ -34,6 +36,16 @@ public class MainPageController {
         return bookService.getAllBooksData().subList(0, 20);
     }
 
+    @ModelAttribute("searchWordDto")
+    public SearchWordDto searchWordDto() {
+        return new SearchWordDto();
+    }
+
+    @ModelAttribute("searchResults")
+    public List<BookDto> searchResults() {
+        return new ArrayList<>();
+    }
+
     @GetMapping({"/"})
     public String mainPage() {
         return "/index";
@@ -46,7 +58,7 @@ public class MainPageController {
 
     @GetMapping("/books/recommended")
     @ResponseBody
-    public RecommendedBooksDto getBooksPage(@RequestParam("offset") int offset, @RequestParam("limit") int limit) {
-        return new RecommendedBooksDto(bookService.getPageOfRecommendedBooks(offset, limit).getContent());
+    public CountedBooksDto getBooksPage(@RequestParam("offset") int offset, @RequestParam("limit") int limit) {
+        return new CountedBooksDto(bookService.getPageOfRecommendedBooks(offset, limit).getContent());
     }
 }

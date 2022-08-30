@@ -26,7 +26,7 @@ public class BookService {
         return convertBookEntitiesToBookDtoList(bookRepository.findAll());
     }
 
-    public Page<BookDto> getPageOfRecommendedBooks(int offset, int limit) {
+    public Page<BookDto> getPageOfBooks(int offset, int limit) {
         Pageable nextPage = PageRequest.of(offset, limit);
         Page<BookEntity> bookEntities = bookRepository.findAll(nextPage);
         return bookEntities.map(this::convertBookEntityToBookDto);

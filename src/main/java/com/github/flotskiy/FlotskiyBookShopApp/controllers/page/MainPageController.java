@@ -23,17 +23,17 @@ public class MainPageController {
 
     @ModelAttribute("recommendedBooks")
     public List<BookDto> recommendedBooks() {
-        return bookService.getPageOfRecommendedBooks(0, 6).getContent();
+        return bookService.getPageOfBooks(0, 6).getContent();
     }
 
     @ModelAttribute("recentBooks")
     public List<BookDto> recentBooks() {
-        return bookService.getAllBooksData().subList(0, 20);
+        return bookService.getPageOfBooks(0, 6).getContent();
     }
 
     @ModelAttribute("popularBooks")
     public List<BookDto> popularBooks() {
-        return bookService.getAllBooksData().subList(0, 20);
+        return bookService.getPageOfBooks(0, 6).getContent();
     }
 
     @ModelAttribute("searchWordDto")
@@ -56,9 +56,21 @@ public class MainPageController {
         return "/postponed";
     }
 
-    @GetMapping("/books/recommended")
+    @GetMapping("/books/card/recommended")
     @ResponseBody
-    public CountedBooksDto getBooksPage(@RequestParam("offset") int offset, @RequestParam("limit") int limit) {
-        return new CountedBooksDto(bookService.getPageOfRecommendedBooks(offset, limit).getContent());
+    public CountedBooksDto getRecommendedBooksPage(@RequestParam("offset") int offset, @RequestParam("limit") int limit) {
+        return new CountedBooksDto(bookService.getPageOfBooks(offset, limit).getContent());
+    }
+
+    @GetMapping("/books/card/recent")
+    @ResponseBody
+    public CountedBooksDto getRecentBooksPage(@RequestParam("offset") int offset, @RequestParam("limit") int limit) {
+        return new CountedBooksDto(bookService.getPageOfBooks(offset, limit).getContent());
+    }
+
+    @GetMapping("/books/card/popular")
+    @ResponseBody
+    public CountedBooksDto getPopularBooksPage(@RequestParam("offset") int offset, @RequestParam("limit") int limit) {
+        return new CountedBooksDto(bookService.getPageOfBooks(offset, limit).getContent());
     }
 }

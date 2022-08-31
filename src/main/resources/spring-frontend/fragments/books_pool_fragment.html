@@ -5,7 +5,7 @@
         <div class="Card" th:each="book : ${booksList}">
             <div class="Card-picture">
                 <a href="#a" th:href="${book.id}">
-                    <img src="/assets/img/content/main/card.jpg" alt="card.jpg"/>
+                    <img src="/assets/img/content/main/card.jpg" th:src="${book.image}" alt="card.jpg"/>
                     <div th:if="${book.price} lt ${book.priceOld}">
                         <div class="Card-sale">Скидка
                         </div>
@@ -25,7 +25,10 @@
                 </div>
             </div>
         </div>
-        <div class="Cards-footer Cards-footer_center"><a class="btn btn_primary" href="#" data-refreshshow="recent" data-refreshoffset="20" data-refreshlimit="20" th:text="#{button.more}">Показать еще</a>
+        <div class="Cards-footer Cards-footer_center">
+            <a class="btn btn_primary" href="#" data-refreshshow="recent"
+               data-refreshoffset="0" data-refreshlimit="20"
+               th:text="#{button.more}">Показать еще</a>
         </div>
     </div>
 </body>

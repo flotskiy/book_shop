@@ -10,6 +10,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.*;
 
 @Service
@@ -62,6 +63,19 @@ public class BookService {
         return bookEntities.map(this::convertBookEntityToBookDto);
     }
 
+    public Page<BookDto> getPageOfRecentBooks(LocalDate from, LocalDate to, int offset, int limit) {
+        Pageable nextPage = PageRequest.of(offset, limit);
+        Page<BookEntity> bookEntities =
+                bookRepository.findBookEntitiesByPubDateBetweenOrderByPubDateDesc(from, to, nextPage);
+        return bookEntities.map(this::convertBookEntityToBookDto);
+    }
+
+    public List<BookDto> getRecentBooksDefault(int offset, int limit) {
+        LocalDate to = LocalDate.now();
+        LocalDate from = to.minusMonths(1);
+        return getPageOfRecentBooks(from, to, offset, limit).getContent();
+    }
+
     private List<BookDto> convertBookEntitiesToBookDtoList(List<BookEntity> booksListToConvert) {
         List<BookDto> booksDtoList = new ArrayList<>();
         for (BookEntity book : booksListToConvert) {
@@ -73,6 +87,7 @@ public class BookService {
     private BookDto convertBookEntityToBookDto(BookEntity bookEntity) {
         BookDto bookDto = new BookDto();
         bookDto.setId(bookEntity.getId());
+        bookDto.setPubDate(bookEntity.getPubDate());
         bookDto.setIsBestseller(bookEntity.getIsBestseller());
         Set<AuthorEntity> authorEntities = bookEntity.getAuthorEntities();
         String authorName = "BOOK HAS NO AUTHOR";

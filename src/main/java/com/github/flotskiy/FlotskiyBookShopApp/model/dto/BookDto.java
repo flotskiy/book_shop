@@ -1,8 +1,11 @@
 package com.github.flotskiy.FlotskiyBookShopApp.model.dto;
 
+import java.time.LocalDate;
+
 public class BookDto {
 
     private int id;
+    private LocalDate pubDate;
     private short isBestseller;
     private String author;
     private String title;
@@ -17,6 +20,14 @@ public class BookDto {
 
     public void setId(int id) {
         this.id = id;
+    }
+
+    public LocalDate getPubDate() {
+        return pubDate;
+    }
+
+    public void setPubDate(LocalDate pubDate) {
+        this.pubDate = pubDate;
     }
 
     public short getIsBestseller() {
@@ -79,10 +90,14 @@ public class BookDto {
     public String toString() {
         return "BookDto{" +
                 "id=" + id +
+                ", pubDate=" + pubDate +
+                ", isBestseller=" + isBestseller +
                 ", author='" + author + '\'' +
                 ", title='" + title + '\'' +
-                ", priceOld='" + priceOld + '\'' +
-                ", price='" + price + '\'' +
+                ", image='" + image + '\'' +
+                ", priceOld=" + priceOld +
+                ", price=" + price +
+                ", discount=" + discount +
                 '}';
     }
 }

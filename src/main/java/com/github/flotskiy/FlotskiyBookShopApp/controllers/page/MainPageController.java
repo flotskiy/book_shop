@@ -28,7 +28,7 @@ public class MainPageController {
 
     @ModelAttribute("recentBooks")
     public List<BookDto> recentBooks() {
-        return bookService.getPageOfBooks(0, 6).getContent();
+        return bookService.getRecentBooksDefault(0,6);
     }
 
     @ModelAttribute("popularBooks")
@@ -65,7 +65,7 @@ public class MainPageController {
     @GetMapping("/books/card/recent")
     @ResponseBody
     public CountedBooksDto getRecentBooksPage(@RequestParam("offset") int offset, @RequestParam("limit") int limit) {
-        return new CountedBooksDto(bookService.getPageOfBooks(offset, limit).getContent());
+        return new CountedBooksDto(bookService.getRecentBooksDefault(offset, limit));
     }
 
     @GetMapping("/books/card/popular")

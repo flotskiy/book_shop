@@ -50,23 +50,32 @@
           </li>
           <li class="breadcrumbs-item"><a href="/genres/index.html" th:text="#{menu.books}">Книги</a>
           </li>
-          <li class="breadcrumbs-item breadcrumbs-item_current"><span th:text="#{menu.genres}">Новинки</span>
+          <li class="breadcrumbs-item breadcrumbs-item_current"><span th:text="#{menu.recent}">Новинки</span>
           </li>
         </ul>
         <div class="Section">
           <div class="Section-header">
             <h1 class="Section-title" th:text="#{menu.recent}">Новинки
             </h1>
-            <form class="form form_inline Section-header-form" action="#" method="post">
+            <form class="form form_inline Section-header-form" action="#"
+                  method="post">
               <div class="form-group">
                 <label class="form-label">с
                 </label>
-                <input class="form-input form-input_date form-input_date_uninit" id="fromdaterecent" name="fromdaterecent" type="text" placeholder="Дата" data-refreshoffset="20" data-refreshlimit="20" data-refreshshow="changedate" data-refreshfrom="0" autocomplete="off"/>
+                <input class="form-input form-input_date form-input_date_uninit"
+                       id="fromdaterecent" name="fromdaterecent" type="text"
+                       th:object="${from}"
+                       placeholder="Дата" data-refreshoffset="0" data-refreshlimit="20"
+                       data-refreshshow="changedate" data-refreshfrom="0" autocomplete="off"/>
               </div>
               <div class="form-group">
                 <label class="form-label">по
                 </label>
-                <input class="form-input form-input_date form-input_date_uninit" id="enddaterecent" name="enddaterecent" type="text" placeholder="Дата" data-refreshoffset="20" data-refreshlimit="20" data-refreshshow="changedate" data-refreshto="0" autocomplete="off"/>
+                <input class="form-input form-input_date form-input_date_uninit"
+                       id="enddaterecent" name="enddaterecent" type="text"
+                       th:object="${to}"
+                       placeholder="Дата" data-refreshoffset="0" data-refreshlimit="20"
+                       data-refreshshow="changedate" data-refreshto="0" autocomplete="off"/>
               </div>
             </form>
           </div>

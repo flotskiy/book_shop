@@ -18,7 +18,7 @@
                 </div>
               </a>
               <div class="Card-content">
-                <strong class="Card-title"><a href="/books/slug.html" th:text="${book.title}">Книга</a>
+                <strong class="Card-title"><a href="/books/slug.html" th:href="${book.id}" th:text="${book.title}">Книга</a>
                 </strong>
                 <div class="Card-description" th:text="${book.author}">Автор
                 </div>

@@ -70,7 +70,7 @@ public class BookService {
         return bookEntities.map(this::convertBookEntityToBookDto);
     }
 
-    public List<BookDto> getRecentBooksDefault(int offset, int limit) {
+    public List<BookDto> getRecentBooks(int offset, int limit) {
         LocalDate to = LocalDate.now();
         LocalDate from = to.minusMonths(1);
         return getPageOfRecentBooks(from, to, offset, limit).getContent();

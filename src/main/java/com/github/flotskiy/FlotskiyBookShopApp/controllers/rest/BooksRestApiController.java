@@ -56,4 +56,14 @@ public class BooksRestApiController {
     public ResponseEntity<List<BookDto>> bestsellerBooks() {
         return ResponseEntity.ok(bookService.getBestsellers());
     }
+
+    @GetMapping("/recent")
+    @ApiOperation("Receiving List of Books which were Published within the Last month " +
+            "and Sorted Descending by Date of publication." +
+            "'offset' parameter is designed to set the first element of the list " +
+            "and 'limit' parameter is helps to specify the number of elements to show")
+    public ResponseEntity<List<BookDto>> recentBooks(@RequestParam("offset") Integer offset,
+                                                     @RequestParam("limit") Integer limit) {
+        return ResponseEntity.ok(bookService.getRecentBooks(offset, limit));
+    }
 }

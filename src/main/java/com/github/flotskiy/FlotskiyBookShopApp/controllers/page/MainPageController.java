@@ -33,7 +33,7 @@ public class MainPageController {
 
     @ModelAttribute("popularBooks")
     public List<BookDto> popularBooks() {
-        return bookService.getPageOfBooks(0, 6).getContent();
+        return bookService.getPageOfPopularBooks(0, 6);
     }
 
     @ModelAttribute("searchWordDto")
@@ -71,6 +71,6 @@ public class MainPageController {
     @GetMapping("/books/card/popular")
     @ResponseBody
     public CountedBooksDto getPopularBooksPage(@RequestParam("offset") int offset, @RequestParam("limit") int limit) {
-        return new CountedBooksDto(bookService.getPageOfBooks(offset, limit).getContent());
+        return new CountedBooksDto(bookService.getPageOfPopularBooks(offset, limit));
     }
 }

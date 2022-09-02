@@ -58,7 +58,7 @@
             <h1 class="Section-title" th:text="#{menu.popular}">Популярное
             </h1>
           </div>
-          <div th:replace="~{fragments/books_pool_fragment :: cardFragment (${popularBooksPage})}"></div>
+          <div th:replace="~{fragments/books_pool_fragment :: cardFragment (${popularBooksPage}, 'popular')}"></div>
         </div>
       </main>
     </div>

@@ -70,11 +70,11 @@
               <div class="Card-content">
                 <strong class="Card-title"><a href="#" th:text="${book.title}">Название книги</a>
                 </strong>
-                <div class="Card-description" th:text="${book.author}">Имя автора
+                <div class="Card-description" th:text="${book.authors}">Имя автора
                 </div>
                 <div class="Card-cost">
-                  <span class="Card-priceOld" th:text="${book.priceOld}">Старая цена</span>
-                  <span class="Card-price" th:text="${book.price}">Цена</span>
+                  <span class="Card-priceOld" th:text="${book.price}">Старая цена</span>
+                  <span class="Card-price" th:text="${book.discountPrice}">Цена</span>
                 </div>
               </div>
             </div>

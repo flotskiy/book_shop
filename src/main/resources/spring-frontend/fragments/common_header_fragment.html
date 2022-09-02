@@ -51,7 +51,7 @@
                             <a class="menu-link" href="/books/recent.html" th:href="@{/recent}" th:text="#{menu.recent}">Новинки</a>
                         </li>
                         <li th:class="${#strings.equals(activeMenuItem, 'popular')} ? 'menu-item menu-item_ACTIVE' : 'menu-item'" class="menu-item">
-                            <a class="menu-link" href="/books/popular.html" th:href="@{/books/popular}" th:text="#{menu.popular}">Популярное</a>
+                            <a class="menu-link" href="/books/popular.html" th:href="@{/popular}" th:text="#{menu.popular}">Популярное</a>
                         </li>
                         <li th:class="${#strings.equals(activeMenuItem, 'authors')} ? 'menu-item menu-item_ACTIVE' : 'menu-item'" class="menu-item">
                             <a class="menu-link" href="/authors/index.html" th:href="@{/authors}" th:text="#{menu.authors}">Авторы</a>

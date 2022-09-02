@@ -1,7 +1,10 @@
 package com.github.flotskiy.FlotskiyBookShopApp.model.entity.user;
 
+import com.github.flotskiy.FlotskiyBookShopApp.model.entity.book.BookEntity;
+
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.Set;
 
 @Entity
 @Table(name = "users")
@@ -22,6 +25,9 @@ public class UserEntity {
 
     @Column(columnDefinition = "VARCHAR(255) NOT NULL")
     private String name;
+
+    @ManyToMany(mappedBy="userEntities")
+    private Set<BookEntity> books;
 
     public int getId() {
         return id;
@@ -61,5 +67,13 @@ public class UserEntity {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public Set<BookEntity> getBooks() {
+        return books;
+    }
+
+    public void setBooks(Set<BookEntity> books) {
+        this.books = books;
     }
 }

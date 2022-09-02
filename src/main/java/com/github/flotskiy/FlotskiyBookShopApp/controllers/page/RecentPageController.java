@@ -56,10 +56,9 @@ public class RecentPageController {
         if (to.isEmpty()) {
             to = LocalDate.now().format(formatter);
         }
-        return new CountedBooksDto(
-                bookService.getPageOfRecentBooks(
-                        LocalDate.parse(from, formatter), LocalDate.parse(to, formatter), offset, limit
-                ).getContent()
+        return new CountedBooksDto(bookService
+                .getPageOfRecentBooks(LocalDate.parse(from, formatter), LocalDate.parse(to, formatter), offset, limit)
+                .getContent()
         );
     }
 }

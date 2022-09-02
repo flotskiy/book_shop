@@ -1,6 +1,7 @@
 package com.github.flotskiy.FlotskiyBookShopApp.model.entity.book;
 
 import com.github.flotskiy.FlotskiyBookShopApp.model.entity.author.AuthorEntity;
+import com.github.flotskiy.FlotskiyBookShopApp.model.entity.user.UserEntity;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
@@ -55,6 +56,12 @@ public class BookEntity {
             joinColumns = {@JoinColumn(name = "book_id")},
             inverseJoinColumns = {@JoinColumn(name = "author_id")})
     private Set<AuthorEntity> authorEntities;
+
+    @ManyToMany(cascade = {CascadeType.ALL})
+    @JoinTable(name = "book2user",
+            joinColumns = {@JoinColumn(name = "book_id")},
+            inverseJoinColumns = {@JoinColumn(name = "user_id")})
+    private Set<UserEntity> userEntities;
 
     public int getId() {
         return id;
@@ -134,5 +141,13 @@ public class BookEntity {
 
     public void setAuthorEntities(Set<AuthorEntity> authorEntities) {
         this.authorEntities = authorEntities;
+    }
+
+    public Set<UserEntity> getUserEntities() {
+        return userEntities;
+    }
+
+    public void setUserEntities(Set<UserEntity> userEntities) {
+        this.userEntities = userEntities;
     }
 }

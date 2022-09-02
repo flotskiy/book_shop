@@ -12,21 +12,21 @@
           <div class="Slider-content">
             <div class="Card">
               <a class="Card-picture" href="/books/slug.html"><img th:src="${book.image}" alt="card.jpg"/>
-                <div th:if="${book.price} lt ${book.priceOld}">
-                  <div class="Card-sale">Скидка
+                <div th:if="${book.discountPrice} lt ${book.price}">
+                  <div class="Card-sale" th:text="|${book.discount}% скидка|">Скидка
                   </div>
                 </div>
               </a>
               <div class="Card-content">
                 <strong class="Card-title"><a href="/books/slug.html" th:href="${book.id}" th:text="${book.title}">Книга</a>
                 </strong>
-                <div class="Card-description" th:text="${book.author}">Автор
+                <div class="Card-description" th:text="${book.authors}">Автор
                 </div>
                 <div class="Card-cost">
-                  <div th:if="${book.price} lt ${book.priceOld}">
-                    <span class="Card-priceOld" th:text="${book.priceOld}">Старая цена</span>
+                  <div th:if="${book.discountPrice} lt ${book.price}">
+                    <span class="Card-priceOld" th:text="${book.price}">Старая цена</span>
                   </div>
-                  <span class="Card-price" th:text="${book.price}">Новая цена</span>
+                  <span class="Card-price" th:text="${book.discountPrice}">Новая цена</span>
                 </div>
               </div>
             </div>

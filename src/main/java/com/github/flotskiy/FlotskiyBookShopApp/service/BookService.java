@@ -1,5 +1,6 @@
 package com.github.flotskiy.FlotskiyBookShopApp.service;
 
+import com.github.flotskiy.FlotskiyBookShopApp.model.dto.RatingDto;
 import com.github.flotskiy.FlotskiyBookShopApp.model.entity.author.AuthorEntity;
 import com.github.flotskiy.FlotskiyBookShopApp.model.entity.book.BookEntity;
 import com.github.flotskiy.FlotskiyBookShopApp.model.dto.BookDto;
@@ -17,10 +18,12 @@ import java.util.*;
 public class BookService {
 
     private final BookRepository bookRepository;
+    private final BooksRatingAndPopularityService booksRatingAndPopularityService;
 
     @Autowired
-    public BookService(BookRepository bookRepository) {
+    public BookService(BookRepository bookRepository, BooksRatingAndPopularityService booksRatingAndPopularityService) {
         this.bookRepository = bookRepository;
+        this.booksRatingAndPopularityService = booksRatingAndPopularityService;
     }
 
     public List<BookDto> getAllBooksData() {
@@ -76,6 +79,19 @@ public class BookService {
         return getPageOfRecentBooks(from, to, offset, limit).getContent();
     }
 
+    public List<BookDto> getPageOfPopularBooks(int offset, int limit) {
+        List<RatingDto> ratingDtoList = booksRatingAndPopularityService.getAllBooksRating();
+        ratingDtoList.forEach(System.out::println); // todo - remove string
+        List<Integer> bookIds = booksRatingAndPopularityService.getPopularBookIds(ratingDtoList, offset, limit);
+        List<BookEntity> bookEntities = bookRepository.findBookEntitiesByIdIsIn(bookIds);
+        List<BookDto> result = new ArrayList<>();
+        for (BookEntity book : bookEntities) {
+            result.add(convertBookEntityToBookDtoWithActualRatingValue(book, ratingDtoList));
+        }
+        result.sort(Comparator.comparing(BookDto::getRating).reversed());
+        return result;
+    }
+
     private List<BookDto> convertBookEntitiesToBookDtoList(List<BookEntity> booksListToConvert) {
         List<BookDto> booksDtoList = new ArrayList<>();
         for (BookEntity book : booksListToConvert) {
@@ -86,22 +102,50 @@ public class BookService {
 
     private BookDto convertBookEntityToBookDto(BookEntity bookEntity) {
         BookDto bookDto = new BookDto();
-        bookDto.setId(bookEntity.getId());
-        bookDto.setPubDate(bookEntity.getPubDate());
-        bookDto.setIsBestseller(bookEntity.getIsBestseller());
-        Set<AuthorEntity> authorEntities = bookEntity.getAuthorEntities();
-        String authorName = "BOOK HAS NO AUTHOR";
-        if (authorEntities.iterator().hasNext()) {
-            authorName = authorEntities.iterator().next().getName();
-        }
-        bookDto.setAuthor(authorName);
-        bookDto.setTitle(bookEntity.getTitle());
+        int bookId = bookEntity.getId();
+        bookDto.setId(bookId);
+        bookDto.setSlug(bookEntity.getSlug());
         bookDto.setImage(bookEntity.getImage());
+        bookDto.setTitle(bookEntity.getTitle());
+        short discount = bookEntity.getDiscount();
+        bookDto.setDiscount(discount);
+        bookDto.setBestseller(bookEntity.getIsBestseller() == 1);
         int price = bookEntity.getPrice();
         bookDto.setPrice(price);
-        int priceOld = (price * (100 + bookEntity.getDiscount())) / 100;
-        bookDto.setPriceOld(priceOld);
-        bookDto.setDiscount(bookEntity.getDiscount());
+        int discountPrice = (int) (price * ((100 - (double) discount) / 100));
+        bookDto.setDiscountPrice(discountPrice);
+        bookDto.setPubDate(bookEntity.getPubDate());
+
+        Set<AuthorEntity> authorEntities = bookEntity.getAuthorEntities();
+        StringBuilder authorName = new StringBuilder();
+        for (AuthorEntity author : authorEntities) {
+            authorName.append(author.getName()).append(", ");
+        }
+        if (authorName.length() > 0) {
+            authorName.delete(authorName.length() - ", ".length(), authorName.length());
+        }
+        if (authorName.length() == 0) {
+            authorName = new StringBuilder("BOOK HAS NO AUTHOR");
+        }
+        bookDto.setAuthors(authorName.toString());
+
+        bookDto.setStatus("false"); // TODO later
+        bookDto.setRating((short) 0);
+
+        return bookDto;
+    }
+
+    private BookDto convertBookEntityToBookDtoWithActualRatingValue(BookEntity bookEntity, List<RatingDto> ratingDtoList) {
+        BookDto bookDto = convertBookEntityToBookDto(bookEntity);
+
+        short rating = 0;
+        for (RatingDto ratingDto : ratingDtoList) {
+            if (bookEntity.getId() == ratingDto.getBookId()) {
+                rating = ratingDto.getRating();
+            }
+        }
+        bookDto.setRating(rating);
+
         return bookDto;
     }
 }

@@ -5,8 +5,10 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import java.time.LocalDate;
+import java.util.Collection;
 import java.util.List;
 
 public interface BookRepository extends JpaRepository<BookEntity, Integer> {
@@ -28,4 +30,7 @@ public interface BookRepository extends JpaRepository<BookEntity, Integer> {
     Page<BookEntity> findBookEntitiesByTitleContaining(String bookTitle, Pageable nextPage);
 
     Page<BookEntity> findBookEntitiesByPubDateBetweenOrderByPubDateDesc(LocalDate from, LocalDate to, Pageable nextPage);
+
+    @Query(value = "SELECT * FROM book b WHERE b.id IN :idList", nativeQuery = true)
+    List<BookEntity> findBookEntitiesByIdIsIn(@Param("idList") Collection<Integer> idList);
 }

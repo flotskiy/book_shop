@@ -1,16 +1,15 @@
 package com.github.flotskiy.FlotskiyBookShopApp.controllers.rest;
 
 import com.github.flotskiy.FlotskiyBookShopApp.model.dto.BookDto;
+import com.github.flotskiy.FlotskiyBookShopApp.model.dto.TagDto;
 import com.github.flotskiy.FlotskiyBookShopApp.service.BookService;
+import com.github.flotskiy.FlotskiyBookShopApp.service.TagService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -21,10 +20,12 @@ import java.util.List;
 public class BooksRestApiController {
 
     private final BookService bookService;
+    private final TagService tagService;
 
     @Autowired
-    public BooksRestApiController(BookService bookService) {
+    public BooksRestApiController(BookService bookService, TagService tagService) {
         this.bookService = bookService;
+        this.tagService = tagService;
     }
 
     @GetMapping("/by-author")
@@ -73,6 +74,26 @@ public class BooksRestApiController {
             "and 'limit' parameter is helps to specify the number of elements to show")
     public ResponseEntity<List<BookDto>> popularBooks(@RequestParam(value = "offset") Integer offset,
                                                       @RequestParam(value = "limit") Integer limit) {
-        return ResponseEntity.ok(bookService.getPageOfPopularBooks(offset, limit));
+        return ResponseEntity.ok(bookService.getPopularBooks(offset, limit));
+    }
+
+    @GetMapping("/tags")
+    @ApiOperation("Receiving List of All Tags with Title, Slug and Class. " +
+            "Class depends from number of books marked by that tag and used to set font size for current tag")
+    public ResponseEntity<List<TagDto>> tags() {
+        return ResponseEntity.ok(tagService.getTagsList());
+    }
+
+    @GetMapping("/tag/{tagId}")
+    @ApiOperation("Receiving List of Books marked with a specific tag. " +
+            "'tagId' parameter represents the ID number of specific tag. " +
+            "'offset' parameter is designed to set the first element of the list " +
+            "and 'limit' parameter is helps to specify the number of elements to show")
+    public ResponseEntity<List<BookDto>> taggedBooks(
+            @PathVariable("tagId") Integer tagId,
+            @RequestParam("offset") Integer offset,
+            @RequestParam("limit") Integer limit
+    ) {
+        return ResponseEntity.ok(bookService.getPageOfBooksByTag(tagId, offset, limit).getContent());
     }
 }

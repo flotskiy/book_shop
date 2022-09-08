@@ -3,22 +3,30 @@ package com.github.flotskiy.FlotskiyBookShopApp.controllers.page;
 import com.github.flotskiy.FlotskiyBookShopApp.model.dto.BookDto;
 import com.github.flotskiy.FlotskiyBookShopApp.model.dto.CountedBooksDto;
 import com.github.flotskiy.FlotskiyBookShopApp.model.dto.SearchWordDto;
+import com.github.flotskiy.FlotskiyBookShopApp.model.dto.TagDto;
 import com.github.flotskiy.FlotskiyBookShopApp.service.BookService;
+import com.github.flotskiy.FlotskiyBookShopApp.service.TagService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Controller
 public class MainPageController {
 
     private final BookService bookService;
+    private final TagService tagService;
 
     @Autowired
-    public MainPageController(BookService bookService) {
+    public MainPageController(BookService bookService, TagService tagService) {
         this.bookService = bookService;
+        this.tagService = tagService;
+    }
+
+    @ModelAttribute("searchWordDto")
+    public SearchWordDto searchWordDto() {
+        return new SearchWordDto();
     }
 
     @ModelAttribute("recommendedBooks")
@@ -33,17 +41,12 @@ public class MainPageController {
 
     @ModelAttribute("popularBooks")
     public List<BookDto> popularBooks() {
-        return bookService.getPageOfPopularBooks(0, 6);
+        return bookService.getPopularBooks(0, 6);
     }
 
-    @ModelAttribute("searchWordDto")
-    public SearchWordDto searchWordDto() {
-        return new SearchWordDto();
-    }
-
-    @ModelAttribute("searchResults")
-    public List<BookDto> searchResults() {
-        return new ArrayList<>();
+    @ModelAttribute("tagsCloud")
+    public List<TagDto> tags() {
+        return tagService.getTagsList();
     }
 
     @GetMapping({"/"})
@@ -71,6 +74,6 @@ public class MainPageController {
     @GetMapping("/books/card/popular")
     @ResponseBody
     public CountedBooksDto getPopularBooksPage(@RequestParam("offset") int offset, @RequestParam("limit") int limit) {
-        return new CountedBooksDto(bookService.getPageOfPopularBooks(offset, limit));
+        return new CountedBooksDto(bookService.getPopularBooks(offset, limit));
     }
 }

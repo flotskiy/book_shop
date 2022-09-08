@@ -17,7 +17,7 @@ public class UserEntity {
     @Column(columnDefinition = "VARCHAR(255) NOT NULL")
     private String hash;
 
-    @Column(columnDefinition = "TIMESTAMP NOT NULL")
+    @Column(name = "reg_time", columnDefinition = "TIMESTAMP NOT NULL")
     private LocalDateTime regTime;
 
     @Column(columnDefinition = "INT NOT NULL DEFAULT 0")

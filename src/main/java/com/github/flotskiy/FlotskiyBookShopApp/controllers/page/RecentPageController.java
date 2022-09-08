@@ -10,7 +10,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
 import java.util.List;
 
 @Controller
@@ -32,11 +31,6 @@ public class RecentPageController {
     @ModelAttribute("searchWordDto")
     public SearchWordDto searchWordDto() {
         return new SearchWordDto();
-    }
-
-    @ModelAttribute("searchResults")
-    public List<BookDto> searchResults() {
-        return new ArrayList<>();
     }
 
     @GetMapping("/recent")

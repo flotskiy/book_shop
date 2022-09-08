@@ -14,7 +14,7 @@ public class MessageEntity {
     @Column(columnDefinition = "TIMESTAMP NOT NULL")
     private LocalDateTime time;
 
-    @Column(columnDefinition = "INT")
+    @Column(name = "user_id", columnDefinition = "INT")
     private int userId;
 
     @Column(columnDefinition = "VARCHAR(255)")

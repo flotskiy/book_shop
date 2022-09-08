@@ -79,9 +79,8 @@ public class BookService {
         return getPageOfRecentBooks(from, to, offset, limit).getContent();
     }
 
-    public List<BookDto> getPageOfPopularBooks(int offset, int limit) {
+    public List<BookDto> getPopularBooks(int offset, int limit) {
         List<RatingDto> ratingDtoList = booksRatingAndPopularityService.getAllBooksRating();
-        ratingDtoList.forEach(System.out::println); // todo - remove string
         List<Integer> bookIds = booksRatingAndPopularityService.getPopularBookIds(ratingDtoList, offset, limit);
         List<BookEntity> bookEntities = bookRepository.findBookEntitiesByIdIsIn(bookIds);
         List<BookDto> result = new ArrayList<>();
@@ -90,6 +89,12 @@ public class BookService {
         }
         result.sort(Comparator.comparing(BookDto::getRating).reversed());
         return result;
+    }
+
+    public Page<BookDto> getPageOfBooksByTag(Integer tagId, Integer offset, Integer limit) {
+        Pageable nextPage = PageRequest.of(offset, limit);
+        Page<BookEntity> bookEntities = bookRepository.findBookEntitiesByBookTagsId(tagId, nextPage);
+        return bookEntities.map(this::convertBookEntityToBookDto);
     }
 
     private List<BookDto> convertBookEntitiesToBookDtoList(List<BookEntity> booksListToConvert) {

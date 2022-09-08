@@ -35,6 +35,9 @@ public class SearchPageController {
     @GetMapping(value = {"/search", "/search/{searchWord}"})
     public String getSearchResults(@PathVariable(value = "searchWord", required = false) SearchWordDto searchWordDto,
                                    Model model) {
+        if (searchWordDto == null) {
+            searchWordDto = new SearchWordDto();
+        }
         model.addAttribute("searchWordDto", searchWordDto);
         model.addAttribute("searchResults",
                 bookService.getPageOfSearchResultBooks(searchWordDto.getExample(), 0, 5).getContent());

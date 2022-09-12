@@ -12,6 +12,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 @Service
@@ -93,8 +94,29 @@ public class BookService {
 
     public Page<BookDto> getPageOfBooksByTag(Integer tagId, Integer offset, Integer limit) {
         Pageable nextPage = PageRequest.of(offset, limit);
-        Page<BookEntity> bookEntities = bookRepository.findBookEntitiesByBookTagsId(tagId, nextPage);
+        Page<BookEntity> bookEntities = bookRepository.findBookEntitiesByBookTagsIdOrderByPubDateDesc(tagId, nextPage);
         return bookEntities.map(this::convertBookEntityToBookDto);
+    }
+
+    public Page<BookDto> getPageOfBooksByGenreId(Integer genreId, Integer offset, Integer limit) {
+        Pageable nextPage = PageRequest.of(offset, limit);
+        Page<BookEntity> bookEntities =
+                bookRepository.findBookEntitiesByGenreEntitiesIdOrderByPubDateDesc(genreId, nextPage);
+        return bookEntities.map(this::convertBookEntityToBookDto);
+    }
+
+    public String checkFrom(String from) {
+        if (from == null || from.isEmpty()) {
+            return "01.01.1900";
+        }
+        return from;
+    }
+
+    public String checkTo(String to) {
+        if (to == null || to.isEmpty()) {
+            to = LocalDate.now().format(DateTimeFormatter.ofPattern("dd.MM.yyyy"));
+        }
+        return to;
     }
 
     private List<BookDto> convertBookEntitiesToBookDtoList(List<BookEntity> booksListToConvert) {

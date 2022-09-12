@@ -3,6 +3,8 @@ package com.github.flotskiy.FlotskiyBookShopApp.controllers.page;
 import com.github.flotskiy.FlotskiyBookShopApp.model.dto.BookDto;
 import com.github.flotskiy.FlotskiyBookShopApp.model.dto.CountedBooksDto;
 import com.github.flotskiy.FlotskiyBookShopApp.model.dto.SearchWordDto;
+import com.github.flotskiy.FlotskiyBookShopApp.model.entity.book.BookEntity;
+import com.github.flotskiy.FlotskiyBookShopApp.model.entity.book.BookTagEntity;
 import com.github.flotskiy.FlotskiyBookShopApp.service.BookService;
 import com.github.flotskiy.FlotskiyBookShopApp.service.TagService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,10 +33,10 @@ public class TagsPageController {
 
     @GetMapping("/tags/{tagSlug}")
     public String tagPage(@PathVariable("tagSlug") String tagSlug, Model model) {
-        Integer tagId = tagService.getBookTagBySlug(tagSlug).getId();
-        List<BookDto> bookDtos = bookService.getPageOfBooksByTag(tagId, 0, 20).getContent();
+        BookTagEntity tagEntity = tagService.getBookTagBySlug(tagSlug);
+        List<BookDto> bookDtos = bookService.getPageOfBooksByTag(tagEntity.getId(), 0, 20).getContent();
         model.addAttribute("tagBookList", bookDtos);
-        model.addAttribute("tagObject", tagService.getBookTagBySlug(tagSlug));
+        model.addAttribute("tagObject", tagEntity);
         return "/tags/index";
     }
 

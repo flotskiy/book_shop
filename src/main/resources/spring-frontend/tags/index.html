@@ -17,16 +17,16 @@
     <div class="wrap">
       <main class="Middle-main">
         <ul class="breadcrumbs">
-          <li class="breadcrumbs-item"><a href="/">Главная</a>
+          <li class="breadcrumbs-item"><a href="/" th:href="@{/}" th:text="#{menu.main}">Главная</a>
           </li>
-          <li class="breadcrumbs-item breadcrumbs-item_current"><span  th:text="${tagObject.title}">Название тега</span>
+          <li class="breadcrumbs-item breadcrumbs-item_current"><span th:text="${tagObject.title}">Название тега</span>
           </li>
         </ul>
         <div class="Section">
           <div class="Section-header">
             <h1 class="Section-title" th:text="${tagObject.title}">Название тега
             </h1>
-            <div class="Section-header-links"><a class="Section-header-link" href="/#tags">Все тэги</a>
+            <div class="Section-header-links"><a class="Section-header-link" href="/#tags" th:text="#{main.tag.all}">Все тэги</a>
             </div>
           </div>
           <div th:replace="~{fragments/books_pool_fragment :: cardFragment (${tagBookList}, 'tag', ${tagObject.id})}"></div>

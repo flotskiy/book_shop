@@ -44,12 +44,8 @@ public class RecentPageController {
                                              @RequestParam(value = "to", required = false) String to,
                                              @RequestParam(value = "offset", required = false) Integer offset,
                                              @RequestParam(value = "limit", required = false) Integer limit) {
-        if (from.isEmpty()) {
-            from = "01.01.1900";
-        }
-        if (to.isEmpty()) {
-            to = LocalDate.now().format(formatter);
-        }
+        from = bookService.checkFrom(from);
+        to = bookService.checkTo(to);
         return new CountedBooksDto(bookService
                 .getPageOfRecentBooks(LocalDate.parse(from, formatter), LocalDate.parse(to, formatter), offset, limit)
                 .getContent()

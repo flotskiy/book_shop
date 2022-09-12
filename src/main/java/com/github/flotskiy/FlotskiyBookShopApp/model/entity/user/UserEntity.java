@@ -1,6 +1,7 @@
 package com.github.flotskiy.FlotskiyBookShopApp.model.entity.user;
 
 import com.github.flotskiy.FlotskiyBookShopApp.model.entity.book.BookEntity;
+import com.github.flotskiy.FlotskiyBookShopApp.model.entity.book.review.BookReviewEntity;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -28,6 +29,24 @@ public class UserEntity {
 
     @ManyToMany(mappedBy="userEntities")
     private Set<BookEntity> books;
+
+    @ManyToMany(cascade = {CascadeType.ALL})
+    @JoinTable(name = "file_download",
+            joinColumns = {@JoinColumn(name = "user_id")},
+            inverseJoinColumns = {@JoinColumn(name = "book_id")})
+    private Set<BookEntity> booksDownloadCounters;
+
+    @ManyToMany(cascade = {CascadeType.ALL})
+    @JoinTable(name = "balance_transaction",
+            joinColumns = {@JoinColumn(name = "user_id")},
+            inverseJoinColumns = {@JoinColumn(name = "book_id")})
+    private Set<BookEntity> booksTransactions;
+
+    @ManyToMany(cascade = {CascadeType.ALL})
+    @JoinTable(name = "book_review",
+            joinColumns = {@JoinColumn(name = "user_id")},
+            inverseJoinColumns = {@JoinColumn(name = "book_id")})
+    private Set<BookEntity> booksReviewed;
 
     public int getId() {
         return id;
@@ -75,5 +94,29 @@ public class UserEntity {
 
     public void setBooks(Set<BookEntity> books) {
         this.books = books;
+    }
+
+    public Set<BookEntity> getBooksDownloadCounters() {
+        return booksDownloadCounters;
+    }
+
+    public void setBooksDownloadCounters(Set<BookEntity> booksDownloadCounters) {
+        this.booksDownloadCounters = booksDownloadCounters;
+    }
+
+    public Set<BookEntity> getBooksTransactions() {
+        return booksTransactions;
+    }
+
+    public void setBooksTransactions(Set<BookEntity> booksTransactions) {
+        this.booksTransactions = booksTransactions;
+    }
+
+    public Set<BookEntity> getBooksReviewed() {
+        return booksReviewed;
+    }
+
+    public void setBooksReviewed(Set<BookEntity> booksReviewed) {
+        this.booksReviewed = booksReviewed;
     }
 }

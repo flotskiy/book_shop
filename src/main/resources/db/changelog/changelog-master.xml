@@ -7,6 +7,6 @@
    http://www.liquibase.org/xml/ns/dbchangelog
    http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
 
-    <include file="db/changelog/changes/2-added_tag_and_tag2book_tables_plus_constraints.xml"/>
+    <include file="db/changelog/changes/3-added-many-to-many-relations(genre,download,transact,review).xml"/>
 
 </databaseChangeLog>

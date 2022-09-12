@@ -1,6 +1,7 @@
 package com.github.flotskiy.FlotskiyBookShopApp.model.entity.book;
 
 import com.github.flotskiy.FlotskiyBookShopApp.model.entity.author.AuthorEntity;
+import com.github.flotskiy.FlotskiyBookShopApp.model.entity.genre.GenreEntity;
 import com.github.flotskiy.FlotskiyBookShopApp.model.entity.user.UserEntity;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
@@ -63,8 +64,23 @@ public class BookEntity {
             inverseJoinColumns = {@JoinColumn(name = "user_id")})
     private Set<UserEntity> userEntities;
 
+    @ManyToMany(cascade = {CascadeType.ALL})
+    @JoinTable(name = "book2genre",
+            joinColumns = {@JoinColumn(name = "book_id")},
+            inverseJoinColumns = {@JoinColumn(name = "genre_id")})
+    private Set<GenreEntity> genreEntities;
+
     @ManyToMany(mappedBy="bookEntities")
     private Set<BookTagEntity> bookTags;
+
+    @ManyToMany(mappedBy="booksDownloadCounters")
+    private Set<UserEntity> downloadedByUsers;
+
+    @ManyToMany(mappedBy="booksTransactions")
+    private Set<UserEntity> transactionsByUsers;
+
+    @ManyToMany(mappedBy="booksReviewed")
+    private Set<UserEntity> reviewedByUsers;
 
     public int getId() {
         return id;
@@ -160,5 +176,37 @@ public class BookEntity {
 
     public void setBookTags(Set<BookTagEntity> bookTags) {
         this.bookTags = bookTags;
+    }
+
+    public Set<GenreEntity> getGenreEntities() {
+        return genreEntities;
+    }
+
+    public void setGenreEntities(Set<GenreEntity> genreEntities) {
+        this.genreEntities = genreEntities;
+    }
+
+    public Set<UserEntity> getDownloadedByUsers() {
+        return downloadedByUsers;
+    }
+
+    public void setDownloadedByUsers(Set<UserEntity> downloadedByUsers) {
+        this.downloadedByUsers = downloadedByUsers;
+    }
+
+    public Set<UserEntity> getTransactionsByUsers() {
+        return transactionsByUsers;
+    }
+
+    public void setTransactionsByUsers(Set<UserEntity> transactionsByUsers) {
+        this.transactionsByUsers = transactionsByUsers;
+    }
+
+    public Set<UserEntity> getReviewedByUsers() {
+        return reviewedByUsers;
+    }
+
+    public void setReviewedByUsers(Set<UserEntity> reviewedByUsers) {
+        this.reviewedByUsers = reviewedByUsers;
     }
 }

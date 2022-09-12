@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <body>
-    <div class="Cards Cards_refresh" th:fragment="cardFragment (booksList, pageName, tagId)">
+    <div class="Cards Cards_refresh" th:fragment="cardFragment (booksList, pageName, objId)">
         <div class="Card" th:each="book : ${booksList}">
             <div class="Card-picture">
                 <a href="#a" th:href="${book.id}">
@@ -27,7 +27,7 @@
         </div>
         <div class="Cards-footer Cards-footer_center">
             <a class="btn btn_primary" href="#" data-refreshshow="recent"
-               th:attr="data-refreshshow=${pageName},data-refreshid=${tagId}"
+               th:attr="data-refreshshow=${pageName},data-refreshid=${objId}"
                data-refreshoffset="0" data-refreshlimit="20"
                data-refreshid="1"
                th:text="#{button.more}">Показать еще</a>

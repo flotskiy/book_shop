@@ -9,7 +9,6 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
@@ -65,8 +64,8 @@ public class BooksRestApiController {
 
     @GetMapping("/recommended")
     @ApiOperation("Receiving List of Books Recommended by special algorithm. " +
-            "'offset' parameter is designed to set the first element of the list " +
-            "and 'limit' parameter is helps to specify the number of elements to show")
+            "'offset' parameter is designed to set the first book of the list " +
+            "and 'limit' parameter is helps to specify the number of books to show")
     public ResponseEntity<CountedBooksDto> recommendedBooks(
             @RequestParam("offset") Integer offset, @RequestParam("limit") Integer limit) {
         return ResponseEntity.ok(new CountedBooksDto(bookService.getPageOfBooks(offset, limit).getContent()));
@@ -75,8 +74,8 @@ public class BooksRestApiController {
     @GetMapping("/recent")
     @ApiOperation("Receiving List of Books which were Published within the Last month " +
             "and Sorted by Date of publication descending." +
-            "'offset' parameter is designed to set the first element of the list " +
-            "and 'limit' parameter is helps to specify the number of elements to show")
+            "'offset' parameter is designed to set the first book of the list " +
+            "and 'limit' parameter is helps to specify the number of books to show")
     public ResponseEntity<CountedBooksDto> recentBooks(
             @RequestParam(value = "from", required = false) String from,
             @RequestParam(value = "to", required = false) String to,
@@ -94,8 +93,8 @@ public class BooksRestApiController {
 
     @GetMapping("/popular")
     @ApiOperation("Receiving List of Popular Books Sorted by Rating descending. " +
-            "'offset' parameter is designed to set the first element of the list " +
-            "and 'limit' parameter is helps to specify the number of elements to show")
+            "'offset' parameter is designed to set the first book of the list " +
+            "and 'limit' parameter is helps to specify the number of books to show")
     public ResponseEntity<CountedBooksDto> popularBooks(@RequestParam(value = "offset") Integer offset,
                                                       @RequestParam(value = "limit") Integer limit) {
         return ResponseEntity.ok(new CountedBooksDto(bookService.getPopularBooks(offset, limit)));
@@ -111,8 +110,8 @@ public class BooksRestApiController {
     @GetMapping("/tag/{tagId}")
     @ApiOperation("Receiving List of Books marked with a specific tag. " +
             "'tagId' parameter represents the ID number of specific tag. " +
-            "'offset' parameter is designed to set the first element of the list " +
-            "and 'limit' parameter is helps to specify the number of elements to show. " +
+            "'offset' parameter is designed to set the first book of the list " +
+            "and 'limit' parameter is helps to specify the number of books to show. " +
             "Books sorted by Date of publication descending.")
     public ResponseEntity<CountedBooksDto> taggedBooks(
             @PathVariable("tagId") Integer tagId,
@@ -132,8 +131,8 @@ public class BooksRestApiController {
     @GetMapping("/genre/{genreId}")
     @ApiOperation("Receiving List of Books matching a specific Genre. " +
             "'genreId' parameter represents the ID number of specific genre. " +
-            "'offset' parameter is designed to set the first element of the list " +
-            "and 'limit' parameter is helps to specify the number of elements to show. " +
+            "'offset' parameter is designed to set the first book of the list " +
+            "and 'limit' parameter is helps to specify the number of books to show. " +
             "Books sorted by Date of publication descending.")
     public ResponseEntity<CountedBooksDto> booksByGenre(
             @PathVariable("genreId") Integer genreId,
@@ -155,5 +154,20 @@ public class BooksRestApiController {
     ) {
         return ResponseEntity
                 .ok(new CountedBooksDto(bookService.getPageOfSearchResultBooks(searchWord, offset, limit).getContent()));
+    }
+
+    @GetMapping("/author/{authorId}")
+    @ApiOperation("Receiving List of Books of definite author. " +
+            "'authorId' parameter represents the ID number of definite author. " +
+            "'offset' parameter is designed to set the first book of the list " +
+            "and 'limit' parameter is helps to specify the number of books to show. " +
+            "Books sorted by Date of publication descending.")
+    public ResponseEntity<CountedBooksDto> booksByAuthor(
+            @PathVariable("authorId") Integer authorId,
+            @RequestParam("offset") Integer offset,
+            @RequestParam("limit") Integer limit
+    ) {
+        return ResponseEntity
+                .ok(new CountedBooksDto(bookService.getPageOfBooksByAuthorId(authorId, offset, limit).getContent()));
     }
 }

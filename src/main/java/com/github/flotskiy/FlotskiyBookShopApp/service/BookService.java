@@ -105,6 +105,13 @@ public class BookService {
         return bookEntities.map(this::convertBookEntityToBookDto);
     }
 
+    public Page<BookDto> getPageOfBooksByAuthorId(Integer authorId, Integer offset, Integer limit) {
+        Pageable nextPage = PageRequest.of(offset, limit);
+        Page<BookEntity> bookEntities =
+                bookRepository.findBookEntitiesByAuthorEntitiesIdOrderByPubDateDesc(authorId, nextPage);
+        return bookEntities.map(this::convertBookEntityToBookDto);
+    }
+
     public String checkFrom(String from) {
         if (from == null || from.isEmpty()) {
             return "01.01.1900";

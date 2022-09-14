@@ -4,10 +4,10 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class FlotskiyBookShopAppApplication {
+public class FlotskiyBookShopApplication {
 
 	public static void main(String[] args) {
-		SpringApplication.run(FlotskiyBookShopAppApplication.class, args);
+		SpringApplication.run(FlotskiyBookShopApplication.class, args);
 	}
 
 }

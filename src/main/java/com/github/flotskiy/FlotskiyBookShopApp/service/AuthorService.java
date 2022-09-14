@@ -25,9 +25,7 @@ public class AuthorService {
         List<AuthorEntity> authorList = authorRepository.findAll();
         List<AuthorDto> authorDtoList = new ArrayList<>();
         for (AuthorEntity author : authorList) {
-            AuthorDto authorDto = new AuthorDto();
-            authorDto.setId(author.getId());
-            authorDto.setName(author.getName());
+            AuthorDto authorDto = convertAuthorEntityToAuthorDtoShort(author);
             authorDtoList.add(authorDto);
         }
         return authorDtoList;
@@ -45,5 +43,41 @@ public class AuthorService {
 
     public List<AuthorEntity> getAuthorsEntity() {
         return authorRepository.findAll();
+    }
+
+    public AuthorDto getAuthorBySlug(String authorSlug) {
+        AuthorEntity authorEntity = authorRepository.findAuthorEntityBySlug(authorSlug);
+        return convertAuthorEntityToAuthorDto(authorEntity);
+    }
+
+    private AuthorDto convertAuthorEntityToAuthorDtoShort(AuthorEntity authorEntity) {
+        AuthorDto authorDto = new AuthorDto();
+        authorDto.setId(authorEntity.getId());
+        authorDto.setName(authorEntity.getName());
+        authorDto.setSlug(authorEntity.getSlug());
+        return authorDto;
+    }
+
+    private AuthorDto convertAuthorEntityToAuthorDto(AuthorEntity authorEntity) {
+        AuthorDto authorDto = new AuthorDto();
+        authorDto.setId(authorEntity.getId());
+        authorDto.setName(authorEntity.getName());
+        authorDto.setPhoto(authorEntity.getPhoto());
+        authorDto.setSlug(authorEntity.getSlug());
+        setDescription(authorEntity, authorDto);
+        authorDto.setBooksCount(authorEntity.getBooks().size());
+        return authorDto;
+    }
+
+    private void setDescription(AuthorEntity authorEntity, AuthorDto authorDto) {
+        int shortLimit = 400;
+        String entityDescription = authorEntity.getDescription();
+        if (entityDescription.length() <= shortLimit) {
+            authorDto.setDescriptionShort(entityDescription);
+            authorDto.setDescriptionRemains("");
+        } else {
+            authorDto.setDescriptionShort(entityDescription.substring(0, shortLimit));
+            authorDto.setDescriptionRemains(entityDescription.substring(shortLimit));
+        }
     }
 }

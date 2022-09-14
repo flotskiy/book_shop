@@ -10,37 +10,8 @@
 <html class="ie9" lang="ru">
 <![endif]-->
 <!--[if gt IE 9]><!--> <html lang="ru" xmlns:th="http://www.thymeleaf.org"> <!--<![endif]-->
-<head>
-  <title th:text="#{title.authors}">Авторы - Flotskiy Bookshop</title>
-  <meta name="description" content="Описание страницы">
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0">
-  <!--meta( http-equiv="cache-control" content="no-cache")-->
-  <!--meta( http-equiv="expires" content="0")-->
-  <!--link(rel="preload" href="assets/css/extra.min.css?v=" + version as="style" crossorigin="anonymous")-->
-  <link href="favicon.ico" rel="shortcut icon">
-  <link rel="preload" href="/assets/fonts/Montserrat/Montserrat-SemiBold.woff2" as="font" crossorigin="anonymous">
-  <link rel="preload" href="/assets/fonts/Montserrat/Montserrat-Light.woff2" as="font" crossorigin="anonymous">
-  <link rel="preload" href="/assets/fonts/Montserrat/Montserrat-Medium.woff2" as="font" crossorigin="anonymous">
-  <link rel="preload" href="/assets/fonts/Montserrat/Montserrat-ExtraBold.woff2" as="font" crossorigin="anonymous">
-  <link rel="stylesheet" href="/assets/css/fonts.min.css?v=59641147">
-  <link rel="stylesheet" href="/assets/css/basic.min.css?v=59641147">
-  <link rel="stylesheet" href="/assets/css/extra.min.css?v=59641147"><!--[if lt IE 9]>
-  <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
-  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
-  <script src="/assets/js/locale.js"></script>
-  <script defer src="/assets/js/scripts.min.js?v=59641147"></script>
-</head>
+<head th:replace="~{fragments/common_head_tag_fragment :: headTagFragment (#{title.authors})}"></head>
 <body class="Site">
-  <!--if lt IE 8
-  p.error-browser
-      | Ваш браузер&nbsp;
-      em устарел!&nbsp;
-      a(href="http://browsehappy.com/") Выберите новую версию
-          +s
-          | браузера здесь&nbsp;
-      | для правильного отображения сайта.
-  -->
   <header th:replace="~{fragments/common_header_fragment :: headFragment ('authors')}"></header>
   <div class="Middle">
     <div class="wrap">
@@ -59,7 +30,8 @@
               </h2>
               <div class="Authors-letter">
                 <div th:each="authorDto : ${authorsEntry.value}" class="Authors-item">
-                  <a href="/authors/slug.html" th:text="${authorDto.name}">Имя и фамилия автора</a>
+                  <a href="/authors/slug" th:href="|/authors/${authorDto.slug}|" th:text="${authorDto.name}">Имя и фамилия автора
+                  </a>
                 </div>
               </div>
             </div>
@@ -68,18 +40,6 @@
       </main>
     </div>
   </div>
-  <footer th:replace="~{fragments/common_footer_fragment :: footFragment}">
-  </footer>
+  <footer th:replace="~{fragments/common_footer_fragment :: footFragment}"></footer>
   <script src="/assets/plg/jQuery/jquery-3.5.1.min.js"></script>
-  <!--+menu(-->
-  <!--    'Это раз',-->
-  <!--    'Это два',-->
-  <!--    'Это три'-->
-  <!--)-->
-  <!--br-->
-  <!--br-->
-  <!--+menu._vt-->
-  <!--    +menuItem Это раз-->
-  <!--    +menuItem.-item_danger Это два-->
-  <!--    +menuItem Это три-->
 </body></html>

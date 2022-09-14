@@ -9,7 +9,11 @@ public class CountedBooksDto {
 
     public CountedBooksDto(List<BookDto> books) {
         this.books = books;
-        this.count = books.size();
+        if (books.isEmpty()) {
+            this.count = -1;
+        } else {
+            this.count = books.size();
+        }
     }
 
     public int getCount() {

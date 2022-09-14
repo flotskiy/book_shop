@@ -10,7 +10,7 @@ public class FaqEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
-    @Column(columnDefinition = "INT NOT NULL DEFAULT 0")
+    @Column(name = "sort_index", columnDefinition = "INT NOT NULL DEFAULT 0")
     private int sortIndex;
 
     @Column(columnDefinition = "VARCHAR(255) NOT NULL")

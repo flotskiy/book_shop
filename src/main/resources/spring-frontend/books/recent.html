@@ -10,67 +10,47 @@
 <html class="ie9" lang="ru">
 <![endif]-->
 <!--[if gt IE 9]><!--> <html lang="ru" xmlns:th="http://www.thymeleaf.org"> <!--<![endif]-->
-<head>
-  <title th:text="#{title.recent}">Новинки - Flotskiy Bookshop</title>
-  <meta name="description" content="Описание страницы">
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0">
-  <!--meta( http-equiv="cache-control" content="no-cache")-->
-  <!--meta( http-equiv="expires" content="0")-->
-  <!--link(rel="preload" href="assets/css/extra.min.css?v=" + version as="style" crossorigin="anonymous")-->
-  <link href="favicon.ico" rel="shortcut icon">
-  <link rel="preload" href="/assets/fonts/Montserrat/Montserrat-SemiBold.woff2" as="font" crossorigin="anonymous">
-  <link rel="preload" href="/assets/fonts/Montserrat/Montserrat-Light.woff2" as="font" crossorigin="anonymous">
-  <link rel="preload" href="/assets/fonts/Montserrat/Montserrat-Medium.woff2" as="font" crossorigin="anonymous">
-  <link rel="preload" href="/assets/fonts/Montserrat/Montserrat-ExtraBold.woff2" as="font" crossorigin="anonymous">
-  <link rel="stylesheet" href="/assets/css/fonts.min.css?v=09585989">
-  <link rel="stylesheet" href="/assets/css/basic.min.css?v=09585989">
-  <link rel="stylesheet" href="/assets/css/extra.min.css?v=09585989"><!--[if lt IE 9]>
-  <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
-  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
-  <script src="/assets/js/locale.js"></script>
-  <script defer src="/assets/js/scripts.min.js?v=09585989"></script>
-</head>
+<head th:replace="~{fragments/common_head_tag_fragment :: headTagFragment (#{title.recent})}"></head>
 <body class="Site">
-  <!--if lt IE 8
-  p.error-browser
-      | Ваш браузер&nbsp;
-      em устарел!&nbsp;
-      a(href="http://browsehappy.com/") Выберите новую версию
-          +s
-          | браузера здесь&nbsp;
-      | для правильного отображения сайта.
-  -->
   <header th:replace="~{fragments/common_header_fragment :: headFragment ('recent')}"></header>
   <div class="Middle">
     <div class="wrap">
       <main class="Middle-main">
         <ul class="breadcrumbs">
-          <li class="breadcrumbs-item"><a href="/index.html" th:text="#{menu.main}">Главная</a>
+          <li class="breadcrumbs-item"><a href="/" th:text="#{menu.main}">Главная</a>
           </li>
-          <li class="breadcrumbs-item"><a href="/genres/index.html" th:text="#{menu.books}">Книги</a>
+          <li class="breadcrumbs-item"><a href="/genres" th:text="#{menu.books}">Книги</a>
           </li>
-          <li class="breadcrumbs-item breadcrumbs-item_current"><span th:text="#{menu.genres}">Новинки</span>
+          <li class="breadcrumbs-item breadcrumbs-item_current"><span th:text="#{menu.recent}">Новинки</span>
           </li>
         </ul>
         <div class="Section">
           <div class="Section-header">
             <h1 class="Section-title" th:text="#{menu.recent}">Новинки
             </h1>
-            <form class="form form_inline Section-header-form" action="#" method="post">
+            <form class="form form_inline Section-header-form" action="#"
+                  method="post">
               <div class="form-group">
                 <label class="form-label">с
                 </label>
-                <input class="form-input form-input_date form-input_date_uninit" id="fromdaterecent" name="fromdaterecent" type="text" placeholder="Дата" data-refreshoffset="20" data-refreshlimit="20" data-refreshshow="changedate" data-refreshfrom="0" autocomplete="off"/>
+                <input class="form-input form-input_date form-input_date_uninit"
+                       id="fromdaterecent" name="fromdaterecent" type="text"
+                       th:object="${from}"
+                       placeholder="Дата" data-refreshoffset="0" data-refreshlimit="20"
+                       data-refreshshow="changedate" data-refreshfrom="0" autocomplete="off"/>
               </div>
               <div class="form-group">
                 <label class="form-label">по
                 </label>
-                <input class="form-input form-input_date form-input_date_uninit" id="enddaterecent" name="enddaterecent" type="text" placeholder="Дата" data-refreshoffset="20" data-refreshlimit="20" data-refreshshow="changedate" data-refreshto="0" autocomplete="off"/>
+                <input class="form-input form-input_date form-input_date_uninit"
+                       id="enddaterecent" name="enddaterecent" type="text"
+                       th:object="${to}"
+                       placeholder="Дата" data-refreshoffset="0" data-refreshlimit="20"
+                       data-refreshshow="changedate" data-refreshto="0" autocomplete="off"/>
               </div>
             </form>
           </div>
-          <div th:replace="~{fragments/books_pool_fragment :: cardFragment (${recentBooksPage})}"></div>
+          <div th:replace="~{fragments/books_pool_fragment :: cardFragment (${recentBooksPage}, 'recent', '')}"></div>
         </div>
       </main>
     </div>

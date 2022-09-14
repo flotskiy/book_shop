@@ -1,15 +1,21 @@
 package com.github.flotskiy.FlotskiyBookShopApp.model.dto;
 
+import java.time.LocalDate;
+
 public class BookDto {
 
     private int id;
-    private short isBestseller;
-    private String author;
-    private String title;
+    private String slug;
     private String image;
-    private int priceOld;
-    private int price;
+    private String authors;
+    private String title;
     private short discount;
+    private boolean isBestseller;
+    private short rating;
+    private String status;
+    private int price;
+    private int discountPrice;
+    private LocalDate pubDate;
 
     public int getId() {
         return id;
@@ -19,28 +25,12 @@ public class BookDto {
         this.id = id;
     }
 
-    public short getIsBestseller() {
-        return isBestseller;
+    public String getSlug() {
+        return slug;
     }
 
-    public void setIsBestseller(short isBestseller) {
-        this.isBestseller = isBestseller;
-    }
-
-    public String getAuthor() {
-        return author;
-    }
-
-    public void setAuthor(String author) {
-        this.author = author;
-    }
-
-    public String getTitle() {
-        return title;
-    }
-
-    public void setTitle(String title) {
-        this.title = title;
+    public void setSlug(String slug) {
+        this.slug = slug;
     }
 
     public String getImage() {
@@ -51,20 +41,20 @@ public class BookDto {
         this.image = image;
     }
 
-    public int getPriceOld() {
-        return priceOld;
+    public String getAuthors() {
+        return authors;
     }
 
-    public void setPriceOld(int priceOld) {
-        this.priceOld = priceOld;
+    public void setAuthors(String authors) {
+        this.authors = authors;
     }
 
-    public int getPrice() {
-        return price;
+    public String getTitle() {
+        return title;
     }
 
-    public void setPrice(int price) {
-        this.price = price;
+    public void setTitle(String title) {
+        this.title = title;
     }
 
     public short getDiscount() {
@@ -75,14 +65,69 @@ public class BookDto {
         this.discount = discount;
     }
 
+    public boolean isBestseller() {
+        return isBestseller;
+    }
+
+    public void setBestseller(boolean bestseller) {
+        isBestseller = bestseller;
+    }
+
+    public short getRating() {
+        return rating;
+    }
+
+    public void setRating(short rating) {
+        this.rating = rating;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
+    public int getPrice() {
+        return price;
+    }
+
+    public void setPrice(int price) {
+        this.price = price;
+    }
+
+    public int getDiscountPrice() {
+        return discountPrice;
+    }
+
+    public void setDiscountPrice(int discountPrice) {
+        this.discountPrice = discountPrice;
+    }
+
+    public LocalDate getPubDate() {
+        return pubDate;
+    }
+
+    public void setPubDate(LocalDate pubDate) {
+        this.pubDate = pubDate;
+    }
+
     @Override
     public String toString() {
         return "BookDto{" +
                 "id=" + id +
-                ", author='" + author + '\'' +
+                ", slug='" + slug + '\'' +
+                ", image='" + image + '\'' +
+                ", authors='" + authors + '\'' +
                 ", title='" + title + '\'' +
-                ", priceOld='" + priceOld + '\'' +
-                ", price='" + price + '\'' +
+                ", discount=" + discount +
+                ", isBestseller=" + isBestseller +
+                ", rating=" + rating +
+                ", status='" + status + '\'' +
+                ", price=" + price +
+                ", discountPrice=" + discountPrice +
+                ", pubDate=" + pubDate +
                 '}';
     }
 }

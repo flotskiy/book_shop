@@ -10,37 +10,8 @@
 <html class="ie9" lang="ru">
 <![endif]-->
 <!--[if gt IE 9]><!--> <html lang="ru" xmlns:th="http://www.thymeleaf.org"> <!--<![endif]-->
-<head>
-  <title th:text="#{title.faq}">Помощь - Flotskiy Bookshop</title>
-  <meta name="description" content="Описание страницы">
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0">
-  <!--meta( http-equiv="cache-control" content="no-cache")-->
-  <!--meta( http-equiv="expires" content="0")-->
-  <!--link(rel="preload" href="assets/css/extra.min.css?v=" + version as="style" crossorigin="anonymous")-->
-  <link href="favicon.ico" rel="shortcut icon">
-  <link rel="preload" href="/assets/fonts/Montserrat/Montserrat-SemiBold.woff2" as="font" crossorigin="anonymous">
-  <link rel="preload" href="/assets/fonts/Montserrat/Montserrat-Light.woff2" as="font" crossorigin="anonymous">
-  <link rel="preload" href="/assets/fonts/Montserrat/Montserrat-Medium.woff2" as="font" crossorigin="anonymous">
-  <link rel="preload" href="/assets/fonts/Montserrat/Montserrat-ExtraBold.woff2" as="font" crossorigin="anonymous">
-  <link rel="stylesheet" href="/assets/css/fonts.min.css?v=77124975">
-  <link rel="stylesheet" href="/assets/css/basic.min.css?v=77124975">
-  <link rel="stylesheet" href="/assets/css/extra.min.css?v=77124975"><!--[if lt IE 9]>
-  <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
-  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
-  <script src="/assets/js/locale.js"></script>
-  <script defer src="/assets/js/scripts.min.js?v=77124975"></script>
-</head>
+<head th:replace="~{fragments/common_head_tag_fragment :: headTagFragment (#{title.faq})}"></head>
 <body class="Site">
-  <!--if lt IE 8
-  p.error-browser
-      | Ваш браузер&nbsp;
-      em устарел!&nbsp;
-      a(href="http://browsehappy.com/") Выберите новую версию
-          +s
-          | браузера здесь&nbsp;
-      | для правильного отображения сайта.
-  -->
   <header th:replace="~{fragments/common_header_fragment :: headFragment ('')}"></header>
   <div class="Middle">
     <div class="wrap">

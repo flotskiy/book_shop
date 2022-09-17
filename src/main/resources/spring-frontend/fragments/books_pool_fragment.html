@@ -4,24 +4,27 @@
     <div class="Cards Cards_refresh" th:fragment="cardFragment (booksList, pageName, objId)">
         <div class="Card" th:each="book : ${booksList}">
             <div class="Card-picture">
-                <a href="#a" th:href="${book.id}">
+                <a href="#" th:href="@{'/books/' + ${book.slug}}">
                     <img src="/assets/img/content/main/card.jpg" th:src="${book.image}" alt="card.jpg"/>
                     <div th:if="${book.discountPrice} lt ${book.price}">
-                        <div class="Card-sale" th:text="|${book.discount}% скидка|">Скидка
+                        <div class="Card-sale" th:text="|${book.discount}% скидка|">Скидка</div>
+                    </div>
+                    <div th:if="${book.isBestseller}">
+                        <div class="Card-ribbon"><span class="Card-ribbonText">Бестселлер</span>
                         </div>
                     </div>
                 </a>
             </div>
             <div class="Card-content">
                 <strong class="Card-title">
-                    <a href="#" th:href="${book.id}" th:text="${book.title}">Книга</a>
+                    <a href="#" th:href="@{'/books/' + ${book.slug}}" th:text="${book.title}">Книга</a>
                 </strong>
                 <div class="Card-description" th:text="${book.authors}">Автор</div>
                 <div class="Card-cost">
-                    <div th:if="${book.discountPrice} lt ${book.price}">
-                        <span class="Card-priceOld" th:text="${book.price}">Старая цена</span>
-                    </div>
-                    <span class="Card-price" th:text="${book.discountPrice}">Новая цена</span>
+                    <span th:if="${book.discountPrice} lt ${book.price}">
+                        <span class="Card-priceOld" th:text="${'₽' + book.price}">Старая цена</span>
+                    </span>
+                    <span class="Card-price" th:text="${'₽' + book.discountPrice}">Новая цена</span>
                 </div>
             </div>
         </div>

@@ -3,13 +3,14 @@ package com.github.flotskiy.FlotskiyBookShopApp.model.dto;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.time.LocalDate;
+import java.util.Set;
 
-public class BookDto {
+public class BookSlugDto {
 
     private int id;
     private String slug;
     private String image;
-    private String authors;
+    private Set<AuthorDto> authors;
     private String title;
     private short discount;
     @JsonProperty("isBestseller")
@@ -19,6 +20,22 @@ public class BookDto {
     private int price;
     private int discountPrice;
     private LocalDate pubDate;
+    private String description;
+    private Set<TagDto> tags;
+
+    public BookSlugDto(BookDto bookDto) {
+        this.id = bookDto.getId();
+        this.slug = bookDto.getSlug();
+        this.image = bookDto.getImage();
+        this.title = bookDto.getTitle();
+        this.discount = bookDto.getDiscount();
+        this.isBestseller = bookDto.isBestseller();
+        this.rating = bookDto.getRating();
+        this.status = bookDto.getStatus();
+        this.price = bookDto.getPrice();
+        this.discountPrice = bookDto.getDiscountPrice();
+        this.pubDate = bookDto.getPubDate();
+    }
 
     public int getId() {
         return id;
@@ -44,11 +61,11 @@ public class BookDto {
         this.image = image;
     }
 
-    public String getAuthors() {
+    public Set<AuthorDto> getAuthors() {
         return authors;
     }
 
-    public void setAuthors(String authors) {
+    public void setAuthors(Set<AuthorDto> authors) {
         this.authors = authors;
     }
 
@@ -72,8 +89,8 @@ public class BookDto {
         return isBestseller;
     }
 
-    public void setIsBestseller(boolean isBestseller) {
-        this.isBestseller = isBestseller;
+    public void setBestseller(boolean bestseller) {
+        isBestseller = bestseller;
     }
 
     public short getRating() {
@@ -116,21 +133,19 @@ public class BookDto {
         this.pubDate = pubDate;
     }
 
-    @Override
-    public String toString() {
-        return "BookDto{" +
-                "id=" + id +
-                ", slug='" + slug + '\'' +
-                ", image='" + image + '\'' +
-                ", authors='" + authors + '\'' +
-                ", title='" + title + '\'' +
-                ", discount=" + discount +
-                ", isBestseller=" + isBestseller +
-                ", rating=" + rating +
-                ", status='" + status + '\'' +
-                ", price=" + price +
-                ", discountPrice=" + discountPrice +
-                ", pubDate=" + pubDate +
-                '}';
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public Set<TagDto> getTags() {
+        return tags;
+    }
+
+    public void setTags(Set<TagDto> tags) {
+        this.tags = tags;
     }
 }

@@ -29,18 +29,28 @@ public class TagService {
         tagEntitiesSorted.sort(Comparator.comparingInt(t -> t.getBookEntities().size()));
         Collections.reverse(tagEntitiesSorted);
         return tagEntities.stream()
-                .map(tagEntity -> convertTagToTagDto(tagEntity, tagEntitiesSorted)).collect(Collectors.toList());
+                .map(tagEntity -> convertTagToTagDtoSorted(tagEntity, tagEntitiesSorted)).collect(Collectors.toList());
     }
 
     public BookTagEntity getBookTagBySlug(String slug) {
         return tagRepository.findTitleBySlug(slug);
     }
 
-    private TagDto convertTagToTagDto(BookTagEntity tagEntity, List<BookTagEntity> tagEntitiesSorted) {
+    public Set<TagDto> convertTagEntitySetToTagDtoSet(Set<BookTagEntity> tagEntitySet) {
+        Set<TagDto> tagDtoSet = new HashSet<>();
+        return tagEntitySet.stream().map(this::convertTagToTagDtoWithoutClazzValue).collect(Collectors.toSet());
+    }
+
+    private TagDto convertTagToTagDtoWithoutClazzValue(BookTagEntity tagEntity) {
         TagDto tagDto = new TagDto();
         tagDto.setId(tagEntity.getId());
         tagDto.setTitle(tagEntity.getTitle());
         tagDto.setSlug(tagEntity.getSlug());
+        return tagDto;
+    }
+
+    public TagDto convertTagToTagDtoSorted(BookTagEntity tagEntity, List<BookTagEntity> tagEntitiesSorted) {
+        TagDto tagDto = convertTagToTagDtoWithoutClazzValue(tagEntity);
         tagDto.setClazz(defineTagClass(tagEntity, tagEntitiesSorted));
         return tagDto;
     }

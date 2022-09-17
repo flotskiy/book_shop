@@ -1,9 +1,12 @@
 package com.github.flotskiy.FlotskiyBookShopApp.service;
 
+import com.github.flotskiy.FlotskiyBookShopApp.model.dto.AuthorDto;
+import com.github.flotskiy.FlotskiyBookShopApp.model.dto.BookSlugDto;
 import com.github.flotskiy.FlotskiyBookShopApp.model.dto.RatingDto;
 import com.github.flotskiy.FlotskiyBookShopApp.model.entity.author.AuthorEntity;
 import com.github.flotskiy.FlotskiyBookShopApp.model.entity.book.BookEntity;
 import com.github.flotskiy.FlotskiyBookShopApp.model.dto.BookDto;
+import com.github.flotskiy.FlotskiyBookShopApp.model.entity.book.BookTagEntity;
 import com.github.flotskiy.FlotskiyBookShopApp.repository.BookRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -14,17 +17,27 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class BookService {
 
     private final BookRepository bookRepository;
     private final BooksRatingAndPopularityService booksRatingAndPopularityService;
+    private final TagService tagService;
+    private final AuthorService authorService;
 
     @Autowired
-    public BookService(BookRepository bookRepository, BooksRatingAndPopularityService booksRatingAndPopularityService) {
+    public BookService(
+            BookRepository bookRepository,
+            BooksRatingAndPopularityService booksRatingAndPopularityService,
+            TagService tagService,
+            AuthorService authorService
+    ) {
         this.bookRepository = bookRepository;
         this.booksRatingAndPopularityService = booksRatingAndPopularityService;
+        this.tagService = tagService;
+        this.authorService = authorService;
     }
 
     public List<BookDto> getAllBooksData() {
@@ -65,6 +78,10 @@ public class BookService {
         Pageable nextPage = PageRequest.of(offset, limit);
         Page<BookEntity> bookEntities = bookRepository.findBookEntitiesByTitleContaining(searchWord, nextPage);
         return bookEntities.map(this::convertBookEntityToBookDto);
+    }
+
+    public Integer getSearchResultsSize(String searchWord) {
+        return bookRepository.countBookEntitiesByTitleContaining(searchWord);
     }
 
     public Page<BookDto> getPageOfRecentBooks(LocalDate from, LocalDate to, int offset, int limit) {
@@ -112,6 +129,26 @@ public class BookService {
         return bookEntities.map(this::convertBookEntityToBookDto);
     }
 
+    public BookEntity getBookEntityBySlug(String slug) {
+        return bookRepository.findBookEntityBySlug(slug);
+    }
+
+    public void saveBookEntity(BookEntity bookEntity) {
+        bookRepository.save(bookEntity);
+    }
+
+    public BookSlugDto getBookSlugBySlug(String slug) {
+        BookEntity bookEntity = bookRepository.findBookEntityBySlug(slug);
+        BookSlugDto bookSlugDto = new BookSlugDto(convertBookEntityToBookDto(bookEntity));
+        bookSlugDto.setDescription(bookEntity.getDescription());
+        Set<BookTagEntity> tagEntities = bookEntity.getBookTags();
+        Set<AuthorDto> authorDtos = bookEntity.getAuthorEntities().stream()
+                .map(authorService::convertAuthorEntityToAuthorDtoShort).collect(Collectors.toSet());
+        bookSlugDto.setAuthors(authorDtos);
+        bookSlugDto.setTags(tagService.convertTagEntitySetToTagDtoSet(tagEntities));
+        return bookSlugDto;
+    }
+
     public String checkFrom(String from) {
         if (from == null || from.isEmpty()) {
             return "01.01.1900";
@@ -143,7 +180,7 @@ public class BookService {
         bookDto.setTitle(bookEntity.getTitle());
         short discount = bookEntity.getDiscount();
         bookDto.setDiscount(discount);
-        bookDto.setBestseller(bookEntity.getIsBestseller() == 1);
+        bookDto.setIsBestseller(bookEntity.getIsBestseller() == 1);
         int price = bookEntity.getPrice();
         bookDto.setPrice(price);
         int discountPrice = (int) (price * ((100 - (double) discount) / 100));

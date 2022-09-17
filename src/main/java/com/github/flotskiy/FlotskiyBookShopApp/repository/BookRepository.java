@@ -29,6 +29,8 @@ public interface BookRepository extends JpaRepository<BookEntity, Integer> {
 
     Page<BookEntity> findBookEntitiesByTitleContaining(String bookTitle, Pageable nextPage);
 
+    Integer countBookEntitiesByTitleContaining(String bookTitle);
+
     Page<BookEntity> findBookEntitiesByPubDateBetweenOrderByPubDateDesc(LocalDate from, LocalDate to, Pageable nextPage);
 
     @Query(value = "SELECT * FROM book b WHERE b.id IN :idList", nativeQuery = true)
@@ -39,4 +41,6 @@ public interface BookRepository extends JpaRepository<BookEntity, Integer> {
     Page<BookEntity> findBookEntitiesByGenreEntitiesIdOrderByPubDateDesc(Integer genreId, Pageable nextPage);
 
     Page<BookEntity> findBookEntitiesByAuthorEntitiesIdOrderByPubDateDesc(Integer authorId, Pageable nextPage);
+
+    BookEntity findBookEntityBySlug(String slug);
 }

@@ -41,6 +41,7 @@ public class SearchPageController {
         model.addAttribute("searchWordDto", searchWordDto);
         model.addAttribute("searchResults",
                 bookService.getPageOfSearchResultBooks(searchWordDto.getExample(), 0, 5).getContent());
+        model.addAttribute("searchResultsSize", bookService.getSearchResultsSize(searchWordDto.getExample()));
         return "/search/index";
     }
 

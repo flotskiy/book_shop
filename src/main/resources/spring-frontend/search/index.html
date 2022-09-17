@@ -30,22 +30,33 @@
         </div>
         <div class="Section Section_close">
           <header class="Section-header">
-            <h2 class="Section-title Middle-searchHeader" th:text="|#{page.search.result}${searchResults.size()}|">Найдено книг
+            <h2 class="Section-title Middle-searchHeader" th:text="|#{page.search.result}${searchResultsSize}|">Найдено книг
             </h2>
           </header>
           <div class="Cards Cards_search Cards_refresh">
             <div class="Card" th:each="book : ${searchResults}">
-              <div class="Card-picture"><a href="#"><img th:src="${book.image}"
-                      src="/assets/img/content/main/card.jpg" alt="card.jpg"/></a>
+              <div class="Card-picture">
+                <a href="#" th:href="@{'/books/' + ${book.slug}}">
+                  <img src="/assets/img/content/main/card.jpg" th:src="${book.image}" alt="card.jpg"/>
+                  <div th:if="${book.discountPrice} lt ${book.price}">
+                    <div class="Card-sale" th:text="|${book.discount}% скидка|">Скидка</div>
+                  </div>
+                  <div th:if="${book.isBestseller}">
+                    <div class="Card-ribbon"><span class="Card-ribbonText">Бестселлер</span></div>
+                  </div>
+                </a>
               </div>
               <div class="Card-content">
-                <strong class="Card-title"><a href="#" th:text="${book.title}">Название книги</a>
+                <strong class="Card-title">
+                  <a href="#" th:href="@{'/books/' + ${book.slug}}" th:text="${book.title}">Название книги</a>
                 </strong>
                 <div class="Card-description" th:text="${book.authors}">Имя автора
                 </div>
                 <div class="Card-cost">
-                  <span class="Card-priceOld" th:text="${book.price}">Старая цена</span>
-                  <span class="Card-price" th:text="${book.discountPrice}">Цена</span>
+                  <span th:if="${book.discountPrice} lt ${book.price}">
+                    <span class="Card-priceOld" th:text="${'₽' + book.price}">Старая цена</span>
+                  </span>
+                  <span class="Card-price" th:text="${'₽' + book.discountPrice}">Цена</span>
                 </div>
               </div>
             </div>

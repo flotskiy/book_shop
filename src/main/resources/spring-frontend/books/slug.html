@@ -26,8 +26,10 @@
   <link rel="preload" href="/assets/fonts/Montserrat/Montserrat-ExtraBold.woff2" as="font" crossorigin="anonymous">
   <link rel="stylesheet" href="/assets/css/fonts.min.css?v=87821122">
   <link rel="stylesheet" href="/assets/css/basic.min.css?v=87821122">
+  <link rel="stylesheet" href="/assets/css/extra.min.css?v=87821122">
+  <link rel="stylesheet" href="/assets/css/DownloadBookWindowStyle.css">
+  <!--[if lt IE 9]>
   <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
-  <link rel="stylesheet" href="/assets/css/extra.min.css?v=87821122"><!--[if lt IE 9]>
   <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
   <script src="/assets/js/locale.js"></script>
@@ -378,6 +380,14 @@
                   </button>
                 </div>
               </div>
+              <div id="myPopup">
+                <p>Ссылки для скачивания</p>
+                <div th:each="bookFile : ${slugBook.bookFileDtos}">
+                  <a href="#" th:href="${'/books/download/' + bookFile.hash}" th:text="${bookFile.getBookFileExtensionString()}"></a>
+                </div>
+                <span id="myPopup__close" class="close">X</span>
+              </div>
+              <div id="myOverlay"></div>
               <!--+div.-cart-->
               <!--    //+div.-cartElement.-cartElement_amount-->
               <!--    //    +Amount._product-->
@@ -539,5 +549,6 @@
   </footer>
   <script src="/assets/plg/jQuery/jquery-3.5.1.min.js"></script>
   <script src="/assets/js/UploadNewBookImageScript.js"></script>
+  <script src="/assets/js/DownloadBookWindowScript.js"></script>
   <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
 </body></html>

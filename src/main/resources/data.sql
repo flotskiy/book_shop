@@ -5215,3 +5215,8 @@ insert into book2genre (id, book_id, genre_id) values (997, 827, 12);
 insert into book2genre (id, book_id, genre_id) values (998, 274, 16);
 insert into book2genre (id, book_id, genre_id) values (999, 163, 25);
 insert into book2genre (id, book_id, genre_id) values (1000, 687, 15);
+
+insert into book_file (id, hash, type_id, path, book_id) values (1, 'weifyq2q3nsdc21eq2q2rfj', 1, '/Deep_End_of_the_Ocean,_The.pdf', 1);
+insert into book_file (id, hash, type_id, path, book_id) values (2, 'dgshggfghsfyq3436dfdhgh', 2, '/Deep_End_of_the_Ocean,_The.epub', 1);
+insert into book_file (id, hash, type_id, path, book_id) values (3, 'jhfgh64dfj0tsdgsve3sddd', 3, '/Deep_End_of_the_Ocean,_The.fb2', 1);
+insert into book_file (id, hash, type_id, path, book_id) values (4, 'fgvbtri98324ljkcg8345yd', 1, '/Whole.pdf', 2);

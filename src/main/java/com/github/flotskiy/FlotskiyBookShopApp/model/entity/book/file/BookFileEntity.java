@@ -1,5 +1,7 @@
 package com.github.flotskiy.FlotskiyBookShopApp.model.entity.book.file;
 
+import com.github.flotskiy.FlotskiyBookShopApp.model.entity.book.BookEntity;
+
 import javax.persistence.*;
 
 @Entity
@@ -18,6 +20,10 @@ public class BookFileEntity {
 
     @Column(columnDefinition = "VARCHAR(255) NOT NULL")
     private String path;
+
+    @ManyToOne
+    @JoinColumn(name = "book_id", referencedColumnName = "id")
+    private BookEntity bookEntity;
 
     public Integer getId() {
         return id;
@@ -49,5 +55,13 @@ public class BookFileEntity {
 
     public void setPath(String path) {
         this.path = path;
+    }
+
+    public BookEntity getBookEntity() {
+        return bookEntity;
+    }
+
+    public void setBookEntity(BookEntity bookEntity) {
+        this.bookEntity = bookEntity;
     }
 }

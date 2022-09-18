@@ -1,12 +1,10 @@
 package com.github.flotskiy.FlotskiyBookShopApp.service;
 
-import com.github.flotskiy.FlotskiyBookShopApp.model.dto.AuthorDto;
-import com.github.flotskiy.FlotskiyBookShopApp.model.dto.BookSlugDto;
-import com.github.flotskiy.FlotskiyBookShopApp.model.dto.RatingDto;
+import com.github.flotskiy.FlotskiyBookShopApp.model.dto.*;
 import com.github.flotskiy.FlotskiyBookShopApp.model.entity.author.AuthorEntity;
 import com.github.flotskiy.FlotskiyBookShopApp.model.entity.book.BookEntity;
-import com.github.flotskiy.FlotskiyBookShopApp.model.dto.BookDto;
 import com.github.flotskiy.FlotskiyBookShopApp.model.entity.book.BookTagEntity;
+import com.github.flotskiy.FlotskiyBookShopApp.model.entity.book.file.BookFileEntity;
 import com.github.flotskiy.FlotskiyBookShopApp.repository.BookRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -146,6 +144,9 @@ public class BookService {
                 .map(authorService::convertAuthorEntityToAuthorDtoShort).collect(Collectors.toSet());
         bookSlugDto.setAuthors(authorDtos);
         bookSlugDto.setTags(tagService.convertTagEntitySetToTagDtoSet(tagEntities));
+        Set<BookFileDto> bookFileDtos = bookEntity.getBookFileEntities().stream()
+                .map(this::convertBookFileEntityToBookFileDto).collect(Collectors.toSet());
+        bookSlugDto.setBookFileDtos(bookFileDtos);
         return bookSlugDto;
     }
 
@@ -218,5 +219,13 @@ public class BookService {
         bookDto.setRating(rating);
 
         return bookDto;
+    }
+
+    private BookFileDto convertBookFileEntityToBookFileDto(BookFileEntity bookFileEntity) {
+        BookFileDto bookFileDto = new BookFileDto();
+        bookFileDto.setHash(bookFileEntity.getHash());
+        bookFileDto.setTypeId(bookFileEntity.getTypeId());
+        bookFileDto.setPath(bookFileEntity.getPath());
+        return bookFileDto;
     }
 }

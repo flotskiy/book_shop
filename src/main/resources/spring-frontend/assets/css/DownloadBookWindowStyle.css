@@ -1,0 +1,40 @@
+#myPopup{
+    width: 300px;
+    height: 220px;
+    padding: 18px 9px;
+    border-radius: 4px;
+    background: #fafafa;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    margin: auto;
+    display: none;
+    opacity: 0;
+    z-index: 2;
+    text-align: center;
+}
+
+#myPopup #myPopup__close{
+    width: 21px;
+    height: 21px;
+    position: absolute;
+    top: 10px;
+    right: 11px;
+    cursor: pointer;
+    display: block;
+    font-size: 29px;
+}
+
+#myOverlay{
+    z-index: 1;
+    position: fixed;
+    background-color: rgba(0,0,0, .7);
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    cursor: pointer;
+    display: none;
+}

@@ -1,6 +1,7 @@
 package com.github.flotskiy.FlotskiyBookShopApp.model.entity.book;
 
 import com.github.flotskiy.FlotskiyBookShopApp.model.entity.author.AuthorEntity;
+import com.github.flotskiy.FlotskiyBookShopApp.model.entity.book.file.BookFileEntity;
 import com.github.flotskiy.FlotskiyBookShopApp.model.entity.genre.GenreEntity;
 import com.github.flotskiy.FlotskiyBookShopApp.model.entity.user.UserEntity;
 import io.swagger.annotations.ApiModel;
@@ -81,6 +82,9 @@ public class BookEntity {
 
     @ManyToMany(mappedBy="booksReviewed")
     private Set<UserEntity> reviewedByUsers;
+
+    @OneToMany(mappedBy = "bookEntity")
+    private Set<BookFileEntity> bookFileEntities;
 
     public int getId() {
         return id;
@@ -208,5 +212,13 @@ public class BookEntity {
 
     public void setReviewedByUsers(Set<UserEntity> reviewedByUsers) {
         this.reviewedByUsers = reviewedByUsers;
+    }
+
+    public Set<BookFileEntity> getBookFileEntities() {
+        return bookFileEntities;
+    }
+
+    public void setBookFileEntities(Set<BookFileEntity> bookFileEntities) {
+        this.bookFileEntities = bookFileEntities;
     }
 }

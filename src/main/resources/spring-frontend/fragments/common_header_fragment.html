@@ -22,6 +22,7 @@
                                 </form>
                             </div>
                         </div>
+                        <span id="error" th:if="${searchError}" th:text="${searchError.getLocalizedMessage()}"></span>
                     </div>
                     <div class="row-block Header-cart">
                         <div class="CartBlock"><a class="CartBlock-block" href="/postponed" th:href="@{/postponed}">

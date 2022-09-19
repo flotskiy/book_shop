@@ -1,5 +1,6 @@
 package com.github.flotskiy.FlotskiyBookShopApp.service;
 
+import com.github.flotskiy.FlotskiyBookShopApp.exceptions.BookstoreApiWrongParameterException;
 import com.github.flotskiy.FlotskiyBookShopApp.model.dto.*;
 import com.github.flotskiy.FlotskiyBookShopApp.model.entity.author.AuthorEntity;
 import com.github.flotskiy.FlotskiyBookShopApp.model.entity.book.BookEntity;
@@ -52,8 +53,15 @@ public class BookService {
         return convertBookEntitiesToBookDtoList(bookRepository.findBookEntitiesByAuthorEntitiesNameContaining(authorName));
     }
 
-    public List<BookDto> getBooksByTitle(String title) {
-        return convertBookEntitiesToBookDtoList(bookRepository.findBookEntitiesByTitleContaining(title));
+    public List<BookDto> getBooksByTitle(String title) throws BookstoreApiWrongParameterException {
+        if (title.length() <= 1) {
+            throw new BookstoreApiWrongParameterException("Wrong value passed to parameter");
+        }
+        List<BookDto> data = convertBookEntitiesToBookDtoList(bookRepository.findBookEntitiesByTitleContaining(title));
+        if (data.size() < 1) {
+            throw new BookstoreApiWrongParameterException("No data found with specified parameter...");
+        }
+        return data;
     }
 
     public List<BookDto> getBooksWithPriceBetween(int min, int max) {

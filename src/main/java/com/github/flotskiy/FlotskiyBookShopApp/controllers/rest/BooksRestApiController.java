@@ -1,5 +1,7 @@
 package com.github.flotskiy.FlotskiyBookShopApp.controllers.rest;
 
+import com.github.flotskiy.FlotskiyBookShopApp.model.dto.ApiResponse;
+import com.github.flotskiy.FlotskiyBookShopApp.exceptions.BookstoreApiWrongParameterException;
 import com.github.flotskiy.FlotskiyBookShopApp.model.dto.*;
 import com.github.flotskiy.FlotskiyBookShopApp.service.BookService;
 import com.github.flotskiy.FlotskiyBookShopApp.service.GenreService;
@@ -8,7 +10,9 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
@@ -40,8 +44,15 @@ public class BooksRestApiController {
 
     @GetMapping("/by-title")
     @ApiOperation("Receiving List of Books with Specified Book's Title")
-    public ResponseEntity<List<BookDto>> booksByTitle(@RequestParam("title") String title) {
-        return ResponseEntity.ok(bookService.getBooksByTitle(title));
+    public ResponseEntity<ApiResponse<BookDto>> booksByTitle(@RequestParam("title") String title)
+            throws BookstoreApiWrongParameterException {
+        ApiResponse<BookDto> response = new ApiResponse<>();
+        List<BookDto> data = bookService.getBooksByTitle(title);
+        response.setDebugMessage("Successful request: /api/books/by-title");
+        response.setMessage("Data size: " + data.size() + " books");
+        response.setStatus(HttpStatus.OK);
+        response.setData(data);
+        return ResponseEntity.ok(response);
     }
 
     @GetMapping("/by-price-range")
@@ -169,5 +180,25 @@ public class BooksRestApiController {
     ) {
         return ResponseEntity
                 .ok(new CountedBooksDto(bookService.getPageOfBooksByAuthorId(authorId, offset, limit).getContent()));
+    }
+
+    @ExceptionHandler(MissingServletRequestParameterException.class)
+    public ResponseEntity<ApiResponse<BookDto>> handleMissingServletRequestParameterException(Exception exception) {
+        return new ResponseEntity<>(
+                new ApiResponse<>(HttpStatus.BAD_REQUEST, "Missing required parameter 'title'", exception),
+                HttpStatus.BAD_REQUEST
+        );
+    }
+
+    @ExceptionHandler(BookstoreApiWrongParameterException.class)
+    public ResponseEntity<ApiResponse<BookDto>> handleBookstoreApiWrongParameterException(Exception exception) {
+        return new ResponseEntity<>(
+                new ApiResponse<>(
+                        HttpStatus.BAD_REQUEST,
+                        "Wrong value passed to parameter OR No data found with specified parameter",
+                        exception
+                ),
+                HttpStatus.BAD_REQUEST
+        );
     }
 }

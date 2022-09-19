@@ -12,7 +12,6 @@ public class BookDto {
     private String authors;
     private String title;
     private short discount;
-    @JsonProperty("isBestseller")
     private boolean isBestseller;
     private short rating;
     private String status;
@@ -68,6 +67,7 @@ public class BookDto {
         this.discount = discount;
     }
 
+    @JsonProperty("isBestseller")
     public boolean isBestseller() {
         return isBestseller;
     }

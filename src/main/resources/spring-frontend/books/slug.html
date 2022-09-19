@@ -55,8 +55,15 @@
                     action="#" th:action="${'/books/' + slugBook.slug + '/img/save'}">
                 <div class="ProductCard-photo" id="uploadButton">
                   <img src="/assets/img/content/main/card.jpg" th:src="*{image}" alt="card.jpg"/>
+                  <div th:if="${slugBook.discountPrice} lt ${slugBook.price}">
+                    <div class="Card-sale" th:text="|${slugBook.discount}% скидка|">Скидка</div>
+                  </div>
+                  <div th:if="${slugBook.isBestseller}">
+                    <div class="Card-ribbon"><span class="Card-ribbonText">Бестселлер</span>
+                    </div>
+                  </div>
                 </div>
-                <input type="file" name="file" id="dialog" style="display: none"/>
+                <input type="file" name="file" id="dialog" style="display: none" accept="image/*"/>
               </form>
             </div>
             <div class="ProductCard-desc">

@@ -1,5 +1,6 @@
 package com.github.flotskiy.FlotskiyBookShopApp.controllers.page;
 
+import com.github.flotskiy.FlotskiyBookShopApp.exceptions.EmptySearchQueryException;
 import com.github.flotskiy.FlotskiyBookShopApp.model.dto.BookDto;
 import com.github.flotskiy.FlotskiyBookShopApp.model.dto.CountedBooksDto;
 import com.github.flotskiy.FlotskiyBookShopApp.model.dto.SearchWordDto;
@@ -34,9 +35,9 @@ public class SearchPageController {
 
     @GetMapping(value = {"/search", "/search/{searchWord}"})
     public String getSearchResults(@PathVariable(value = "searchWord", required = false) SearchWordDto searchWordDto,
-                                   Model model) {
+                                   Model model) throws EmptySearchQueryException {
         if (searchWordDto == null) {
-            searchWordDto = new SearchWordDto();
+            throw new EmptySearchQueryException("Search with null query parameter is Impossible");
         }
         model.addAttribute("searchWordDto", searchWordDto);
         model.addAttribute("searchResults",

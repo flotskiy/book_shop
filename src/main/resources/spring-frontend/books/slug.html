@@ -373,7 +373,14 @@
                   </button>
                 </div>
                 <div class="ProductCard-cartElement">
-                  <button class="btn btn_primary btn_outline" data-sendstatus="CART" data-bookid="[1111]" data-btntype="check" data-btnradio="buyblock" data-check="false" data-alttext="В корзине"><span class="btn-icon"><img src="/assets/img/icons/shopping-basket.svg" alt="shopping-basket.svg"/></span><span class="btn-content" th:text="#{button.buy}">Купить</span>
+                  <button class="btn btn_primary btn_outline" data-sendstatus="CART"
+                          data-bookid="[1111]" th:attr="data-bookid = ${slugBook.slug}"
+                          data-btntype="check" data-btnradio="buyblock" data-check="false"
+                          data-alttext="В корзине">
+                    <span class="btn-icon">
+                      <img src="/assets/img/icons/shopping-basket.svg" alt="shopping-basket.svg"/>
+                    </span>
+                    <span class="btn-content" th:text="#{button.buy}">Купить</span>
                   </button>
                 </div>
               </div>

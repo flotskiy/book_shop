@@ -2,7 +2,6 @@ package com.github.flotskiy.FlotskiyBookShopApp.controllers.page;
 
 import com.github.flotskiy.FlotskiyBookShopApp.model.dto.BookDto;
 import com.github.flotskiy.FlotskiyBookShopApp.model.dto.CountedBooksDto;
-import com.github.flotskiy.FlotskiyBookShopApp.model.dto.SearchWordDto;
 import com.github.flotskiy.FlotskiyBookShopApp.service.BookService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -14,7 +13,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import java.util.List;
 
 @Controller
-public class PopularPageController {
+public class PopularPageController extends HeaderController {
 
     private final BookService bookService;
 
@@ -26,11 +25,6 @@ public class PopularPageController {
     @ModelAttribute("popularBooksPage")
     public List<BookDto> recentBooks() {
         return bookService.getPopularBooks(0, 20);
-    }
-
-    @ModelAttribute("searchWordDto")
-    public SearchWordDto searchWordDto() {
-        return new SearchWordDto();
     }
 
     @GetMapping("/popular")

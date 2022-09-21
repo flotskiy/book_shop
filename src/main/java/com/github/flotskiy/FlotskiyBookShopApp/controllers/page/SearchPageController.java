@@ -3,7 +3,7 @@ package com.github.flotskiy.FlotskiyBookShopApp.controllers.page;
 import com.github.flotskiy.FlotskiyBookShopApp.exceptions.EmptySearchQueryException;
 import com.github.flotskiy.FlotskiyBookShopApp.model.dto.BookDto;
 import com.github.flotskiy.FlotskiyBookShopApp.model.dto.CountedBooksDto;
-import com.github.flotskiy.FlotskiyBookShopApp.model.dto.SearchWordDto;
+import com.github.flotskiy.FlotskiyBookShopApp.model.dto.HeaderInfoDto;
 import com.github.flotskiy.FlotskiyBookShopApp.service.BookService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -14,7 +14,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Controller
-public class SearchPageController {
+public class SearchPageController extends HeaderController {
 
     private final BookService bookService;
 
@@ -23,34 +23,34 @@ public class SearchPageController {
         this.bookService = bookService;
     }
 
-    @ModelAttribute("searchWordDto")
-    public SearchWordDto searchWordDto() {
-        return new SearchWordDto();
-    }
-
     @ModelAttribute("searchResults")
     public List<BookDto> searchResults() {
         return new ArrayList<>();
     }
 
     @GetMapping(value = {"/search", "/search/{searchWord}"})
-    public String getSearchResults(@PathVariable(value = "searchWord", required = false) SearchWordDto searchWordDto,
+    public String getSearchResults(@PathVariable(value = "searchWord", required = false) HeaderInfoDto headerInfoDto,
                                    Model model) throws EmptySearchQueryException {
-        if (searchWordDto == null) {
+        if (headerInfoDto == null) {
             throw new EmptySearchQueryException("Search with null query parameter is Impossible");
         }
-        model.addAttribute("searchWordDto", searchWordDto);
+        model.addAttribute("headerInfoDto", headerInfoDto);
         model.addAttribute("searchResults",
-                bookService.getPageOfSearchResultBooks(searchWordDto.getExample(), 0, 5).getContent());
-        model.addAttribute("searchResultsSize", bookService.getSearchResultsSize(searchWordDto.getExample()));
+                bookService.getPageOfSearchResultBooks(headerInfoDto.getSearchQuery(), 0, 5).getContent());
+        model.addAttribute("searchResultsSize",
+                bookService.getSearchResultsSize(headerInfoDto.getSearchQuery()));
         return "/search/index";
     }
 
     @GetMapping("/search/page/{searchWord}")
     @ResponseBody
-    public CountedBooksDto getNextSearchPage(@RequestParam("offset") int offset,
-                                             @RequestParam("limit") int limit,
-                                             @PathVariable(value = "searchWord", required = false) SearchWordDto searchWordDto) {
-        return new CountedBooksDto(bookService.getPageOfSearchResultBooks(searchWordDto.getExample(), offset, limit).getContent());
+    public CountedBooksDto getNextSearchPage(
+            @RequestParam("offset") int offset,
+            @RequestParam("limit") int limit,
+            @PathVariable(value = "searchWord", required = false) HeaderInfoDto headerInfoDto
+    ) {
+        return new CountedBooksDto(
+                bookService.getPageOfSearchResultBooks(headerInfoDto.getSearchQuery(), offset, limit).getContent()
+        );
     }
 }

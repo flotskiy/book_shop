@@ -3,7 +3,6 @@ package com.github.flotskiy.FlotskiyBookShopApp.controllers.page;
 import com.github.flotskiy.FlotskiyBookShopApp.model.dto.BookDto;
 import com.github.flotskiy.FlotskiyBookShopApp.model.dto.CountedBooksDto;
 import com.github.flotskiy.FlotskiyBookShopApp.model.dto.GenreDto;
-import com.github.flotskiy.FlotskiyBookShopApp.model.dto.SearchWordDto;
 import com.github.flotskiy.FlotskiyBookShopApp.model.entity.genre.GenreEntity;
 import com.github.flotskiy.FlotskiyBookShopApp.service.BookService;
 import com.github.flotskiy.FlotskiyBookShopApp.service.GenreService;
@@ -15,7 +14,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @Controller
-public class GenresPageController {
+public class GenresPageController extends HeaderController {
 
     private final GenreService genreService;
     private final BookService bookService;
@@ -24,11 +23,6 @@ public class GenresPageController {
     public GenresPageController(GenreService genreService, BookService bookService) {
         this.genreService = genreService;
         this.bookService = bookService;
-    }
-
-    @ModelAttribute("searchWordDto")
-    public SearchWordDto searchWordDto() {
-        return new SearchWordDto();
     }
 
     @ModelAttribute("genresLinks")

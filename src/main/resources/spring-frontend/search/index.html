@@ -22,7 +22,7 @@
           <div class="search">
             <form class="form form_search" action="#" method="post" data-searchlimit="5">
               <input class="search-input" id="querypage" name="querypage" type="text"
-                     th:placeholder="#{header.placeholder}" th:value="${searchWordDto.example}"/>
+                     th:placeholder="#{header.placeholder}" th:value="${headerInfoDto.searchQuery}"/>
               <button class="search-button" type="submit" name="searchpage" id="searchpage" th:text="#{menu.search}">Поиск
               </button>
             </form>
@@ -63,7 +63,7 @@
             <div class="Cards-footer Cards-footer_center">
               <a class="btn btn_primary" href="#"
                  data-refreshshow="search" data-refreshoffset="0" data-refreshlimit="5"
-                 th:attr="data-refreshquery=${searchWordDto.example}" data-refreshquery="Техника"
+                 th:attr="data-refreshquery=${headerInfoDto.searchQuery}" data-refreshquery="Техника"
                  th:text="#{button.more}">Показать еще</a>
             </div>
           </div>

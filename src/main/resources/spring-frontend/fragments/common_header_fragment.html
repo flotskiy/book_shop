@@ -3,20 +3,30 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <body>
     <header class="Header" th:fragment="headFragment (activeMenuItem)">
-        <div class="Header-rowMain">
+        <div class="Header-rowMain" th:object="${headerInfoDto}">
             <div class="wrap">
                 <div class="row">
-                    <div class="row-block Header-logo"><a class="logo" href="/"><img class="logo-image" src="/assets/img/logo.png" alt="logo.png"/><span class="logo-text">BOOKSHOP</span></a>
+                    <div class="row-block Header-logo">
+                        <a class="logo" href="/">
+                            <img class="logo-image" src="/assets/img/logo.png" alt="logo.png"/>
+                            <span class="logo-text">BOOKSHOP</span>
+                        </a>
                     </div>
                     <div class="Header-searchWrap row-block">
-                        <div class="Header-searchLink"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="19" viewBox="0 0 18 19"><g><g><path fill="#b8b8b8" d="M17.812 17.852c.25.268.25.69 0 .948a.622.622 0 0 1-.457.2.64.64 0 0 1-.457-.2l-5.364-5.494a7.07 7.07 0 0 1-4.32 1.47C3.232 14.777 0 11.457 0 7.389 0 3.321 3.232 0 7.214 0c3.983 0 7.214 3.32 7.214 7.388 0 1.94-.74 3.7-1.926 5.015zM7.214 13.44c3.264 0 5.909-2.708 5.909-6.05 0-3.344-2.655-6.052-5.909-6.052-3.264 0-5.908 2.72-5.908 6.051 0 3.332 2.644 6.051 5.908 6.051z"/></g></g></svg>
+                        <div class="Header-searchLink">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="19" viewBox="0 0 18 19">
+                                <g>
+                                    <g>
+                                        <path fill="#b8b8b8" d="M17.812 17.852c.25.268.25.69 0 .948a.622.622 0 0 1-.457.2.64.64 0 0 1-.457-.2l-5.364-5.494a7.07 7.07 0 0 1-4.32 1.47C3.232 14.777 0 11.457 0 7.389 0 3.321 3.232 0 7.214 0c3.983 0 7.214 3.32 7.214 7.388 0 1.94-.74 3.7-1.926 5.015zM7.214 13.44c3.264 0 5.909-2.708 5.909-6.05 0-3.344-2.655-6.052-5.909-6.052-3.264 0-5.908 2.72-5.908 6.051 0 3.332 2.644 6.051 5.908 6.051z"/>
+                                    </g>
+                                </g>
+                            </svg>
                         </div>
                         <div class="Header-search">
                             <div class="search">
-                                <form class="form form_search" action="#" method="post" data-searchlimit="20"
-                                      th:object="${searchWordDto}">
+                                <form class="form form_search" action="#" method="post" data-searchlimit="20">
                                     <input class="search-input" id="query" name="query" type="text"
-                                           th:placeholder="#{header.placeholder}" th:field="*{example}" value=""/>
+                                           th:placeholder="#{header.placeholder}" th:field="*{searchQuery}" value=""/>
                                     <button class="search-button" type="submit" name="search" id="search" th:text="#{menu.search}">Поиск
                                     </button>
                                 </form>
@@ -44,7 +54,7 @@
                                         </g>
                                     </g>
                                 </svg>
-                                <span class="CartBlock-amount">-1</span>
+                                <span class="CartBlock-amount" th:text="*{cartBooksCount}">-1</span>
                             </a>
                             <a class="CartBlock-block" href="/signin.html" th:href="@{/signin}">
                                 <svg class="CartBlock-img" xmlns="http://www.w3.org/2000/svg" width="22" height="23" viewBox="0 0 22 23">

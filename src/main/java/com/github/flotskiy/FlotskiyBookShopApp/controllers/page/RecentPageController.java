@@ -2,7 +2,6 @@ package com.github.flotskiy.FlotskiyBookShopApp.controllers.page;
 
 import com.github.flotskiy.FlotskiyBookShopApp.model.dto.BookDto;
 import com.github.flotskiy.FlotskiyBookShopApp.model.dto.CountedBooksDto;
-import com.github.flotskiy.FlotskiyBookShopApp.model.dto.SearchWordDto;
 import com.github.flotskiy.FlotskiyBookShopApp.service.BookService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -13,7 +12,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 @Controller
-public class RecentPageController {
+public class RecentPageController extends HeaderController {
 
     private final BookService bookService;
     private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");
@@ -26,11 +25,6 @@ public class RecentPageController {
     @ModelAttribute("recentBooksPage")
     public List<BookDto> recentBooks() {
         return bookService.getRecentBooks(0, 20);
-    }
-
-    @ModelAttribute("searchWordDto")
-    public SearchWordDto searchWordDto() {
-        return new SearchWordDto();
     }
 
     @GetMapping("/recent")

@@ -1,7 +1,6 @@
 package com.github.flotskiy.FlotskiyBookShopApp.controllers.page;
 
 import com.github.flotskiy.FlotskiyBookShopApp.model.dto.BookDto;
-import com.github.flotskiy.FlotskiyBookShopApp.model.dto.SearchWordDto;
 import com.github.flotskiy.FlotskiyBookShopApp.service.BookService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -15,18 +14,13 @@ import java.util.Arrays;
 import java.util.List;
 
 @Controller
-public class CartPageController {
+public class CartPageController extends HeaderController {
 
     private final BookService bookService;
 
     @Autowired
     public CartPageController(BookService bookService) {
         this.bookService = bookService;
-    }
-
-    @ModelAttribute("searchWordDto")
-    public SearchWordDto searchWordDto() {
-        return new SearchWordDto();
     }
 
     @ModelAttribute(name = "bookCart")
@@ -64,13 +58,12 @@ public class CartPageController {
             ArrayList<String> cookieBooks = new ArrayList<>(Arrays.asList(cartContents.split("/")));
             cookieBooks.remove(slug);
             Cookie cookie = new Cookie("cartContents", String.join("/", cookieBooks));
-            cookie.setPath("/books");
+            cookie.setPath("/");
             response.addCookie(cookie);
             model.addAttribute("isCartEmpty", false);
         } else {
             model.addAttribute("isCartEmpty", true);
         }
         return "redirect:/books/cart";
-
     }
 }

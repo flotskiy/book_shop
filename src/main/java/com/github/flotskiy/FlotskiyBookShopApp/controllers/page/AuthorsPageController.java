@@ -2,7 +2,6 @@ package com.github.flotskiy.FlotskiyBookShopApp.controllers.page;
 
 import com.github.flotskiy.FlotskiyBookShopApp.model.dto.AuthorDto;
 import com.github.flotskiy.FlotskiyBookShopApp.model.dto.CountedBooksDto;
-import com.github.flotskiy.FlotskiyBookShopApp.model.dto.SearchWordDto;
 import com.github.flotskiy.FlotskiyBookShopApp.model.entity.author.AuthorEntity;
 import com.github.flotskiy.FlotskiyBookShopApp.service.AuthorService;
 import com.github.flotskiy.FlotskiyBookShopApp.service.BookService;
@@ -17,7 +16,7 @@ import java.util.List;
 
 @Controller
 @Api()
-public class AuthorsPageController {
+public class AuthorsPageController extends HeaderController {
 
     private final AuthorService authorService;
     private final BookService bookService;
@@ -26,11 +25,6 @@ public class AuthorsPageController {
     public AuthorsPageController(AuthorService authorService, BookService bookService) {
         this.authorService = authorService;
         this.bookService = bookService;
-    }
-
-    @ModelAttribute("searchWordDto")
-    public SearchWordDto searchWordDto() {
-        return new SearchWordDto();
     }
 
     @GetMapping("/authors")

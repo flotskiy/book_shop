@@ -2,8 +2,6 @@ package com.github.flotskiy.FlotskiyBookShopApp.controllers.page;
 
 import com.github.flotskiy.FlotskiyBookShopApp.model.dto.BookDto;
 import com.github.flotskiy.FlotskiyBookShopApp.model.dto.CountedBooksDto;
-import com.github.flotskiy.FlotskiyBookShopApp.model.dto.SearchWordDto;
-import com.github.flotskiy.FlotskiyBookShopApp.model.entity.book.BookEntity;
 import com.github.flotskiy.FlotskiyBookShopApp.model.entity.book.BookTagEntity;
 import com.github.flotskiy.FlotskiyBookShopApp.service.BookService;
 import com.github.flotskiy.FlotskiyBookShopApp.service.TagService;
@@ -15,7 +13,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @Controller
-public class TagsPageController {
+public class TagsPageController extends HeaderController {
 
     private final BookService bookService;
     private final TagService tagService;
@@ -24,11 +22,6 @@ public class TagsPageController {
     public TagsPageController(BookService bookService, TagService tagService) {
         this.bookService = bookService;
         this.tagService = tagService;
-    }
-
-    @ModelAttribute("searchWordDto")
-    public SearchWordDto searchWordDto() {
-        return new SearchWordDto();
     }
 
     @GetMapping("/tags/{tagSlug}")

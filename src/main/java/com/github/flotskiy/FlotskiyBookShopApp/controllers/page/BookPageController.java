@@ -1,6 +1,5 @@
 package com.github.flotskiy.FlotskiyBookShopApp.controllers.page;
 
-import com.github.flotskiy.FlotskiyBookShopApp.model.dto.SearchWordDto;
 import com.github.flotskiy.FlotskiyBookShopApp.model.entity.book.BookEntity;
 import com.github.flotskiy.FlotskiyBookShopApp.service.BookService;
 import com.github.flotskiy.FlotskiyBookShopApp.service.ResourceStorage;
@@ -23,7 +22,7 @@ import java.util.logging.Logger;
 
 @Controller
 @RequestMapping("/books")
-public class BookPageController {
+public class BookPageController extends HeaderController {
 
     private final BookService bookService;
     private final ResourceStorage storage;
@@ -32,11 +31,6 @@ public class BookPageController {
     public BookPageController(BookService bookService, ResourceStorage storage) {
         this.bookService = bookService;
         this.storage = storage;
-    }
-
-    @ModelAttribute("searchWordDto")
-    public SearchWordDto searchWordDto() {
-        return new SearchWordDto();
     }
 
     @GetMapping("/{slug}")
@@ -81,14 +75,14 @@ public class BookPageController {
     ) {
         if (cartContents == null || cartContents.equals("")) {
             Cookie cookie = new Cookie("cartContents", slug);
-            cookie.setPath("/books");
+            cookie.setPath("/");
             response.addCookie(cookie);
             model.addAttribute("isCartEmpty", false);
         } else if (!cartContents.contains(slug)) {
             StringJoiner joiner = new StringJoiner("/");
             joiner.add(cartContents).add(slug);
             Cookie cookie = new Cookie("cartContents", joiner.toString());
-            cookie.setPath("/books");
+            cookie.setPath("/");
             response.addCookie(cookie);
             model.addAttribute("isCartEmpty", false);
         }

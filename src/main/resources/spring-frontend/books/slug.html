@@ -350,8 +350,10 @@
                 </div>
                 <div class="ProductCard-cost">
                   <span class="ProductCard-titleProp"  th:text="#{page.book.price}">Цена:</span>
-                  <span class="ProductCard-priceOld" th:text="*{price}">₽300</span>
-                  <span class="ProductCard-price" th:text="*{discountPrice}">₽180</span>
+                  <span th:if="${slugBook.discountPrice} lt ${slugBook.price}">
+                    <span class="ProductCard-priceOld" th:text="*{'₽' + price}">₽300</span>
+                  </span>
+                  <span class="ProductCard-price" th:text="*{'₽' + discountPrice}">₽180</span>
                 </div>
                 <!--+div.-info
                 //+div.-cost

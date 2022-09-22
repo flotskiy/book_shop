@@ -22,17 +22,15 @@
           <div class="Cart-product" th:each="book : ${bookCart}">
             <div class="Cart-block Cart-block_row">
               <div class="Cart-block Cart-block_pict">
-                <a class="Cart-pict" href="#">
+                <a class="Cart-pict" href="#" th:href="@{'/books/' + ${book.slug}}">
                   <img class="Cart-img" src="/assets/img/content/main/card.jpg" th:src="${book.image}" alt="card.jpg"/>
                 </a>
               </div>
               <div class="Cart-block Cart-block_row">
                 <div class="Cart-block Cart-block_info">
-                  <div class="Cart-author">
-                    <a href="#" th:text="${book.authors}">Имя автора</a>
-                  </div>
+                  <div class="Cart-author" th:text="${book.authors}">Имя автора</div>
                   <div class="Cart-title">
-                    <a href="#"  th:text="${book.title}">Название книги</a>
+                    <a href="#" th:href="@{'/books/' + ${book.slug}}" th:text="${book.title}">Название книги</a>
                   </div>
                   <div class="Cart-rating">
                     <span class="Rating">
@@ -91,7 +89,7 @@
                         <span class="btn-icon">
                           <img src="/assets/img/icons/heart.svg" alt="heart.svg"/>
                         </span>
-                        <span class="btn-content">Отложить</span>
+                        <span class="btn-content" th:text="#{button.keep}">Отложить</span>
                       </button>
                     </div>
                     <div class="Cart-btn">
@@ -100,29 +98,31 @@
                         <span class="btn-icon">
                           <img src="/assets/img/icons/trash.svg" alt="trash.svg"/>
                         </span>
-                        <span class="btn-content">Удалить</span>
+                        <span class="btn-content" th:text="#{button.del}">Удалить</span>
                       </button>
                     </div>
                   </div>
                 </div>
                 <div class="Cart-block Cart-block_price">
-                  <div class="Cart-priceTitle">Цена:
+                  <div class="Cart-priceTitle" th:text="#{page.book.price}">Цена:
                   </div>
-                  <div class="Cart-price Cart-price_old" th:text="${'₽' + book.price}">-1
+                  <div class="Cart-price Cart-price_old"
+                       th:if="${book.discountPrice} lt ${book.price}" th:text="${'₽' + book.price}">-1
                   </div>
                   <div class="Cart-price" th:text="${'₽' + book.discountPrice}">-1
                   </div>
-                  <div class="Cart-sale" th:text="${'-' + book.discount + '%'}">-1%
+                  <div class="Cart-sale"
+                       th:if="${book.discountPrice} lt ${book.price}" th:text="${'-' + book.discount + '%'}">-1%
                   </div>
                 </div>
               </div>
             </div>
           </div>
-          <div class="Cart-total">
+          <div class="Cart-total" th:if="${not isCartEmpty}">
             <div class="Cart-block Cart-block_total">
-              <strong class="Cart-title">Итого:</strong>
-              <span class="Cart-price">534 р.</span>
-              <span class="Cart-price_old">658 р.</span>
+              <strong class="Cart-title" th:text="#{page.cart.total}">Итого:</strong>
+              <span class="Cart-price" th:text="${'₽' + #aggregates.sum(bookCart.![discountPrice])}">-1 р.</span>
+              <span class="Cart-price_old" th:text="${'₽' + #aggregates.sum(bookCart.![price])}">-1 р.</span>
             </div>
             <div class="Cart-block"><a class="btn btn_success btn_md" href="/order.html" th:text="#{button.buy}">Купить</a>
             </div>

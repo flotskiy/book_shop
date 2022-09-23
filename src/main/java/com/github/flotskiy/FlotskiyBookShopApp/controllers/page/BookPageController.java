@@ -2,6 +2,7 @@ package com.github.flotskiy.FlotskiyBookShopApp.controllers.page;
 
 import com.github.flotskiy.FlotskiyBookShopApp.model.entity.book.BookEntity;
 import com.github.flotskiy.FlotskiyBookShopApp.service.BookService;
+import com.github.flotskiy.FlotskiyBookShopApp.service.CookieService;
 import com.github.flotskiy.FlotskiyBookShopApp.service.ResourceStorage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ByteArrayResource;
@@ -14,22 +15,27 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.nio.file.Path;
-import java.util.StringJoiner;
+import java.util.Arrays;
+import java.util.Map;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 @Controller
 @RequestMapping("/books")
 public class BookPageController extends HeaderController {
 
     private final BookService bookService;
+    private final CookieService cookieService;
     private final ResourceStorage storage;
 
     @Autowired
-    public BookPageController(BookService bookService, ResourceStorage storage) {
+    public BookPageController(BookService bookService, CookieService cookieService, ResourceStorage storage) {
         this.bookService = bookService;
+        this.cookieService = cookieService;
         this.storage = storage;
     }
 
@@ -68,24 +74,33 @@ public class BookPageController extends HeaderController {
 
     @PostMapping("/changeBookStatus/{slug}")
     public String handleChangeBookStatus(
-            @PathVariable("slug") String slug,
-            @CookieValue(name = "cartContents", required = false) String cartContents,
+            @PathVariable(value = "slug") String slug,
+            @RequestParam("status") String status,
+            HttpServletRequest request,
             HttpServletResponse response,
             Model model
     ) {
-        if (cartContents == null || cartContents.equals("")) {
-            Cookie cookie = new Cookie("cartContents", slug);
-            cookie.setPath("/");
-            response.addCookie(cookie);
-            model.addAttribute("isCartEmpty", false);
-        } else if (!cartContents.contains(slug)) {
-            StringJoiner joiner = new StringJoiner("/");
-            joiner.add(cartContents).add(slug);
-            Cookie cookie = new Cookie("cartContents", joiner.toString());
-            cookie.setPath("/");
-            response.addCookie(cookie);
-            model.addAttribute("isCartEmpty", false);
+        String[] slugs = slug.split(",");
+        String newCookie = slug.replaceAll(",", "/");
+        String cartContents = "";
+        String keptContents = "";
+        Cookie[] cookiesFromRequest = request.getCookies();
+
+        if (cookiesFromRequest != null) {
+            Map<String, String> cookiesMap = Arrays.stream(cookiesFromRequest)
+                    .collect(Collectors.toMap(Cookie::getName, Cookie::getValue));
+            cartContents = cookiesMap.get("cartContents");
+            keptContents = cookiesMap.get("keptContents");
         }
-        return "redirect:/books/" + slug;
+
+        if (status.equals("CART")) {
+            cookieService.handleCartCookie(cartContents, newCookie, response, model);
+        } else if (status.equals("KEPT")) {
+            cookieService.handleKeptCookie(keptContents, newCookie, response, model);
+        }
+        if (slugs.length == 1) {
+            return "redirect:/books/" + slug;
+        }
+        return "redirect:/books/postponed";
     }
 }

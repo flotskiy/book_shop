@@ -2,6 +2,7 @@ package com.github.flotskiy.FlotskiyBookShopApp.controllers.page;
 
 import com.github.flotskiy.FlotskiyBookShopApp.model.dto.BookDto;
 import com.github.flotskiy.FlotskiyBookShopApp.service.BookService;
+import com.github.flotskiy.FlotskiyBookShopApp.util.CustomStringHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -17,10 +18,12 @@ import java.util.List;
 public class CartPageController extends HeaderController {
 
     private final BookService bookService;
+    private final CustomStringHandler customStringHandler;
 
     @Autowired
-    public CartPageController(BookService bookService) {
+    public CartPageController(BookService bookService, CustomStringHandler customStringHandler) {
         this.bookService = bookService;
+        this.customStringHandler = customStringHandler;
     }
 
     @ModelAttribute(name = "bookCart")
@@ -37,12 +40,9 @@ public class CartPageController extends HeaderController {
             model.addAttribute("isCartEmpty", true);
         } else {
             model.addAttribute("isCartEmpty", false);
-            cartContents = cartContents.startsWith("/") ? cartContents.substring(1) : cartContents;
-            cartContents =
-                    cartContents.endsWith("/") ? cartContents.substring(0, cartContents.length() - 1) : cartContents;
-            String[] cookieSlugs = cartContents.split("/");
-            List<BookDto> booksFromCookiesSlugs = bookService.getBooksBySlugIn(cookieSlugs);
-            model.addAttribute("bookCart",booksFromCookiesSlugs);
+            String[] cookiesSlugs = customStringHandler.getCookieSlugs(cartContents);
+            List<BookDto> booksFromCookiesSlugs = bookService.getBooksBySlugIn(List.of(cookiesSlugs));
+            model.addAttribute("bookCart", booksFromCookiesSlugs);
         }
         return "/cart";
     }

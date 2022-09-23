@@ -135,7 +135,7 @@ public class BookService {
         return bookEntities.map(this::convertBookEntityToBookDto);
     }
 
-    public List<BookDto> getBooksBySlugIn(String[] slugs) {
+    public List<BookDto> getBooksBySlugIn(List<String> slugs) {
         return convertBookEntitiesToBookDtoList(bookRepository.findBookEntitiesBySlugIn(slugs));
     }
 

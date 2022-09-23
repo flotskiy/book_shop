@@ -48,11 +48,6 @@ public class MainPageController extends HeaderController {
         return "/index";
     }
 
-    @GetMapping("/postponed")
-    public String postponedPage() {
-        return "/postponed";
-    }
-
     @GetMapping("/books/card/recommended")
     @ResponseBody
     public CountedBooksDto getRecommendedBooksPage(@RequestParam("offset") int offset, @RequestParam("limit") int limit) {

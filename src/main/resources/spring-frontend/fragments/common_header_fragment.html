@@ -36,7 +36,7 @@
                     </div>
                     <div class="row-block Header-cart">
                         <div class="CartBlock">
-                            <a class="CartBlock-block" href="/postponed" th:href="@{/postponed}">
+                            <a class="CartBlock-block" href="/postponed" th:href="@{/books/postponed}">
                                 <svg class="CartBlock-img" xmlns="http://www.w3.org/2000/svg" height="23" width="23" viewBox="0 0 512 512">
                                     <g>
                                         <g>
@@ -44,9 +44,9 @@
                                         </g>
                                     </g>
                                 </svg>
-                                <span class="CartBlock-amount">0</span>
+                                <span class="CartBlock-amount" th:text="*{keptBooksCount}">-1</span>
                             </a>
-                            <a class="CartBlock-block" href="/cart.html" th:href="@{/books/cart}">
+                            <a class="CartBlock-block" href="/cart" th:href="@{/books/cart}">
                                 <svg class="CartBlock-img" xmlns="http://www.w3.org/2000/svg" width="30" height="23" viewBox="0 0 30 23">
                                     <g>
                                         <g>

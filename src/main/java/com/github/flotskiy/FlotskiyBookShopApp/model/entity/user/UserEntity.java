@@ -1,7 +1,7 @@
 package com.github.flotskiy.FlotskiyBookShopApp.model.entity.user;
 
 import com.github.flotskiy.FlotskiyBookShopApp.model.entity.book.BookEntity;
-import com.github.flotskiy.FlotskiyBookShopApp.model.entity.book.review.BookReviewEntity;
+import com.github.flotskiy.FlotskiyBookShopApp.model.entity.book.review.BookReviewLikeEntity;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -47,6 +47,12 @@ public class UserEntity {
             joinColumns = {@JoinColumn(name = "user_id")},
             inverseJoinColumns = {@JoinColumn(name = "book_id")})
     private Set<BookEntity> booksReviewed;
+
+    @ManyToMany(mappedBy="ratedByUserEntities")
+    private Set<BookEntity> booksRated;
+
+    @OneToMany(mappedBy = "userEntityLiked")
+    private Set<BookReviewLikeEntity> bookReviewLikeEntities;
 
     public int getId() {
         return id;
@@ -118,5 +124,21 @@ public class UserEntity {
 
     public void setBooksReviewed(Set<BookEntity> booksReviewed) {
         this.booksReviewed = booksReviewed;
+    }
+
+    public Set<BookEntity> getBooksRated() {
+        return booksRated;
+    }
+
+    public void setBooksRated(Set<BookEntity> booksRated) {
+        this.booksRated = booksRated;
+    }
+
+    public Set<BookReviewLikeEntity> getBookReviewLikeEntities() {
+        return bookReviewLikeEntities;
+    }
+
+    public void setBookReviewLikeEntities(Set<BookReviewLikeEntity> bookReviewLikeEntities) {
+        this.bookReviewLikeEntities = bookReviewLikeEntities;
     }
 }

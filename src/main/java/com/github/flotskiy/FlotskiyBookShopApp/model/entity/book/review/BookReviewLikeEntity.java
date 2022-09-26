@@ -1,5 +1,7 @@
 package com.github.flotskiy.FlotskiyBookShopApp.model.entity.book.review;
 
+import com.github.flotskiy.FlotskiyBookShopApp.model.entity.user.UserEntity;
+
 import javax.persistence.*;
 import java.time.LocalDateTime;
 
@@ -8,43 +10,54 @@ import java.time.LocalDateTime;
 public class BookReviewLikeEntity {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+//    @GeneratedValue(strategy = GenerationType.IDENTITY) TODO: REMOVE COMMENT LATER
+    private Integer id;
 
     @Column(name = "review_id", columnDefinition = "INT NOT NULL")
-    private int reviewId;
+    private Integer reviewId;
 
-    @Column(name = "user_id", columnDefinition = "INT NOT NULL")
-    private int userId;
+    @ManyToOne
+    @JoinColumn(name = "user_id", columnDefinition = "INT NOT NULL")
+    private UserEntity userEntityLiked;
 
     @Column(columnDefinition = "TIMESTAMP NOT NULL")
     private LocalDateTime time;
 
     @Column(columnDefinition = "SMALLINT NOT NULL")
-    private short value;
+    private Short value;
 
-    public int getId() {
+    public BookReviewLikeEntity() {}
+
+    public BookReviewLikeEntity(Integer id, Integer reviewId, UserEntity userEntityLiked, LocalDateTime time, Short value) {
+        this.id = id;
+        this.reviewId = reviewId;
+        this.userEntityLiked = userEntityLiked;
+        this.time = time;
+        this.value = value;
+    }
+
+    public Integer getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 
-    public int getReviewId() {
+    public Integer getReviewId() {
         return reviewId;
     }
 
-    public void setReviewId(int reviewId) {
+    public void setReviewId(Integer reviewId) {
         this.reviewId = reviewId;
     }
 
-    public int getUserId() {
-        return userId;
+    public UserEntity getUserEntityLiked() {
+        return userEntityLiked;
     }
 
-    public void setUserId(int userId) {
-        this.userId = userId;
+    public void setUserEntityLiked(UserEntity userEntityLikes) {
+        this.userEntityLiked = userEntityLikes;
     }
 
     public LocalDateTime getTime() {
@@ -55,11 +68,22 @@ public class BookReviewLikeEntity {
         this.time = time;
     }
 
-    public short getValue() {
+    public Short getValue() {
         return value;
     }
 
-    public void setValue(short value) {
+    public void setValue(Short value) {
         this.value = value;
+    }
+
+    @Override
+    public String toString() {
+        return "BookReviewLikeEntity{" +
+                "id=" + id +
+                ", reviewId=" + reviewId +
+                ", userEntityLiked=" + userEntityLiked +
+                ", time=" + time +
+                ", value=" + value +
+                '}';
     }
 }

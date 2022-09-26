@@ -6,9 +6,7 @@ import com.github.flotskiy.FlotskiyBookShopApp.repository.AuthorRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -33,12 +31,15 @@ public class AuthorService {
 
     public Map<String, List<AuthorDto>> getAuthorsGroupedMap() {
         List<AuthorDto> authorDtoList = getAuthorsMap();
-        return authorDtoList.stream()
-                .peek(authorDto -> {
-                    String[] nameArray = authorDto.getName().split(" ", 2);
-                    authorDto.setName(nameArray[0] + " " + nameArray[1]);
-                })
-                .collect(Collectors.groupingBy((AuthorDto a) -> a.getName().substring(0, 1).toUpperCase()));
+        Map<String, List<AuthorDto>> result =
+                authorDtoList.stream()
+                        .peek(authorDto -> {
+                            String[] nameArray = authorDto.getName().split(" ", 2);
+                            authorDto.setName(nameArray[1] + " " + nameArray[0]);
+                        })
+                        .collect(Collectors.groupingBy((AuthorDto a) -> a.getName().substring(0, 1).toUpperCase()));
+        result.values().forEach(list -> list.sort(Comparator.comparing(AuthorDto::getName)));
+        return new TreeMap<>(result);
     }
 
     public List<AuthorEntity> getAuthorsEntity() {

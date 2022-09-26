@@ -86,6 +86,12 @@ public class BookEntity {
     @OneToMany(mappedBy = "bookEntity")
     private Set<BookFileEntity> bookFileEntities;
 
+    @ManyToMany(cascade = {CascadeType.ALL})
+    @JoinTable(name = "rating",
+            joinColumns = {@JoinColumn(name = "book_id")},
+            inverseJoinColumns = {@JoinColumn(name = "user_id")})
+    private Set<UserEntity> ratedByUserEntities;
+
     public int getId() {
         return id;
     }
@@ -220,5 +226,13 @@ public class BookEntity {
 
     public void setBookFileEntities(Set<BookFileEntity> bookFileEntities) {
         this.bookFileEntities = bookFileEntities;
+    }
+
+    public Set<UserEntity> getRatedByUserEntities() {
+        return ratedByUserEntities;
+    }
+
+    public void setRatedByUserEntities(Set<UserEntity> ratedByUserEntities) {
+        this.ratedByUserEntities = ratedByUserEntities;
     }
 }

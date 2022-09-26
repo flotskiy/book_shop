@@ -2,6 +2,8 @@ package com.github.flotskiy.FlotskiyBookShopApp.service;
 
 import com.github.flotskiy.FlotskiyBookShopApp.exceptions.BookstoreApiWrongParameterException;
 import com.github.flotskiy.FlotskiyBookShopApp.model.dto.*;
+import com.github.flotskiy.FlotskiyBookShopApp.model.dto.book.page.BookFileDto;
+import com.github.flotskiy.FlotskiyBookShopApp.model.dto.book.page.BookSlugDto;
 import com.github.flotskiy.FlotskiyBookShopApp.model.entity.author.AuthorEntity;
 import com.github.flotskiy.FlotskiyBookShopApp.model.entity.book.BookEntity;
 import com.github.flotskiy.FlotskiyBookShopApp.model.entity.book.BookTagEntity;
@@ -12,7 +14,11 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.ui.Model;
 
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
@@ -25,18 +31,24 @@ public class BookService {
     private final BooksRatingAndPopularityService booksRatingAndPopularityService;
     private final TagService tagService;
     private final AuthorService authorService;
+    private final CookieService cookieService;
+    private final ReviewAndLikeService reviewAndLikeService;
 
     @Autowired
     public BookService(
             BookRepository bookRepository,
             BooksRatingAndPopularityService booksRatingAndPopularityService,
             TagService tagService,
-            AuthorService authorService
+            AuthorService authorService,
+            CookieService cookieService,
+            ReviewAndLikeService reviewAndLikeService
     ) {
         this.bookRepository = bookRepository;
         this.booksRatingAndPopularityService = booksRatingAndPopularityService;
         this.tagService = tagService;
         this.authorService = authorService;
+        this.cookieService = cookieService;
+        this.reviewAndLikeService = reviewAndLikeService;
     }
 
     public List<BookDto> getAllBooksData() {
@@ -104,12 +116,12 @@ public class BookService {
     }
 
     public List<BookDto> getPopularBooks(int offset, int limit) {
-        List<RatingDto> ratingDtoList = booksRatingAndPopularityService.getAllBooksRating();
-        List<Integer> bookIds = booksRatingAndPopularityService.getPopularBookIds(ratingDtoList, offset, limit);
+        List<PopularityDto> popularityDtoList = booksRatingAndPopularityService.getAllPopularBooks();
+        List<Integer> bookIds = booksRatingAndPopularityService.getPopularBookIds(popularityDtoList, offset, limit);
         List<BookEntity> bookEntities = bookRepository.findBookEntitiesByIdIsIn(bookIds);
         List<BookDto> result = new ArrayList<>();
         for (BookEntity book : bookEntities) {
-            result.add(convertBookEntityToBookDtoWithActualRatingValue(book, ratingDtoList));
+            result.add(convertBookEntityToBookDtoWithPopularityValue(book, popularityDtoList));
         }
         result.sort(Comparator.comparing(BookDto::getRating).reversed());
         return result;
@@ -136,7 +148,7 @@ public class BookService {
     }
 
     public List<BookDto> getBooksBySlugIn(List<String> slugs) {
-        return convertBookEntitiesToBookDtoList(bookRepository.findBookEntitiesBySlugIn(slugs));
+        return convertBookEntitiesToBookDtoWithRatingList(bookRepository.findBookEntitiesBySlugIn(slugs));
     }
 
     public BookEntity getBookEntityBySlug(String slug) {
@@ -149,7 +161,7 @@ public class BookService {
 
     public BookSlugDto getBookSlugBySlug(String slug) {
         BookEntity bookEntity = bookRepository.findBookEntityBySlug(slug);
-        BookSlugDto bookSlugDto = new BookSlugDto(convertBookEntityToBookDto(bookEntity));
+        BookSlugDto bookSlugDto = new BookSlugDto(convertBookEntityToBookDtoWithRatingValue(bookEntity));
         bookSlugDto.setDescription(bookEntity.getDescription());
         Set<BookTagEntity> tagEntities = bookEntity.getBookTags();
         Set<AuthorDto> authorDtos = bookEntity.getAuthorEntities().stream()
@@ -159,6 +171,7 @@ public class BookService {
         Set<BookFileDto> bookFileDtos = bookEntity.getBookFileEntities().stream()
                 .map(this::convertBookFileEntityToBookFileDto).collect(Collectors.toSet());
         bookSlugDto.setBookFileDtos(bookFileDtos);
+        bookSlugDto.setBookReviewDtos(reviewAndLikeService.getBookReviewDtos(bookEntity.getId()));
         return bookSlugDto;
     }
 
@@ -176,10 +189,39 @@ public class BookService {
         return to;
     }
 
+    public void changeBookStatus(
+            String slug, String status, HttpServletRequest request, HttpServletResponse response, Model model
+    ) {
+        String newCookie = slug.replaceAll(",", "/");
+        String cartContents = "";
+        String keptContents = "";
+        Cookie[] cookiesFromRequest = request.getCookies();
+
+        if (cookiesFromRequest != null) {
+            Map<String, String> cookiesMap = Arrays.stream(cookiesFromRequest)
+                    .collect(Collectors.toMap(Cookie::getName, Cookie::getValue));
+            cartContents = cookiesMap.get("cartContents");
+            keptContents = cookiesMap.get("keptContents");
+        }
+        if (status.equals("CART")) {
+            cookieService.handleCartCookie(cartContents, newCookie, response, model);
+        } else if (status.equals("KEPT")) {
+            cookieService.handleKeptCookie(keptContents, newCookie, response, model);
+        }
+    }
+
     private List<BookDto> convertBookEntitiesToBookDtoList(List<BookEntity> booksListToConvert) {
         List<BookDto> booksDtoList = new ArrayList<>();
         for (BookEntity book : booksListToConvert) {
             booksDtoList.add(convertBookEntityToBookDto(book));
+        }
+        return booksDtoList;
+    }
+
+    private List<BookDto> convertBookEntitiesToBookDtoWithRatingList(List<BookEntity> booksListToConvert) {
+        List<BookDto> booksDtoList = new ArrayList<>();
+        for (BookEntity book : booksListToConvert) {
+            booksDtoList.add(convertBookEntityToBookDtoWithRatingValue(book));
         }
         return booksDtoList;
     }
@@ -219,13 +261,21 @@ public class BookService {
         return bookDto;
     }
 
-    private BookDto convertBookEntityToBookDtoWithActualRatingValue(BookEntity bookEntity, List<RatingDto> ratingDtoList) {
+    private BookDto convertBookEntityToBookDtoWithRatingValue(BookEntity bookEntity) {
+        BookDto bookDto = convertBookEntityToBookDto(bookEntity);
+        short rating = booksRatingAndPopularityService.calculateBookRating(bookEntity.getId()).shortValue();
+        bookDto.setRating(rating);
+        return bookDto;
+    }
+
+    private BookDto convertBookEntityToBookDtoWithPopularityValue(BookEntity bookEntity,
+                                                                  List<PopularityDto> popularityDtoList) {
         BookDto bookDto = convertBookEntityToBookDto(bookEntity);
 
         short rating = 0;
-        for (RatingDto ratingDto : ratingDtoList) {
-            if (bookEntity.getId() == ratingDto.getBookId()) {
-                rating = ratingDto.getRating();
+        for (PopularityDto popularityDto : popularityDtoList) {
+            if (bookEntity.getId() == popularityDto.getBookId()) {
+                rating = popularityDto.getPopularity();
             }
         }
         bookDto.setRating(rating);

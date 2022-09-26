@@ -1,6 +1,6 @@
 package com.github.flotskiy.FlotskiyBookShopApp.service;
 
-import com.github.flotskiy.FlotskiyBookShopApp.model.dto.TagDto;
+import com.github.flotskiy.FlotskiyBookShopApp.model.dto.book.page.TagDto;
 import com.github.flotskiy.FlotskiyBookShopApp.model.entity.book.BookTagEntity;
 import com.github.flotskiy.FlotskiyBookShopApp.repository.TagRepository;
 import org.springframework.beans.factory.annotation.Autowired;

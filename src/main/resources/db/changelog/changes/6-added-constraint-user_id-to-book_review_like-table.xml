@@ -1,0 +1,427 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext" xmlns:pro="http://www.liquibase.org/xml/ns/pro" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd http://www.liquibase.org/xml/ns/pro http://www.liquibase.org/xml/ns/pro/liquibase-pro-latest.xsd http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+    <changeSet author="Александр Флотский (generated)" id="1664396138376-1">
+        <createTable tableName="author">
+            <column autoIncrement="true" name="id" type="INTEGER">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="author_pkey"/>
+            </column>
+            <column name="description" type="TEXT"/>
+            <column name="name" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="photo" type="VARCHAR(255)"/>
+            <column name="slug" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="Александр Флотский (generated)" id="1664396138376-2">
+        <createTable tableName="balance_transaction">
+            <column name="id" type="INTEGER">
+                <constraints nullable="false"/>
+            </column>
+            <column name="book_id" type="INTEGER">
+                <constraints nullable="false"/>
+            </column>
+            <column name="description" type="TEXT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="time" type="TIMESTAMP WITHOUT TIME ZONE">
+                <constraints nullable="false"/>
+            </column>
+            <column autoIncrement="true" name="user_id" type="INTEGER">
+                <constraints nullable="false"/>
+            </column>
+            <column defaultValueNumeric="0" name="value" type="INTEGER">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="Александр Флотский (generated)" id="1664396138376-3">
+        <createTable tableName="book">
+            <column autoIncrement="true" name="id" type="INTEGER">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="book_pkey"/>
+            </column>
+            <column name="description" type="TEXT"/>
+            <column defaultValueNumeric="0" name="discount" type="SMALLINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="image" type="VARCHAR(255)"/>
+            <column name="is_bestseller" type="SMALLINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="price" type="INTEGER">
+                <constraints nullable="false"/>
+            </column>
+            <column name="pub_date" type="date">
+                <constraints nullable="false"/>
+            </column>
+            <column name="slug" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="title" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="Александр Флотский (generated)" id="1664396138376-4">
+        <createTable tableName="book2author">
+            <column name="id" type="INTEGER">
+                <constraints nullable="false"/>
+            </column>
+            <column name="author_id" type="INTEGER">
+                <constraints nullable="false"/>
+            </column>
+            <column autoIncrement="true" name="book_id" type="INTEGER">
+                <constraints nullable="false"/>
+            </column>
+            <column defaultValueNumeric="0" name="sort_index" type="INTEGER">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="Александр Флотский (generated)" id="1664396138376-5">
+        <createTable tableName="book2genre">
+            <column name="id" type="INTEGER">
+                <constraints nullable="false"/>
+            </column>
+            <column autoIncrement="true" name="book_id" type="INTEGER">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="book2genre_pkey"/>
+            </column>
+            <column name="genre_id" type="INTEGER">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="book2genre_pkey"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="Александр Флотский (generated)" id="1664396138376-6">
+        <createTable tableName="book2user">
+            <column name="id" type="INTEGER">
+                <constraints nullable="false"/>
+            </column>
+            <column autoIncrement="true" name="book_id" type="INTEGER">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="book2user_pkey"/>
+            </column>
+            <column name="time" type="TIMESTAMP WITHOUT TIME ZONE">
+                <constraints nullable="false"/>
+            </column>
+            <column name="type_id" type="INTEGER">
+                <constraints nullable="false"/>
+            </column>
+            <column name="user_id" type="INTEGER">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="book2user_pkey"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="Александр Флотский (generated)" id="1664396138376-7">
+        <createTable tableName="book2user_type">
+            <column autoIncrement="true" name="id" type="INTEGER">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="book2user_type_pkey"/>
+            </column>
+            <column name="code" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="name" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="Александр Флотский (generated)" id="1664396138376-8">
+        <createTable tableName="book_file">
+            <column autoIncrement="true" name="id" type="INTEGER">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="book_file_pkey"/>
+            </column>
+            <column name="hash" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="path" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="type_id" type="INTEGER">
+                <constraints nullable="false"/>
+            </column>
+            <column name="book_id" type="INTEGER"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="Александр Флотский (generated)" id="1664396138376-9">
+        <createTable tableName="book_file_type">
+            <column autoIncrement="true" name="id" type="INTEGER">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="book_file_type_pkey"/>
+            </column>
+            <column name="description" type="TEXT"/>
+            <column name="name" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="Александр Флотский (generated)" id="1664396138376-10">
+        <createTable tableName="book_review">
+            <column name="id" type="INTEGER">
+                <constraints nullable="false"/>
+            </column>
+            <column name="book_id" type="INTEGER">
+                <constraints nullable="false"/>
+            </column>
+            <column name="text" type="TEXT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="time" type="TIMESTAMP WITHOUT TIME ZONE">
+                <constraints nullable="false"/>
+            </column>
+            <column autoIncrement="true" name="user_id" type="INTEGER">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="Александр Флотский (generated)" id="1664396138376-11">
+        <createTable tableName="book_review_like">
+            <column autoIncrement="true" name="id" type="INTEGER">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="book_review_like_pkey"/>
+            </column>
+            <column name="review_id" type="INTEGER">
+                <constraints nullable="false"/>
+            </column>
+            <column name="time" type="TIMESTAMP WITHOUT TIME ZONE">
+                <constraints nullable="false"/>
+            </column>
+            <column name="value" type="SMALLINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="user_id" type="INTEGER">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="Александр Флотский (generated)" id="1664396138376-12">
+        <createTable tableName="document">
+            <column autoIncrement="true" name="id" type="INTEGER">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="document_pkey"/>
+            </column>
+            <column name="slug" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column defaultValueNumeric="0" name="sort_index" type="INTEGER">
+                <constraints nullable="false"/>
+            </column>
+            <column name="text" type="TEXT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="title" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="Александр Флотский (generated)" id="1664396138376-13">
+        <createTable tableName="faq">
+            <column autoIncrement="true" name="id" type="INTEGER">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="faq_pkey"/>
+            </column>
+            <column name="answer" type="TEXT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="question" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column defaultValueNumeric="0" name="sort_index" type="INTEGER">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="Александр Флотский (generated)" id="1664396138376-14">
+        <createTable tableName="file_download">
+            <column name="id" type="INTEGER">
+                <constraints nullable="false"/>
+            </column>
+            <column name="book_id" type="INTEGER">
+                <constraints nullable="false"/>
+            </column>
+            <column defaultValueNumeric="1" name="count" type="INTEGER">
+                <constraints nullable="false"/>
+            </column>
+            <column autoIncrement="true" name="user_id" type="INTEGER">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="Александр Флотский (generated)" id="1664396138376-15">
+        <createTable tableName="genre">
+            <column autoIncrement="true" name="id" type="INTEGER">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="genre_pkey"/>
+            </column>
+            <column name="name" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="parent_id" type="INTEGER"/>
+            <column name="slug" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="Александр Флотский (generated)" id="1664396138376-16">
+        <createTable tableName="message">
+            <column autoIncrement="true" name="id" type="INTEGER">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="message_pkey"/>
+            </column>
+            <column name="email" type="VARCHAR(255)"/>
+            <column name="name" type="VARCHAR(255)"/>
+            <column name="subject" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="text" type="TEXT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="time" type="TIMESTAMP WITHOUT TIME ZONE">
+                <constraints nullable="false"/>
+            </column>
+            <column name="user_id" type="INTEGER"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="Александр Флотский (generated)" id="1664396138376-17">
+        <createTable tableName="tag">
+            <column autoIncrement="true" name="id" type="INTEGER">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="tag_pkey"/>
+            </column>
+            <column name="slug" type="VARCHAR(255)"/>
+            <column name="title" type="VARCHAR(255)"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="Александр Флотский (generated)" id="1664396138376-18">
+        <createTable tableName="tag2book">
+            <column name="id" type="INTEGER">
+                <constraints nullable="false"/>
+            </column>
+            <column name="book_id" type="INTEGER">
+                <constraints nullable="false"/>
+            </column>
+            <column autoIncrement="true" name="tag_id" type="INTEGER">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="Александр Флотский (generated)" id="1664396138376-19">
+        <createTable tableName="user_contact">
+            <column autoIncrement="true" name="id" type="INTEGER">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="user_contact_pkey"/>
+            </column>
+            <column name="approved" type="SMALLINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="code" type="VARCHAR(255)"/>
+            <column name="code_time" type="TIMESTAMP WITHOUT TIME ZONE"/>
+            <column name="code_trails" type="INTEGER"/>
+            <column name="contact" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="type" type="INTEGER"/>
+            <column name="user_id" type="INTEGER">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="Александр Флотский (generated)" id="1664396138376-20">
+        <createTable tableName="users">
+            <column autoIncrement="true" name="id" type="INTEGER">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="users_pkey"/>
+            </column>
+            <column defaultValueNumeric="0" name="balance" type="INTEGER">
+                <constraints nullable="false"/>
+            </column>
+            <column name="hash" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="name" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="reg_time" type="TIMESTAMP WITHOUT TIME ZONE">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="Александр Флотский (generated)" id="1664396138376-21">
+        <createSequence cacheSize="1" cycle="false" dataType="bigint" incrementBy="1" maxValue="9223372036854775807" minValue="1" sequenceName="hibernate_sequence" startValue="1"/>
+    </changeSet>
+    <changeSet author="Александр Флотский (generated)" id="1664396138376-22">
+        <createTable tableName="rating">
+            <column name="id" type="INTEGER">
+                <constraints nullable="false"/>
+            </column>
+            <column name="book_id" type="INTEGER">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="rating_pkey"/>
+            </column>
+            <column name="rating" type="SMALLINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="user_id" type="INTEGER">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="rating_pkey"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="Александр Флотский (generated)" id="1664396138376-23">
+        <addPrimaryKey columnNames="user_id, book_id" constraintName="balance_transaction_pkey" tableName="balance_transaction"/>
+    </changeSet>
+    <changeSet author="Александр Флотский (generated)" id="1664396138376-24">
+        <addPrimaryKey columnNames="book_id, author_id" constraintName="book2author_pkey" tableName="book2author"/>
+    </changeSet>
+    <changeSet author="Александр Флотский (generated)" id="1664396138376-25">
+        <addPrimaryKey columnNames="user_id, book_id" constraintName="book_review_pkey" tableName="book_review"/>
+    </changeSet>
+    <changeSet author="Александр Флотский (generated)" id="1664396138376-26">
+        <addPrimaryKey columnNames="user_id, book_id" constraintName="file_download_pkey" tableName="file_download"/>
+    </changeSet>
+    <changeSet author="Александр Флотский (generated)" id="1664396138376-27">
+        <addPrimaryKey columnNames="tag_id, book_id" constraintName="tag2book_pkey" tableName="tag2book"/>
+    </changeSet>
+    <changeSet author="Александр Флотский (generated)" id="1664396138376-28">
+        <addForeignKeyConstraint baseColumnNames="user_id" baseTableName="book2user" constraintName="fk1i8i82uo8kbv1wepiujenmj7x" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="users" validate="true"/>
+    </changeSet>
+    <changeSet author="Александр Флотский (generated)" id="1664396138376-29">
+        <addForeignKeyConstraint baseColumnNames="book_id" baseTableName="book_review" constraintName="fk29oatdl4f30mtg65oxo1nkmjg" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="book" validate="true"/>
+    </changeSet>
+    <changeSet author="Александр Флотский (generated)" id="1664396138376-30">
+        <addForeignKeyConstraint baseColumnNames="book_id" baseTableName="book2user" constraintName="fk7cv34daf9pi5ie147slv010b3" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="book" validate="true"/>
+    </changeSet>
+    <changeSet author="Александр Флотский (generated)" id="1664396138376-31">
+        <addForeignKeyConstraint baseColumnNames="book_id" baseTableName="rating" constraintName="fk7y1acs6la7vkgb5ulm44729sc" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="book" validate="true"/>
+    </changeSet>
+    <changeSet author="Александр Флотский (generated)" id="1664396138376-32">
+        <addForeignKeyConstraint baseColumnNames="book_id" baseTableName="tag2book" constraintName="fk8j295ey1smf1206yejrfv69lu" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="book" validate="true"/>
+    </changeSet>
+    <changeSet author="Александр Флотский (generated)" id="1664396138376-33">
+        <addForeignKeyConstraint baseColumnNames="book_id" baseTableName="book_file" constraintName="fk9hhnrtr3w54i3cxuv1q6gjdbo" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="book" validate="true"/>
+    </changeSet>
+    <changeSet author="Александр Флотский (generated)" id="1664396138376-34">
+        <addForeignKeyConstraint baseColumnNames="book_id" baseTableName="book2author" constraintName="fkafij5snytuqywyya5gj5r30l3" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="book" validate="true"/>
+    </changeSet>
+    <changeSet author="Александр Флотский (generated)" id="1664396138376-35">
+        <addForeignKeyConstraint baseColumnNames="user_id" baseTableName="book_review_like" constraintName="fkbh4qufg71ntnx2v11gy8ldc5f" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="users" validate="true"/>
+    </changeSet>
+    <changeSet author="Александр Флотский (generated)" id="1664396138376-36">
+        <addForeignKeyConstraint baseColumnNames="author_id" baseTableName="book2author" constraintName="fkcdamvjmc66dxs94gpco2g5yyb" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="author" validate="true"/>
+    </changeSet>
+    <changeSet author="Александр Флотский (generated)" id="1664396138376-37">
+        <addForeignKeyConstraint baseColumnNames="book_id" baseTableName="file_download" constraintName="fkckyk51qg1y0buyh6pe7uwcw8w" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="book" validate="true"/>
+    </changeSet>
+    <changeSet author="Александр Флотский (generated)" id="1664396138376-38">
+        <addForeignKeyConstraint baseColumnNames="book_id" baseTableName="book2genre" constraintName="fkdyiaf682r8d022a3gi1q16ypw" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="book" validate="true"/>
+    </changeSet>
+    <changeSet author="Александр Флотский (generated)" id="1664396138376-39">
+        <addForeignKeyConstraint baseColumnNames="user_id" baseTableName="file_download" constraintName="fkelm7ats7ftrgyvfn8a1xwhin9" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="users" validate="true"/>
+    </changeSet>
+    <changeSet author="Александр Флотский (generated)" id="1664396138376-40">
+        <addForeignKeyConstraint baseColumnNames="user_id" baseTableName="rating" constraintName="fkf68lgbsbxl310n0jifwpfqgfh" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="users" validate="true"/>
+    </changeSet>
+    <changeSet author="Александр Флотский (generated)" id="1664396138376-41">
+        <addForeignKeyConstraint baseColumnNames="book_id" baseTableName="balance_transaction" constraintName="fkfmqooydnad6dlf5jjhx1mmqft" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="book" validate="true"/>
+    </changeSet>
+    <changeSet author="Александр Флотский (generated)" id="1664396138376-42">
+        <addForeignKeyConstraint baseColumnNames="genre_id" baseTableName="book2genre" constraintName="fkkdc8kcprnkl4ygg2f0v9588wi" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="genre" validate="true"/>
+    </changeSet>
+    <changeSet author="Александр Флотский (generated)" id="1664396138376-43">
+        <addForeignKeyConstraint baseColumnNames="tag_id" baseTableName="tag2book" constraintName="fkkw0s14kul4psyy06ud4dpgv5u" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="tag" validate="true"/>
+    </changeSet>
+    <changeSet author="Александр Флотский (generated)" id="1664396138376-44">
+        <addForeignKeyConstraint baseColumnNames="user_id" baseTableName="balance_transaction" constraintName="fkndi1dijwreoyd8stngrabtx8m" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="users" validate="true"/>
+    </changeSet>
+    <changeSet author="Александр Флотский (generated)" id="1664396138376-45">
+        <addForeignKeyConstraint baseColumnNames="user_id" baseTableName="book_review" constraintName="fkntncp0b191bex8jkm3vy3l13x" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="users" validate="true"/>
+    </changeSet>
+</databaseChangeLog>

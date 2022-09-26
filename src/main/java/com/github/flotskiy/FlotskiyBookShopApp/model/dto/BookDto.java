@@ -6,24 +6,24 @@ import java.time.LocalDate;
 
 public class BookDto {
 
-    private int id;
+    private Integer id;
     private String slug;
     private String image;
     private String authors;
     private String title;
-    private short discount;
+    private Short discount;
     private boolean isBestseller;
-    private short rating;
+    private Short rating;
     private String status;
-    private int price;
-    private int discountPrice;
+    private Integer price;
+    private Integer discountPrice;
     private LocalDate pubDate;
 
-    public int getId() {
+    public Integer getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 
@@ -59,11 +59,11 @@ public class BookDto {
         this.title = title;
     }
 
-    public short getDiscount() {
+    public Short getDiscount() {
         return discount;
     }
 
-    public void setDiscount(short discount) {
+    public void setDiscount(Short discount) {
         this.discount = discount;
     }
 
@@ -76,11 +76,11 @@ public class BookDto {
         this.isBestseller = isBestseller;
     }
 
-    public short getRating() {
+    public Short getRating() {
         return rating;
     }
 
-    public void setRating(short rating) {
+    public void setRating(Short rating) {
         this.rating = rating;
     }
 
@@ -92,19 +92,19 @@ public class BookDto {
         this.status = status;
     }
 
-    public int getPrice() {
+    public Integer getPrice() {
         return price;
     }
 
-    public void setPrice(int price) {
+    public void setPrice(Integer price) {
         this.price = price;
     }
 
-    public int getDiscountPrice() {
+    public Integer getDiscountPrice() {
         return discountPrice;
     }
 
-    public void setDiscountPrice(int discountPrice) {
+    public void setDiscountPrice(Integer discountPrice) {
         this.discountPrice = discountPrice;
     }
 

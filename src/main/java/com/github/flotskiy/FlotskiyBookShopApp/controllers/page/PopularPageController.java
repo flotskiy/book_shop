@@ -1,8 +1,9 @@
 package com.github.flotskiy.FlotskiyBookShopApp.controllers.page;
 
-import com.github.flotskiy.FlotskiyBookShopApp.model.dto.BookDto;
-import com.github.flotskiy.FlotskiyBookShopApp.model.dto.CountedBooksDto;
+import com.github.flotskiy.FlotskiyBookShopApp.model.dto.book.BookDto;
+import com.github.flotskiy.FlotskiyBookShopApp.model.dto.book.CountedBooksDto;
 import com.github.flotskiy.FlotskiyBookShopApp.service.BookService;
+import com.github.flotskiy.FlotskiyBookShopApp.service.UserRegistrationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -18,7 +19,8 @@ public class PopularPageController extends HeaderController {
     private final BookService bookService;
 
     @Autowired
-    public PopularPageController(BookService bookService) {
+    public PopularPageController(UserRegistrationService userRegistrationService, BookService bookService) {
+        super(userRegistrationService);
         this.bookService = bookService;
     }
 

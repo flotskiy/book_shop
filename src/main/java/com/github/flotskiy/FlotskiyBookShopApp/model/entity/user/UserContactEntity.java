@@ -10,22 +10,24 @@ import java.time.LocalDateTime;
 public class UserContactEntity {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+//    @GeneratedValue(strategy = GenerationType.IDENTITY) TODO: REMOVE COMMENT LATER
+    private Integer id;
 
-    @Column(name = "user_id", columnDefinition = "INT NOT NULL")
-    private int userId;
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "user_id", referencedColumnName = "id", nullable = false, columnDefinition = "INT NOT NULL")
+    private UserEntity userEntity;
 
+    @Enumerated(EnumType.STRING)
     private ContactType type;
 
     @Column(columnDefinition = "SMALLINT NOT NULL")
-    private short approved;
+    private Short approved;
 
     @Column(columnDefinition = "VARCHAR(255)")
     private String code;
 
     @Column(name = "code_trails", columnDefinition = "INT")
-    private int codeTrails;
+    private Integer codeTrails;
 
     @Column(name = "code_time", columnDefinition = "TIMESTAMP")
     private LocalDateTime codeTime;
@@ -33,20 +35,12 @@ public class UserContactEntity {
     @Column(columnDefinition = "VARCHAR(255) NOT NULL")
     private String contact;
 
-    public int getId() {
+    public Integer getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(Integer id) {
         this.id = id;
-    }
-
-    public int getUserId() {
-        return userId;
-    }
-
-    public void setUserId(int userId) {
-        this.userId = userId;
     }
 
     public ContactType getType() {
@@ -57,11 +51,11 @@ public class UserContactEntity {
         this.type = type;
     }
 
-    public short getApproved() {
+    public Short getApproved() {
         return approved;
     }
 
-    public void setApproved(short approved) {
+    public void setApproved(Short approved) {
         this.approved = approved;
     }
 
@@ -73,11 +67,11 @@ public class UserContactEntity {
         this.code = code;
     }
 
-    public int getCodeTrails() {
+    public Integer getCodeTrails() {
         return codeTrails;
     }
 
-    public void setCodeTrails(int codeTrails) {
+    public void setCodeTrails(Integer codeTrails) {
         this.codeTrails = codeTrails;
     }
 
@@ -95,5 +89,13 @@ public class UserContactEntity {
 
     public void setContact(String contact) {
         this.contact = contact;
+    }
+
+    public UserEntity getUserEntity() {
+        return userEntity;
+    }
+
+    public void setUserEntity(UserEntity userEntity) {
+        this.userEntity = userEntity;
     }
 }

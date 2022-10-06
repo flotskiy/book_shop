@@ -1,7 +1,8 @@
 package com.github.flotskiy.FlotskiyBookShopApp.model.dto.book.page;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.github.flotskiy.FlotskiyBookShopApp.model.dto.*;
+import com.github.flotskiy.FlotskiyBookShopApp.model.dto.book.AuthorDto;
+import com.github.flotskiy.FlotskiyBookShopApp.model.dto.book.BookDto;
 
 import java.time.LocalDate;
 import java.util.List;

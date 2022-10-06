@@ -1,4 +1,4 @@
-package com.github.flotskiy.FlotskiyBookShopApp.model.dto;
+package com.github.flotskiy.FlotskiyBookShopApp.model.dto.book;
 
 import java.util.List;
 

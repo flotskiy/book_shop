@@ -1,10 +1,11 @@
 package com.github.flotskiy.FlotskiyBookShopApp.controllers.page;
 
-import com.github.flotskiy.FlotskiyBookShopApp.model.dto.BookDto;
-import com.github.flotskiy.FlotskiyBookShopApp.model.dto.CountedBooksDto;
+import com.github.flotskiy.FlotskiyBookShopApp.model.dto.book.BookDto;
+import com.github.flotskiy.FlotskiyBookShopApp.model.dto.book.CountedBooksDto;
 import com.github.flotskiy.FlotskiyBookShopApp.model.dto.book.page.TagDto;
 import com.github.flotskiy.FlotskiyBookShopApp.service.BookService;
 import com.github.flotskiy.FlotskiyBookShopApp.service.TagService;
+import com.github.flotskiy.FlotskiyBookShopApp.service.UserRegistrationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
@@ -18,7 +19,10 @@ public class MainPageController extends HeaderController {
     private final TagService tagService;
 
     @Autowired
-    public MainPageController(BookService bookService, TagService tagService) {
+    public MainPageController(
+            UserRegistrationService userRegistrationService, BookService bookService, TagService tagService
+    ) {
+        super(userRegistrationService);
         this.bookService = bookService;
         this.tagService = tagService;
     }

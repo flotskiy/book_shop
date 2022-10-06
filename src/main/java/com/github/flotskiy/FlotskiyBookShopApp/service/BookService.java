@@ -1,7 +1,9 @@
 package com.github.flotskiy.FlotskiyBookShopApp.service;
 
 import com.github.flotskiy.FlotskiyBookShopApp.exceptions.BookstoreApiWrongParameterException;
-import com.github.flotskiy.FlotskiyBookShopApp.model.dto.*;
+import com.github.flotskiy.FlotskiyBookShopApp.model.dto.book.AuthorDto;
+import com.github.flotskiy.FlotskiyBookShopApp.model.dto.book.BookDto;
+import com.github.flotskiy.FlotskiyBookShopApp.model.dto.book.PopularityDto;
 import com.github.flotskiy.FlotskiyBookShopApp.model.dto.book.page.BookFileDto;
 import com.github.flotskiy.FlotskiyBookShopApp.model.dto.book.page.BookSlugDto;
 import com.github.flotskiy.FlotskiyBookShopApp.model.entity.author.AuthorEntity;

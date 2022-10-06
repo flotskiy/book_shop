@@ -1,10 +1,11 @@
 package com.github.flotskiy.FlotskiyBookShopApp.controllers.page;
 
-import com.github.flotskiy.FlotskiyBookShopApp.model.dto.AuthorDto;
-import com.github.flotskiy.FlotskiyBookShopApp.model.dto.CountedBooksDto;
+import com.github.flotskiy.FlotskiyBookShopApp.model.dto.book.AuthorDto;
+import com.github.flotskiy.FlotskiyBookShopApp.model.dto.book.CountedBooksDto;
 import com.github.flotskiy.FlotskiyBookShopApp.model.entity.author.AuthorEntity;
 import com.github.flotskiy.FlotskiyBookShopApp.service.AuthorService;
 import com.github.flotskiy.FlotskiyBookShopApp.service.BookService;
+import com.github.flotskiy.FlotskiyBookShopApp.service.UserRegistrationService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,7 +23,11 @@ public class AuthorsPageController extends HeaderController {
     private final BookService bookService;
 
     @Autowired
-    public AuthorsPageController(AuthorService authorService, BookService bookService) {
+    public AuthorsPageController(
+            UserRegistrationService userRegistrationService,
+            AuthorService authorService,
+            BookService bookService) {
+        super(userRegistrationService);
         this.authorService = authorService;
         this.bookService = bookService;
     }

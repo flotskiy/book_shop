@@ -26,59 +26,76 @@
           <div class="Login-ins">
             <div class="Login-step">
               <div class="form-group">
-                <label class="form-label Login-title" th:text="#{page.signin.info}">Введите e-mail или телефон
-                </label>
+                <label class="form-label Login-title" th:text="#{page.signin.info}">Введите e-mail или телефон</label>
+                <label class="form-label Login-title" th:if="${regOk}">Регистрация прошла успешно!</label>
+                <label class="form-label Login-title" th:if="${regOk} == false">Регистрация завершилась неудачей!</label>
               </div>
               <div class="form-group">
                 <div class="row">
                   <div class="row-block">
                     <label class="toggle Login-type">
-                      <input type="radio" name="typeauth" value="phonetype" checked="checked"/><span class="toggle-box"></span><span class="toggle-text" th:text="#{page.signin.phone}">Телефон</span>
+                      <input type="radio" name="typeauth" value="phonetype" checked="checked"/>
+                      <span class="toggle-box"></span>
+                      <span class="toggle-text" th:text="#{page.signin.phone}">Телефон</span>
                     </label>
                   </div>
                   <div class="row-block">
                     <label class="toggle Login-type">
-                      <input type="radio" name="typeauth" value="mailtype"/><span class="toggle-box"></span><span class="toggle-text">E-mail</span>
+                      <input type="radio" name="typeauth" value="mailtype"/>
+                      <span class="toggle-box"></span>
+                      <span class="toggle-text">E-mail</span>
                     </label>
                   </div>
                 </div>
               </div>
               <div class="form-group">
-                <input class="form-input form-input_phone" id="phone" name="phone" type="text" placeholder="Введите телефон" th:placeholder="#{page.signin.phone.placeholder}" data-mask="+7 (999) 999-99-99" data-validate="require"/>
-                <input class="form-input form-input_mail" id="mail" name="mail" type="text" placeholder="Введите e-mail" th:placeholder="#{page.signin.mail.placeholder}" data-validate="mail require"/>
+                <input class="form-input form-input_phone" id="phone" name="phone" type="text"
+                       placeholder="Введите телефон" th:placeholder="#{page.signin.phone.placeholder}"
+                       data-mask="+7 (999) 999-99-99" data-validate="require"/>
+                <input class="form-input form-input_mail" id="mail" name="mail" type="text"
+                       placeholder="Введите e-mail" th:placeholder="#{page.signin.mail.placeholder}"
+                       data-validate="mail require"/>
               </div>
               <div class="form-group form-group_center">
-                <button class="btn btn_primary form-btn" type="button" name="sendauth" id="sendauth" data-type="phone" data-send="" th:text="#{button.next}">Далее
+                <button class="btn btn_primary form-btn" type="button" name="sendauth" id="sendauth"
+                        data-type="phone" data-send="" th:text="#{button.next}">Далее
                 </button>
               </div>
             </div>
             <div class="Login-step Login-step_hide" data-type="phone">
               <div class="form-group">
-                <label class="form-label Login-title">На&nbsp;Ваш телефон отправлено сообщение с&nbsp;кодом для входа. Введите его:
+                <label class="form-label Login-title" th:text="#{page.signin.login.phone}">
+                  Введите код из смс или перейдите по&nbsp;ссылке ниже для регистрации:
                 </label>
               </div>
               <div class="form-group form-group_key">
-                <input class="form-input" id="phonecode" name="phonecode" type="text" placeholder="Код" data-validate="key require" data-mask="999 999"/>
+                <input class="form-input" id="phonecode" name="phonecode" type="text"
+                       placeholder="Код" th:placeholder="#{page.signin.code}"/>
               </div>
               <div class="form-group form-group_center">
-                <button class="btn btn_primary form-btn" type="button" name="toComeInPhone" id="toComeInPhone" data-send="">Войти
+                <button class="btn btn_primary form-btn" type="button" name="toComeInPhone"
+                        id="toComeInPhone" data-send="" th:text="#{button.enter}">Войти
                 </button>
               </div>
             </div>
             <div class="Login-step Login-step_hide" data-type="mail">
               <div class="form-group">
-                <label class="form-label Login-title">На&nbsp;Ваш e-mail отправлена ссылка для входа и&nbsp;код. Перейдите по&nbsp;ссылке или введите код ниже:
+                <label class="form-label Login-title" th:text="#{page.signin.login.mail}">
+                  Введите пароль учётной записи или перейдите по&nbsp;ссылке ниже для регистрации:
                 </label>
               </div>
               <div class="form-group form-group_key">
-                <input class="form-input" id="mailcode" name="mailcode" type="text" placeholder="Код" data-validate="key require" data-mask="999 999"/>
+                <input class="form-input" id="mailcode" name="mailcode" type="text"
+                       placeholder="Password" th:placeholder="#{page.signin.password}"/>
               </div>
               <div class="form-group form-group_center">
-                <button class="btn btn_primary form-btn" type="button" name="toComeInMail" id="toComeInMail" data-send="">Войти
+                <button class="btn btn_primary form-btn" type="button" name="toComeInMail" id="toComeInMail"
+                        data-send="" th:text="#{button.enter}">Войти
                 </button>
               </div>
             </div>
-            <div class="form-group form-group_center"><a class="Login-reg" href="/signup.html" th:text="#{menu.signup}">Зарегистрироваться</a>
+            <div class="form-group form-group_center">
+              <a class="Login-reg" href="/signup.html" th:href="@{/signup}" th:text="#{menu.signup}">Зарегистрироваться</a>
             </div>
           </div>
         </form>

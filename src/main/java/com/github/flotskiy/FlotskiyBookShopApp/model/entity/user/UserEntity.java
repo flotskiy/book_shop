@@ -12,8 +12,8 @@ import java.util.Set;
 public class UserEntity {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+//    @GeneratedValue(strategy = GenerationType.IDENTITY) TODO: REMOVE COMMENT LATER
+    private Integer id;
 
     @Column(columnDefinition = "VARCHAR(255) NOT NULL")
     private String hash;
@@ -22,7 +22,7 @@ public class UserEntity {
     private LocalDateTime regTime;
 
     @Column(columnDefinition = "INT NOT NULL DEFAULT 0")
-    private int balance;
+    private Integer balance;
 
     @Column(columnDefinition = "VARCHAR(255) NOT NULL")
     private String name;
@@ -54,11 +54,14 @@ public class UserEntity {
     @OneToMany(mappedBy = "userEntityLiked")
     private Set<BookReviewLikeEntity> bookReviewLikeEntities;
 
-    public int getId() {
+    @OneToOne(mappedBy = "userEntity")
+    private UserContactEntity userContactEntity;
+
+    public Integer getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 
@@ -78,11 +81,11 @@ public class UserEntity {
         this.regTime = regTime;
     }
 
-    public int getBalance() {
+    public Integer getBalance() {
         return balance;
     }
 
-    public void setBalance(int balance) {
+    public void setBalance(Integer balance) {
         this.balance = balance;
     }
 
@@ -140,5 +143,13 @@ public class UserEntity {
 
     public void setBookReviewLikeEntities(Set<BookReviewLikeEntity> bookReviewLikeEntities) {
         this.bookReviewLikeEntities = bookReviewLikeEntities;
+    }
+
+    public UserContactEntity getUserContactEntity() {
+        return userContactEntity;
+    }
+
+    public void setUserContactEntity(UserContactEntity userContactEntity) {
+        this.userContactEntity = userContactEntity;
     }
 }

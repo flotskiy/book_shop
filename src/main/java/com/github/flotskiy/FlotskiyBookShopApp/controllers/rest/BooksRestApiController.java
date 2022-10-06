@@ -2,7 +2,9 @@ package com.github.flotskiy.FlotskiyBookShopApp.controllers.rest;
 
 import com.github.flotskiy.FlotskiyBookShopApp.model.dto.ApiResponse;
 import com.github.flotskiy.FlotskiyBookShopApp.exceptions.BookstoreApiWrongParameterException;
-import com.github.flotskiy.FlotskiyBookShopApp.model.dto.*;
+import com.github.flotskiy.FlotskiyBookShopApp.model.dto.book.BookDto;
+import com.github.flotskiy.FlotskiyBookShopApp.model.dto.book.CountedBooksDto;
+import com.github.flotskiy.FlotskiyBookShopApp.model.dto.book.GenreDto;
 import com.github.flotskiy.FlotskiyBookShopApp.model.dto.book.page.TagDto;
 import com.github.flotskiy.FlotskiyBookShopApp.service.*;
 import io.swagger.annotations.Api;

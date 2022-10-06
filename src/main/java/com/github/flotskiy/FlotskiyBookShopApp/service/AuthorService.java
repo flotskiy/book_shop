@@ -1,7 +1,7 @@
 package com.github.flotskiy.FlotskiyBookShopApp.service;
 
 import com.github.flotskiy.FlotskiyBookShopApp.model.entity.author.AuthorEntity;
-import com.github.flotskiy.FlotskiyBookShopApp.model.dto.AuthorDto;
+import com.github.flotskiy.FlotskiyBookShopApp.model.dto.book.AuthorDto;
 import com.github.flotskiy.FlotskiyBookShopApp.repository.AuthorRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

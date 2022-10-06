@@ -5,10 +5,7 @@ import com.github.flotskiy.FlotskiyBookShopApp.exceptions.RateBookByUserExceptio
 import com.github.flotskiy.FlotskiyBookShopApp.exceptions.RateBookReviewException;
 import com.github.flotskiy.FlotskiyBookShopApp.model.dto.book.page.BookSlugDto;
 import com.github.flotskiy.FlotskiyBookShopApp.model.entity.book.BookEntity;
-import com.github.flotskiy.FlotskiyBookShopApp.service.BookService;
-import com.github.flotskiy.FlotskiyBookShopApp.service.BooksRatingAndPopularityService;
-import com.github.flotskiy.FlotskiyBookShopApp.service.ResourceStorage;
-import com.github.flotskiy.FlotskiyBookShopApp.service.ReviewAndLikeService;
+import com.github.flotskiy.FlotskiyBookShopApp.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.http.HttpHeaders;
@@ -36,11 +33,13 @@ public class BookPageController extends HeaderController {
 
     @Autowired
     public BookPageController(
+            UserRegistrationService userRegistrationService,
             BookService bookService,
             ReviewAndLikeService reviewAndLikeService,
             BooksRatingAndPopularityService booksRatingAndPopularityService,
             ResourceStorage storage
     ) {
+        super(userRegistrationService);
         this.bookService = bookService;
         this.reviewAndLikeService = reviewAndLikeService;
         this.booksRatingAndPopularityService = booksRatingAndPopularityService;

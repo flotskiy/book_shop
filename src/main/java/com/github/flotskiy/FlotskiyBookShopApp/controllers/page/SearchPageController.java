@@ -1,10 +1,11 @@
 package com.github.flotskiy.FlotskiyBookShopApp.controllers.page;
 
 import com.github.flotskiy.FlotskiyBookShopApp.exceptions.EmptySearchQueryException;
-import com.github.flotskiy.FlotskiyBookShopApp.model.dto.BookDto;
-import com.github.flotskiy.FlotskiyBookShopApp.model.dto.CountedBooksDto;
+import com.github.flotskiy.FlotskiyBookShopApp.model.dto.book.BookDto;
+import com.github.flotskiy.FlotskiyBookShopApp.model.dto.book.CountedBooksDto;
 import com.github.flotskiy.FlotskiyBookShopApp.model.dto.HeaderInfoDto;
 import com.github.flotskiy.FlotskiyBookShopApp.service.BookService;
+import com.github.flotskiy.FlotskiyBookShopApp.service.UserRegistrationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -19,7 +20,8 @@ public class SearchPageController extends HeaderController {
     private final BookService bookService;
 
     @Autowired
-    public SearchPageController(BookService bookService) {
+    public SearchPageController(UserRegistrationService userRegistrationService, BookService bookService) {
+        super(userRegistrationService);
         this.bookService = bookService;
     }
 

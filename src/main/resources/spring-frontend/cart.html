@@ -80,7 +80,8 @@
               <span class="Cart-price" th:text="${'₽' + #aggregates.sum(bookCart.![discountPrice])}">-1 р.</span>
               <span class="Cart-price_old" th:text="${'₽' + #aggregates.sum(bookCart.![price])}">-1 р.</span>
             </div>
-            <div class="Cart-block"><a class="btn btn_success btn_md" href="/order.html" th:text="#{button.buy}">Купить</a>
+            <div class="Cart-block">
+              <a class="btn btn_success btn_md" href="/order.html" th:text="#{button.buy}">Купить</a>
             </div>
           </div>
         </form>

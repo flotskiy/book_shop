@@ -1,5 +1,6 @@
-package com.github.flotskiy.FlotskiyBookShopApp.model.dto.user;
+package com.github.flotskiy.FlotskiyBookShopApp.security;
 
+import com.github.flotskiy.FlotskiyBookShopApp.model.dto.user.UserDto;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;

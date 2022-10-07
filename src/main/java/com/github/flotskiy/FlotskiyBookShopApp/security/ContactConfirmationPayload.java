@@ -1,4 +1,4 @@
-package com.github.flotskiy.FlotskiyBookShopApp.model.dto.user;
+package com.github.flotskiy.FlotskiyBookShopApp.security;
 
 public class ContactConfirmationPayload {
 

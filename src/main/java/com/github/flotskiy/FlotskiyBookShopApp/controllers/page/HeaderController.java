@@ -2,7 +2,7 @@ package com.github.flotskiy.FlotskiyBookShopApp.controllers.page;
 
 import com.github.flotskiy.FlotskiyBookShopApp.model.dto.HeaderInfoDto;
 import com.github.flotskiy.FlotskiyBookShopApp.model.dto.user.UserDto;
-import com.github.flotskiy.FlotskiyBookShopApp.service.UserRegistrationService;
+import com.github.flotskiy.FlotskiyBookShopApp.security.UserRegistrationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;

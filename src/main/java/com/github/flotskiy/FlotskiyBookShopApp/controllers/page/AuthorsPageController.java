@@ -5,7 +5,7 @@ import com.github.flotskiy.FlotskiyBookShopApp.model.dto.book.CountedBooksDto;
 import com.github.flotskiy.FlotskiyBookShopApp.model.entity.author.AuthorEntity;
 import com.github.flotskiy.FlotskiyBookShopApp.service.AuthorService;
 import com.github.flotskiy.FlotskiyBookShopApp.service.BookService;
-import com.github.flotskiy.FlotskiyBookShopApp.service.UserRegistrationService;
+import com.github.flotskiy.FlotskiyBookShopApp.security.UserRegistrationService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;

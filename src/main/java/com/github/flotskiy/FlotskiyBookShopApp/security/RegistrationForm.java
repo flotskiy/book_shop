@@ -1,6 +1,6 @@
-package com.github.flotskiy.FlotskiyBookShopApp.model.dto.user;
+package com.github.flotskiy.FlotskiyBookShopApp.security;
 
-public class RegistrationFormDto {
+public class RegistrationForm {
 
     private String name;
     private String email;

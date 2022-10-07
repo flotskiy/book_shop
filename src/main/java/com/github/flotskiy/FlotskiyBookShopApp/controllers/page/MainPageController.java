@@ -5,7 +5,7 @@ import com.github.flotskiy.FlotskiyBookShopApp.model.dto.book.CountedBooksDto;
 import com.github.flotskiy.FlotskiyBookShopApp.model.dto.book.page.TagDto;
 import com.github.flotskiy.FlotskiyBookShopApp.service.BookService;
 import com.github.flotskiy.FlotskiyBookShopApp.service.TagService;
-import com.github.flotskiy.FlotskiyBookShopApp.service.UserRegistrationService;
+import com.github.flotskiy.FlotskiyBookShopApp.security.UserRegistrationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;

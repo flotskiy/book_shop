@@ -6,7 +6,7 @@ import com.github.flotskiy.FlotskiyBookShopApp.model.dto.book.GenreDto;
 import com.github.flotskiy.FlotskiyBookShopApp.model.entity.genre.GenreEntity;
 import com.github.flotskiy.FlotskiyBookShopApp.service.BookService;
 import com.github.flotskiy.FlotskiyBookShopApp.service.GenreService;
-import com.github.flotskiy.FlotskiyBookShopApp.service.UserRegistrationService;
+import com.github.flotskiy.FlotskiyBookShopApp.security.UserRegistrationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;

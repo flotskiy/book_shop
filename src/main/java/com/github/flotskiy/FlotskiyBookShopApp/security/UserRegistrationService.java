@@ -1,4 +1,4 @@
-package com.github.flotskiy.FlotskiyBookShopApp.service;
+package com.github.flotskiy.FlotskiyBookShopApp.security;
 
 import com.github.flotskiy.FlotskiyBookShopApp.model.dto.user.*;
 import com.github.flotskiy.FlotskiyBookShopApp.model.entity.user.UserContactEntity;
@@ -6,6 +6,8 @@ import com.github.flotskiy.FlotskiyBookShopApp.model.entity.user.UserEntity;
 import com.github.flotskiy.FlotskiyBookShopApp.model.enums.ContactType;
 import com.github.flotskiy.FlotskiyBookShopApp.repository.UserContactRepository;
 import com.github.flotskiy.FlotskiyBookShopApp.repository.UserRepository;
+import com.github.flotskiy.FlotskiyBookShopApp.security.*;
+import com.github.flotskiy.FlotskiyBookShopApp.security.jwt.JWTService;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -25,45 +27,51 @@ public class UserRegistrationService {
     private final UserContactRepository userContactRepository;
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationManager authenticationManager;
+    private final BookstoreUserDetailsService bookstoreUserDetailsService;
+    private final JWTService jwtService;
 
     @Autowired
     public UserRegistrationService(
             UserRepository userRepository,
             UserContactRepository userContactRepository,
             PasswordEncoder passwordEncoder,
-            AuthenticationManager authenticationManager
+            AuthenticationManager authenticationManager,
+            BookstoreUserDetailsService bookstoreUserDetailsService,
+            JWTService jwtService
     ) {
         this.userRepository = userRepository;
         this.userContactRepository = userContactRepository;
         this.passwordEncoder = passwordEncoder;
         this.authenticationManager = authenticationManager;
+        this.bookstoreUserDetailsService = bookstoreUserDetailsService;
+        this.jwtService = jwtService;
     }
 
-    public void registerNewUserWithContact(RegistrationFormDto registrationFormDto) throws InstanceAlreadyExistsException {
+    public void registerNewUserWithContact(RegistrationForm registrationForm) throws InstanceAlreadyExistsException {
         UserEntity userEntity = userRepository.findUserEntityByUserContactEntity_TypeAndUserContactEntity_Contact(
-                ContactType.EMAIL, registrationFormDto.getEmail()
+                ContactType.EMAIL, registrationForm.getEmail()
         );
         if (userEntity == null) {
-            UserEntity newUserEntity = registerNewUser(registrationFormDto);
-            registerNewUserContact(registrationFormDto, newUserEntity);
+            UserEntity newUserEntity = registerNewUser(registrationForm);
+            registerNewUserContact(registrationForm, newUserEntity);
         } else {
             throw new InstanceAlreadyExistsException("User with that email already exists");
         }
     }
 
-    private UserEntity registerNewUser(RegistrationFormDto registrationFormDto) {
+    private UserEntity registerNewUser(RegistrationForm registrationForm) {
         UserEntity newUserEntity = new UserEntity();
         int newUserId = userRepository.getMaxId() + 1;
         newUserEntity.setId(newUserId);
-        newUserEntity.setHash(passwordEncoder.encode(registrationFormDto.getPass()));
+        newUserEntity.setHash(passwordEncoder.encode(registrationForm.getPass()));
         newUserEntity.setBalance(0);
         newUserEntity.setRegTime(LocalDateTime.now());
-        newUserEntity.setName(registrationFormDto.getName());
+        newUserEntity.setName(registrationForm.getName());
         userRepository.save(newUserEntity);
         return newUserEntity;
     }
 
-    private void registerNewUserContact(RegistrationFormDto registrationFormDto, UserEntity userEntity) {
+    private void registerNewUserContact(RegistrationForm registrationForm, UserEntity userEntity) {
         UserContactEntity newUserContactEntity = new UserContactEntity();
         Integer currentMaxId = userContactRepository.getMaxId();
         int newUserContactId = 0;
@@ -74,13 +82,13 @@ public class UserRegistrationService {
         }
         newUserContactEntity.setId(newUserContactId);
         newUserContactEntity.setUserEntity(userEntity);
-        String email = registrationFormDto.getEmail();
+        String email = registrationForm.getEmail();
         if (email != null && !email.isBlank()) {
             newUserContactEntity.setType(ContactType.EMAIL);
             newUserContactEntity.setContact(email);
         } else {
             newUserContactEntity.setType(ContactType.PHONE);
-            newUserContactEntity.setContact(registrationFormDto.getPhone());
+            newUserContactEntity.setContact(registrationForm.getPhone());
         }
         newUserContactEntity.setApproved((short) 0);
         newUserContactEntity.setCode(RandomStringUtils.random(6, true, true));
@@ -89,13 +97,25 @@ public class UserRegistrationService {
         userContactRepository.save(newUserContactEntity);
     }
 
-    public ContactConfirmationResponseDto login(ContactConfirmationPayload payload) {
+    public ContactConfirmationResponse login(ContactConfirmationPayload payload) {
         UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken =
                 new UsernamePasswordAuthenticationToken(payload.getContact(), payload.getCode());
         Authentication authentication = authenticationManager.authenticate(usernamePasswordAuthenticationToken);
         SecurityContextHolder.getContext().setAuthentication(authentication);
-        ContactConfirmationResponseDto response = new ContactConfirmationResponseDto();
-        response.setResult(true);
+        ContactConfirmationResponse response = new ContactConfirmationResponse();
+        response.setResult("true");
+        return response;
+    }
+
+    public ContactConfirmationResponse jwtLogin(ContactConfirmationPayload payload) {
+        authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(payload.getContact(), payload.getCode())
+        );
+        BookstoreUserDetails userDetails =
+                (BookstoreUserDetails) bookstoreUserDetailsService.loadUserByUsername(payload.getContact());
+        String jwtToken = jwtService.generateToken(userDetails);
+        ContactConfirmationResponse response = new ContactConfirmationResponse();
+        response.setResult(jwtToken);
         return response;
     }
 

@@ -5,6 +5,7 @@ import com.github.flotskiy.FlotskiyBookShopApp.exceptions.RateBookByUserExceptio
 import com.github.flotskiy.FlotskiyBookShopApp.exceptions.RateBookReviewException;
 import com.github.flotskiy.FlotskiyBookShopApp.model.dto.book.page.BookSlugDto;
 import com.github.flotskiy.FlotskiyBookShopApp.model.entity.book.BookEntity;
+import com.github.flotskiy.FlotskiyBookShopApp.security.UserRegistrationService;
 import com.github.flotskiy.FlotskiyBookShopApp.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ByteArrayResource;

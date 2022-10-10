@@ -1,12 +1,12 @@
 package com.github.flotskiy.FlotskiyBookShopApp.security;
 
+import com.github.flotskiy.FlotskiyBookShopApp.model.dto.post.ContactConfirmPayloadDto;
 import com.github.flotskiy.FlotskiyBookShopApp.model.dto.user.*;
 import com.github.flotskiy.FlotskiyBookShopApp.model.entity.user.UserContactEntity;
 import com.github.flotskiy.FlotskiyBookShopApp.model.entity.user.UserEntity;
 import com.github.flotskiy.FlotskiyBookShopApp.model.enums.ContactType;
 import com.github.flotskiy.FlotskiyBookShopApp.repository.UserContactRepository;
 import com.github.flotskiy.FlotskiyBookShopApp.repository.UserRepository;
-import com.github.flotskiy.FlotskiyBookShopApp.security.*;
 import com.github.flotskiy.FlotskiyBookShopApp.security.jwt.JWTService;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -97,7 +97,7 @@ public class UserRegistrationService {
         userContactRepository.save(newUserContactEntity);
     }
 
-    public ContactConfirmationResponse login(ContactConfirmationPayload payload) {
+    public ContactConfirmationResponse login(ContactConfirmPayloadDto payload) {
         UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken =
                 new UsernamePasswordAuthenticationToken(payload.getContact(), payload.getCode());
         Authentication authentication = authenticationManager.authenticate(usernamePasswordAuthenticationToken);
@@ -107,7 +107,7 @@ public class UserRegistrationService {
         return response;
     }
 
-    public ContactConfirmationResponse jwtLogin(ContactConfirmationPayload payload) {
+    public ContactConfirmationResponse jwtLogin(ContactConfirmPayloadDto payload) {
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(payload.getContact(), payload.getCode())
         );

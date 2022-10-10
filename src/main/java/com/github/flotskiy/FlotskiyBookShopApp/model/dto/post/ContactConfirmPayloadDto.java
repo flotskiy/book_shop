@@ -1,6 +1,6 @@
-package com.github.flotskiy.FlotskiyBookShopApp.security;
+package com.github.flotskiy.FlotskiyBookShopApp.model.dto.post;
 
-public class ContactConfirmationPayload {
+public class ContactConfirmPayloadDto {
 
     private String contact;
     private String code;

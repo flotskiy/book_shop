@@ -6,7 +6,6 @@ import com.github.flotskiy.FlotskiyBookShopApp.model.entity.user.UserEntity;
 import com.github.flotskiy.FlotskiyBookShopApp.model.enums.ContactType;
 import com.github.flotskiy.FlotskiyBookShopApp.repository.UserContactRepository;
 import com.github.flotskiy.FlotskiyBookShopApp.repository.UserRepository;
-import com.github.flotskiy.FlotskiyBookShopApp.security.BookstoreUserDetails;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;

@@ -1,6 +1,6 @@
 package com.github.flotskiy.FlotskiyBookShopApp.controllers.page;
 
-import com.github.flotskiy.FlotskiyBookShopApp.security.ContactConfirmationPayload;
+import com.github.flotskiy.FlotskiyBookShopApp.model.dto.post.ContactConfirmPayloadDto;
 import com.github.flotskiy.FlotskiyBookShopApp.security.RegistrationForm;
 import com.github.flotskiy.FlotskiyBookShopApp.security.ContactConfirmationResponse;
 import com.github.flotskiy.FlotskiyBookShopApp.security.UserRegistrationService;
@@ -38,7 +38,7 @@ public class SignInAndSignUpController extends HeaderController {
 
     @PostMapping("/requestContactConfirmation")
     @ResponseBody
-    public ContactConfirmationResponse handleRequestContactConfirmation(@RequestBody ContactConfirmationPayload payload) {
+    public ContactConfirmationResponse handleRequestContactConfirmation(@RequestBody ContactConfirmPayloadDto payload) {
         ContactConfirmationResponse response = new ContactConfirmationResponse();
         response.setResult("true");
         return response;
@@ -46,7 +46,7 @@ public class SignInAndSignUpController extends HeaderController {
 
     @PostMapping("/approveContact")
     @ResponseBody
-    public ContactConfirmationResponse handleApproveContact(@RequestBody ContactConfirmationPayload payload) {
+    public ContactConfirmationResponse handleApproveContact(@RequestBody ContactConfirmPayloadDto payload) {
         ContactConfirmationResponse response = new ContactConfirmationResponse();
         response.setResult("true");
         return response;
@@ -68,7 +68,7 @@ public class SignInAndSignUpController extends HeaderController {
     @PostMapping("/login")
     @ResponseBody
     public ContactConfirmationResponse handleLogin(
-            @RequestBody ContactConfirmationPayload payload, HttpServletResponse httpServletResponse
+            @RequestBody ContactConfirmPayloadDto payload, HttpServletResponse httpServletResponse
     ) {
         ContactConfirmationResponse loginResponse = getUserRegistrationService().jwtLogin(payload);
         Cookie cookie = new Cookie("token", loginResponse.getResult());

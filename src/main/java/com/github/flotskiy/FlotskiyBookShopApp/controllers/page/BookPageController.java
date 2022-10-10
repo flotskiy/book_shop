@@ -4,7 +4,11 @@ import com.github.flotskiy.FlotskiyBookShopApp.exceptions.BookReviewException;
 import com.github.flotskiy.FlotskiyBookShopApp.exceptions.RateBookByUserException;
 import com.github.flotskiy.FlotskiyBookShopApp.exceptions.RateBookReviewException;
 import com.github.flotskiy.FlotskiyBookShopApp.model.dto.book.page.BookSlugDto;
+import com.github.flotskiy.FlotskiyBookShopApp.model.dto.post.BookReviewDto;
+import com.github.flotskiy.FlotskiyBookShopApp.model.dto.post.BookStatusDto;
+import com.github.flotskiy.FlotskiyBookShopApp.model.dto.post.RateBookReviewDto;
 import com.github.flotskiy.FlotskiyBookShopApp.model.entity.book.BookEntity;
+import com.github.flotskiy.FlotskiyBookShopApp.model.dto.post.RateBookDto;
 import com.github.flotskiy.FlotskiyBookShopApp.security.UserRegistrationService;
 import com.github.flotskiy.FlotskiyBookShopApp.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -88,12 +92,12 @@ public class BookPageController extends HeaderController {
     @PostMapping("/changeBookStatus/{slug}")
     public String handleChangeBookStatus(
             @PathVariable(value = "slug") String slug,
-            @RequestParam("status") String status,
+            @RequestBody BookStatusDto payload,
             HttpServletRequest request,
             HttpServletResponse response,
             Model model
     ) {
-        bookService.changeBookStatus(slug, status, request, response, model);
+        bookService.changeBookStatus(slug, payload.getStatus(), request, response, model);
         if (slug.split(",").length == 1) {
             return "redirect:/books/" + slug;
         }
@@ -101,26 +105,25 @@ public class BookPageController extends HeaderController {
     }
 
     @PostMapping("/rateBook")
-    public String rateBook(@RequestParam("bookId") Integer bookId, @RequestParam("value") Integer value)
-            throws RateBookByUserException {
+    public String rateBook(@RequestBody RateBookDto payload) throws RateBookByUserException {
         Integer userId = 1; // Current user ID
-        String slug = booksRatingAndPopularityService.setRatingToBookByUser(bookId, userId, value);
+        String slug = booksRatingAndPopularityService
+                .setRatingToBookByUser(payload.getBookId(), userId, Integer.parseInt(payload.getValue()));
         return "redirect:/books/" + slug;
     }
 
     @PostMapping("/rateBookReview")
-    public String rateBookReview(@RequestParam("reviewid") Integer reviewId, @RequestParam("value") Integer value)
-            throws RateBookReviewException {
+    public String rateBookReview(@RequestBody RateBookReviewDto payload) throws RateBookReviewException {
         Integer userId = 1; // Current user ID
-        String slug = booksRatingAndPopularityService.rateBookReview(reviewId, userId, value);
+        String slug = booksRatingAndPopularityService
+                .rateBookReview(payload.getReviewId(), userId, payload.getValue());
         return "redirect:/books/" + slug;
     }
 
     @PostMapping("/bookReview")
-    public String bookReview(@RequestParam("bookId") Integer bookId, @RequestParam("text") String text)
-            throws BookReviewException {
+    public String bookReview(@RequestBody BookReviewDto payload) throws BookReviewException {
         Integer userId = 1; // Current user ID
-        String slug = reviewAndLikeService.bookReview(bookId, userId, text);
+        String slug = reviewAndLikeService.bookReview(payload.getBookId(), userId, payload.getText());
         return "redirect:/books/" + slug;
     }
 }

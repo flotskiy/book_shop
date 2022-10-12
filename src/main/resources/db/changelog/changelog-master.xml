@@ -7,6 +7,6 @@
    http://www.liquibase.org/xml/ns/dbchangelog
    http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
 
-    <include file="db/changelog/changes/4-added-constraint-foreign-key-book_id-in-book_file-table.xml"/>
+    <include file="db/changelog/changes/6-added-constraint-user_id-to-book_review_like-table.xml"/>
 
 </databaseChangeLog>

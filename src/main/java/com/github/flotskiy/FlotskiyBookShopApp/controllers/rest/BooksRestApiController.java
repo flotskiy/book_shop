@@ -3,21 +3,25 @@ package com.github.flotskiy.FlotskiyBookShopApp.controllers.rest;
 import com.github.flotskiy.FlotskiyBookShopApp.model.dto.ApiResponse;
 import com.github.flotskiy.FlotskiyBookShopApp.exceptions.BookstoreApiWrongParameterException;
 import com.github.flotskiy.FlotskiyBookShopApp.model.dto.*;
-import com.github.flotskiy.FlotskiyBookShopApp.service.BookService;
-import com.github.flotskiy.FlotskiyBookShopApp.service.GenreService;
-import com.github.flotskiy.FlotskiyBookShopApp.service.TagService;
+import com.github.flotskiy.FlotskiyBookShopApp.model.dto.book.page.TagDto;
+import com.github.flotskiy.FlotskiyBookShopApp.service.*;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.HashMap;
 import java.util.List;
+import java.util.logging.Logger;
 
 @RestController
 @RequestMapping("/api/books")
@@ -28,12 +32,22 @@ public class BooksRestApiController {
     private final BookService bookService;
     private final TagService tagService;
     private final GenreService genreService;
+    private final BooksRatingAndPopularityService booksRatingAndPopularityService;
+    private final ReviewAndLikeService reviewAndLikeService;
 
     @Autowired
-    public BooksRestApiController(BookService bookService, TagService tagService, GenreService genreService) {
+    public BooksRestApiController(
+            BookService bookService,
+            TagService tagService,
+            GenreService genreService,
+            BooksRatingAndPopularityService booksRatingAndPopularityService,
+            ReviewAndLikeService reviewAndLikeService
+            ) {
         this.bookService = bookService;
         this.tagService = tagService;
         this.genreService = genreService;
+        this.booksRatingAndPopularityService = booksRatingAndPopularityService;
+        this.reviewAndLikeService = reviewAndLikeService;
     }
 
     @GetMapping("/by-author")
@@ -180,6 +194,88 @@ public class BooksRestApiController {
     ) {
         return ResponseEntity
                 .ok(new CountedBooksDto(bookService.getPageOfBooksByAuthorId(authorId, offset, limit).getContent()));
+    }
+
+    @RequestMapping("/changeBookStatus/{slug}")
+    @ApiOperation("Changes status for one or several books in Database for current " +
+            "'slug' parameter represents the definite book/books to change status. " +
+            "'status' parameter is designed to receive from user the new value of book status to set." +
+            "Returns 'true' in case of success and 'false' in case of failure.")
+    public ResponseEntity<HashMap<String, Object>> changeBookStatus(
+            @PathVariable(value = "slug") String slug,
+            @RequestParam("status") String status,
+            HttpServletRequest request,
+            HttpServletResponse response,
+            Model model
+    ) {
+        bookService.changeBookStatus(slug, status, request, response, model);
+        HashMap<String, Object> result = new HashMap<>();
+        result.put("result", true); // TODO: 'false' result in case of some problems
+        return ResponseEntity.ok().body(result);
+    }
+
+    @RequestMapping("/rateBook")
+    @ApiOperation("Adds a Book's rate to Database from current User. " +
+            "'bookId' parameter represents the ID number of definite book to rate. " +
+            "'value' parameter is designed to set the level of rating from user. " +
+            "Returns 'true' in case of success and 'false' in case of failure.")
+    public ResponseEntity<HashMap<String, Object>> rateCurrentBook(
+            @RequestParam("bookId") Integer bookId, @RequestParam("value") Integer value
+    ) {
+        Integer userId = 1; // ID of current user
+        HashMap<String, Object> result = new HashMap<>();
+        try {
+            booksRatingAndPopularityService.setRatingToBookByUser(bookId, userId, value);
+            result.put("result", true);
+            return ResponseEntity.ok().body(result);
+        } catch (Exception ex) {
+            result.put("result", false);
+            Logger.getLogger(this.getClass().getSimpleName()).warning(ex.getMessage());
+            return ResponseEntity.badRequest().body(result);
+        }
+    }
+
+    @RequestMapping("/rateBookReview")
+    @ApiOperation("Adds like or dislike to a Book review to Database from current User. " +
+            "'reviewid' parameter represents the ID number of definite book review to like or dislike. " +
+            "'value' parameter is designed to receive like (1) or dislike (-1) from user. " +
+            "Returns 'true' in case of success and 'false' in case of failure.")
+    public ResponseEntity<HashMap<String, Object>> rateBookReview(
+            @RequestParam("reviewid") Integer reviewId, @RequestParam("value") Integer value
+    ) {
+        Integer userId = 1; // ID of current user
+        HashMap<String, Object> result = new HashMap<>();
+        try {
+            booksRatingAndPopularityService.rateBookReview(reviewId, userId, value);
+            result.put("result", true);
+            return ResponseEntity.ok().body(result);
+        } catch (Exception ex) {
+            result.put("result", false);
+            Logger.getLogger(this.getClass().getSimpleName()).warning(ex.getMessage());
+            return ResponseEntity.badRequest().body(result);
+        }
+    }
+
+    @RequestMapping("/bookReview")
+    @ApiOperation("Adds review to a Book to Database from current authorized user. " +
+            "'bookId' parameter represents the ID number of definite book to review. " +
+            "'text' parameter is designed to receive review contents from user. " +
+            "Returns 'true' in case of success and 'false' in case of failure.")
+    public ResponseEntity<HashMap<String, Object>> rateBookReview(
+            @RequestParam("bookId") Integer bookId, @RequestParam("text") String text
+    ) {
+        Integer userId = 1; // ID of current user
+        HashMap<String, Object> result = new HashMap<>();
+        try {
+            reviewAndLikeService.bookReview(bookId, userId, text);
+            result.put("result", true);
+            return ResponseEntity.ok().body(result);
+        }  catch (Exception ex) {
+            result.put("result", false);
+            result.put("error", ex.getMessage());
+            Logger.getLogger(this.getClass().getSimpleName()).warning(ex.getMessage());
+            return ResponseEntity.badRequest().body(result);
+        }
     }
 
     @ExceptionHandler(MissingServletRequestParameterException.class)

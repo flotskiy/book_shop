@@ -17,7 +17,7 @@
     <div class="wrap">
       <main class="Middle-main">
         <h1 class="Middle-title" th:text="#{menu.cart}">Корзина</h1>
-        <h3 th:if="${isCartEmpty}">Корзина пуста :(</h3>
+        <h3 th:if="${isCartEmpty}" th:text="#{page.cart.isempty}">Корзина пуста :(</h3>
         <form class="form Cart" action="#" method="post">
           <div class="Cart-product" th:each="book : ${bookCart}">
             <div class="Cart-block Cart-block_row">
@@ -34,58 +34,15 @@
                   </div>
                   <div class="Cart-rating">
                     <span class="Rating">
-                      <span class="Rating-stars">
-                        <span class="Rating-star Rating-star_view">
-                          <svg xmlns="http://www.w3.org/2000/svg" width="19" height="18" viewBox="0 0 19 18">
-                            <g>
-                              <g>
-                                <path fill="#ffc000" d="M9.5 14.925L3.629 18l1.121-6.512L0 6.875l6.564-.95L9.5 0l2.936 5.925 6.564.95-4.75 4.613L15.371 18z"></path>
-                              </g>
-                            </g>
-                          </svg>
-                        </span>
-                        <span class="Rating-star Rating-star_view">
-                          <svg xmlns="http://www.w3.org/2000/svg" width="19" height="18" viewBox="0 0 19 18">
-                            <g>
-                              <g>
-                                <path fill="#ffc000" d="M9.5 14.925L3.629 18l1.121-6.512L0 6.875l6.564-.95L9.5 0l2.936 5.925 6.564.95-4.75 4.613L15.371 18z"></path>
-                              </g>
-                            </g>
-                          </svg>
-                        </span>
-                        <span class="Rating-star Rating-star_view">
-                          <svg xmlns="http://www.w3.org/2000/svg" width="19" height="18" viewBox="0 0 19 18">
-                            <g>
-                              <g>
-                                <path fill="#ffc000" d="M9.5 14.925L3.629 18l1.121-6.512L0 6.875l6.564-.95L9.5 0l2.936 5.925 6.564.95-4.75 4.613L15.371 18z"></path>
-                              </g>
-                            </g>
-                          </svg>
-                        </span>
-                        <span class="Rating-star">
-                          <svg xmlns="http://www.w3.org/2000/svg" width="19" height="18" viewBox="0 0 19 18">
-                            <g>
-                              <g>
-                                <path fill="#ffc000" d="M9.5 14.925L3.629 18l1.121-6.512L0 6.875l6.564-.95L9.5 0l2.936 5.925 6.564.95-4.75 4.613L15.371 18z"></path>
-                              </g>
-                            </g>
-                          </svg>
-                        </span>
-                        <span class="Rating-star">
-                          <svg xmlns="http://www.w3.org/2000/svg" width="19" height="18" viewBox="0 0 19 18">
-                            <g>
-                              <g>
-                                <path fill="#ffc000" d="M9.5 14.925L3.629 18l1.121-6.512L0 6.875l6.564-.95L9.5 0l2.936 5.925 6.564.95-4.75 4.613L15.371 18z"></path>
-                              </g>
-                            </g>
-                          </svg>
-                        </span>
-                      </span>
+                      <span th:replace="~{fragments/book_rating_fragment :: rating (${book.rating})}"></span>
                     </span>
                   </div>
                   <div class="Cart-buttons">
                     <div class="Cart-btn">
-                      <button class="btn btn_primary btn_outline" data-sendstatus="KEPT" data-bookid="[1122]">
+                      <button class="btn btn_primary btn_outline" data-sendstatus="KEPT"
+                              data-bookid="[1111]" th:attr="data-bookid = ${book.slug}"
+                              data-btntype="check" data-btnradio="buyblock" data-check="false"
+                              data-alttext="Отложена">
                         <span class="btn-icon">
                           <img src="/assets/img/icons/heart.svg" alt="heart.svg"/>
                         </span>
@@ -109,8 +66,7 @@
                   <div class="Cart-price Cart-price_old"
                        th:if="${book.discountPrice} lt ${book.price}" th:text="${'₽' + book.price}">-1
                   </div>
-                  <div class="Cart-price" th:text="${'₽' + book.discountPrice}">-1
-                  </div>
+                  <div class="Cart-price" th:text="${'₽' + book.discountPrice}">-1</div>
                   <div class="Cart-sale"
                        th:if="${book.discountPrice} lt ${book.price}" th:text="${'-' + book.discount + '%'}">-1%
                   </div>

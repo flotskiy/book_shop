@@ -16,12 +16,21 @@ public class HeaderController {
     @ModelAttribute("headerInfoDto")
     public HeaderInfoDto headerInfoDto(HttpServletRequest request) {
         HeaderInfoDto headerInfoDto = new HeaderInfoDto();
-        Cookie cookie = WebUtils.getCookie(request, "cartContents");
-        if (cookie != null && !cookie.getValue().equals("")) {
-            String cookieString = cookie.getValue();
-            ArrayList<String> cookieBooks = new ArrayList<>(Arrays.asList(cookieString.split("/")));
+
+        Cookie cartContents = WebUtils.getCookie(request, "cartContents");
+        if (cartContents != null && !cartContents.getValue().equals("")) {
+            String cartCookieString = cartContents.getValue();
+            ArrayList<String> cookieBooks = new ArrayList<>(Arrays.asList(cartCookieString.split("/")));
             headerInfoDto.setCartBooksCount(cookieBooks.size());
         }
+
+        Cookie keptContents = WebUtils.getCookie(request, "keptContents");
+        if (keptContents != null && !keptContents.getValue().equals("")) {
+            String keptCookieString = keptContents.getValue();
+            ArrayList<String> cookieBooks = new ArrayList<>(Arrays.asList(keptCookieString.split("/")));
+            headerInfoDto.setKeptBooksCount(cookieBooks.size());
+        }
+
         return headerInfoDto;
     }
 }

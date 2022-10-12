@@ -2,7 +2,7 @@ package com.github.flotskiy.FlotskiyBookShopApp.controllers.page;
 
 import com.github.flotskiy.FlotskiyBookShopApp.model.dto.BookDto;
 import com.github.flotskiy.FlotskiyBookShopApp.model.dto.CountedBooksDto;
-import com.github.flotskiy.FlotskiyBookShopApp.model.dto.TagDto;
+import com.github.flotskiy.FlotskiyBookShopApp.model.dto.book.page.TagDto;
 import com.github.flotskiy.FlotskiyBookShopApp.service.BookService;
 import com.github.flotskiy.FlotskiyBookShopApp.service.TagService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,11 +46,6 @@ public class MainPageController extends HeaderController {
     @GetMapping({"/"})
     public String mainPage() {
         return "/index";
-    }
-
-    @GetMapping("/postponed")
-    public String postponedPage() {
-        return "/postponed";
     }
 
     @GetMapping("/books/card/recommended")

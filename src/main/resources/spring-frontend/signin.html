@@ -95,7 +95,15 @@
               </div>
             </div>
             <div class="form-group form-group_center">
-              <a class="Login-reg" href="/signup.html" th:href="@{/signup}" th:text="#{menu.signup}">Зарегистрироваться</a>
+              <a class="Login-reg" href="/signup.html" th:href="@{/signup}" th:text="#{menu.signup}">
+                Зарегистрироваться
+              </a>
+            </div>
+            <div class="form-group form-group_center">
+              <a class="Login-reg" href="/signup.html" th:href="@{/oauth2/authorization/google}"
+                 th:text="#{page.signin.google}">
+                Войти через Google
+              </a>
             </div>
           </div>
         </form>

@@ -120,8 +120,16 @@ public class UserRegistrationService {
     }
 
     public UserDto gerCurrentUser() {
-        BookstoreUserDetails userDetails =
-                (BookstoreUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        System.out.println(SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString()); // TODO: REMOVE
+        Object userObject = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        BookstoreUserDetails userDetails = null;
+        if (userObject instanceof BookstoreUserDetails) {
+            userDetails = (BookstoreUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        } else {
+            UserDto userDto = new UserDto();
+            userDto.setName("Google User");
+            userDetails = new BookstoreUserDetails(userDto);
+        }
         return userDetails.getUserDto();
     }
 }

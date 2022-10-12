@@ -1,7 +1,8 @@
 package com.github.flotskiy.FlotskiyBookShopApp.controllers.page;
 
-import com.github.flotskiy.FlotskiyBookShopApp.model.dto.BookDto;
+import com.github.flotskiy.FlotskiyBookShopApp.model.dto.book.BookDto;
 import com.github.flotskiy.FlotskiyBookShopApp.service.BookService;
+import com.github.flotskiy.FlotskiyBookShopApp.security.UserRegistrationService;
 import com.github.flotskiy.FlotskiyBookShopApp.util.CustomStringHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -21,7 +22,12 @@ public class PostponedPageController extends HeaderController {
     private final CustomStringHandler customStringHandler;
 
     @Autowired
-    public PostponedPageController(BookService bookService, CustomStringHandler customStringHandler) {
+    public PostponedPageController(
+            UserRegistrationService userRegistrationService,
+            BookService bookService,
+            CustomStringHandler customStringHandler
+    ) {
+        super(userRegistrationService);
         this.bookService = bookService;
         this.customStringHandler = customStringHandler;
     }

@@ -3,7 +3,7 @@ package com.github.flotskiy.FlotskiyBookShopApp.service;
 import com.github.flotskiy.FlotskiyBookShopApp.exceptions.RateBookByUserException;
 import com.github.flotskiy.FlotskiyBookShopApp.exceptions.RateBookReviewException;
 import com.github.flotskiy.FlotskiyBookShopApp.model.dto.book.page.DetailedRatingDto;
-import com.github.flotskiy.FlotskiyBookShopApp.model.dto.PopularityDto;
+import com.github.flotskiy.FlotskiyBookShopApp.model.dto.book.PopularityDto;
 import com.github.flotskiy.FlotskiyBookShopApp.model.entity.book.BookEntity;
 import com.github.flotskiy.FlotskiyBookShopApp.model.entity.book.links.Book2UserEntity;
 import com.github.flotskiy.FlotskiyBookShopApp.model.entity.book.review.BookRatingEntity;

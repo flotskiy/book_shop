@@ -2,7 +2,9 @@ package com.github.flotskiy.FlotskiyBookShopApp.controllers.rest;
 
 import com.github.flotskiy.FlotskiyBookShopApp.model.dto.ApiResponse;
 import com.github.flotskiy.FlotskiyBookShopApp.exceptions.BookstoreApiWrongParameterException;
-import com.github.flotskiy.FlotskiyBookShopApp.model.dto.*;
+import com.github.flotskiy.FlotskiyBookShopApp.model.dto.book.BookDto;
+import com.github.flotskiy.FlotskiyBookShopApp.model.dto.book.CountedBooksDto;
+import com.github.flotskiy.FlotskiyBookShopApp.model.dto.book.GenreDto;
 import com.github.flotskiy.FlotskiyBookShopApp.model.dto.book.page.TagDto;
 import com.github.flotskiy.FlotskiyBookShopApp.service.*;
 import io.swagger.annotations.Api;
@@ -261,7 +263,7 @@ public class BooksRestApiController {
             "'bookId' parameter represents the ID number of definite book to review. " +
             "'text' parameter is designed to receive review contents from user. " +
             "Returns 'true' in case of success and 'false' in case of failure.")
-    public ResponseEntity<HashMap<String, Object>> rateBookReview(
+    public ResponseEntity<HashMap<String, Object>> bookReview(
             @RequestParam("bookId") Integer bookId, @RequestParam("text") String text
     ) {
         Integer userId = 1; // ID of current user

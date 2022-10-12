@@ -1,6 +1,6 @@
 package com.github.flotskiy.FlotskiyBookShopApp.service;
 
-import com.github.flotskiy.FlotskiyBookShopApp.model.dto.GenreDto;
+import com.github.flotskiy.FlotskiyBookShopApp.model.dto.book.GenreDto;
 import com.github.flotskiy.FlotskiyBookShopApp.model.entity.book.links.Book2GenreEntity;
 import com.github.flotskiy.FlotskiyBookShopApp.model.entity.genre.GenreEntity;
 import com.github.flotskiy.FlotskiyBookShopApp.repository.Book2GenreRepository;

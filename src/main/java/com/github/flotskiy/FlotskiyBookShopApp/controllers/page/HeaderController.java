@@ -1,6 +1,12 @@
 package com.github.flotskiy.FlotskiyBookShopApp.controllers.page;
 
 import com.github.flotskiy.FlotskiyBookShopApp.model.dto.HeaderInfoDto;
+import com.github.flotskiy.FlotskiyBookShopApp.model.dto.user.UserDto;
+import com.github.flotskiy.FlotskiyBookShopApp.security.UserRegistrationService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.AnonymousAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.util.WebUtils;
@@ -12,6 +18,13 @@ import java.util.Arrays;
 
 @Controller
 public class HeaderController {
+
+    private final UserRegistrationService userRegistrationService;
+
+    @Autowired
+    public HeaderController(UserRegistrationService userRegistrationService) {
+        this.userRegistrationService = userRegistrationService;
+    }
 
     @ModelAttribute("headerInfoDto")
     public HeaderInfoDto headerInfoDto(HttpServletRequest request) {
@@ -31,6 +44,17 @@ public class HeaderController {
             headerInfoDto.setKeptBooksCount(cookieBooks.size());
         }
 
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (!(authentication instanceof AnonymousAuthenticationToken)) {
+            UserDto userDto = userRegistrationService.gerCurrentUser();
+            headerInfoDto.setMyBooksCount(5); // TODO: remove hardcode later
+            headerInfoDto.setUserName(userDto.getName());
+            headerInfoDto.setUserBalance(userDto.getBalance());
+        }
         return headerInfoDto;
+    }
+
+    protected UserRegistrationService getUserRegistrationService() {
+        return userRegistrationService;
     }
 }

@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import javax.management.InstanceAlreadyExistsException;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
+import java.util.HashMap;
 import java.util.logging.Logger;
 
 @Controller
@@ -67,13 +68,20 @@ public class SignInAndSignUpController extends HeaderController {
 
     @PostMapping("/login")
     @ResponseBody
-    public ContactConfirmationResponse handleLogin(
+    public HashMap<String, String> handleLogin(
             @RequestBody ContactConfirmPayloadDto payload, HttpServletResponse httpServletResponse
     ) {
-        ContactConfirmationResponse loginResponse = getUserRegistrationService().jwtLogin(payload);
-        Cookie cookie = new Cookie("token", loginResponse.getResult());
-        httpServletResponse.addCookie(cookie);
-        return loginResponse;
+        HashMap<String, String> result = new HashMap<>();
+        try {
+            ContactConfirmationResponse loginResponse = getUserRegistrationService().jwtLogin(payload);
+            Cookie cookie = new Cookie("token", loginResponse.getResult());
+            httpServletResponse.addCookie(cookie);
+            result.put("result", loginResponse.getResult());
+        } catch (Exception exception) {
+            String message = getUserRegistrationService().getExceptionInfo(exception);
+            result.put("error", message);
+        }
+        return result;
     }
 
     @GetMapping("/my")

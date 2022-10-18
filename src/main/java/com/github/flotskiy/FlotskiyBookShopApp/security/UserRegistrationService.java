@@ -11,14 +11,18 @@ import com.github.flotskiy.FlotskiyBookShopApp.security.jwt.JWTService;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.oauth2.jwt.JwtException;
 import org.springframework.stereotype.Service;
 
 import javax.management.InstanceAlreadyExistsException;
 import java.time.LocalDateTime;
+import java.util.logging.Logger;
 
 @Service
 public class UserRegistrationService {
@@ -29,6 +33,7 @@ public class UserRegistrationService {
     private final AuthenticationManager authenticationManager;
     private final BookstoreUserDetailsService bookstoreUserDetailsService;
     private final JWTService jwtService;
+    private final Logger logger = Logger.getLogger(this.getClass().getSimpleName());
 
     @Autowired
     public UserRegistrationService(
@@ -131,5 +136,23 @@ public class UserRegistrationService {
             userDetails = new BookstoreUserDetails(userDto);
         }
         return userDetails.getUserDto();
+    }
+
+    public String getExceptionInfo(Exception exception) {
+        try {
+            throw exception;
+        } catch (JwtException jwtException) {
+            logger.warning(jwtException.getLocalizedMessage());
+            return "Access denied! Try to sign in again!";
+        } catch (BadCredentialsException bce) {
+            logger.warning(bce.getLocalizedMessage());
+            return "Wrong user name and/or password!";
+        } catch (AuthenticationException ae) {
+            logger.warning(ae.getLocalizedMessage());
+            return "Error during authentication occurred!";
+        } catch (Exception ex) {
+            logger.warning(ex.getLocalizedMessage());
+            return "Something went wrong!";
+        }
     }
 }

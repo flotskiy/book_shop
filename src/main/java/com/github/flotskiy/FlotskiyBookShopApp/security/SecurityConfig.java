@@ -1,5 +1,6 @@
 package com.github.flotskiy.FlotskiyBookShopApp.security;
 
+import com.github.flotskiy.FlotskiyBookShopApp.security.jwt.InactiveJwtService;
 import com.github.flotskiy.FlotskiyBookShopApp.security.jwt.JWTRequestFilter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -19,11 +20,17 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     private final BookstoreUserDetailsService bookstoreUserDetailsService;
     private final JWTRequestFilter jwtRequestFilter;
+    private final InactiveJwtService inactiveJwtService;
 
     @Autowired
-    public SecurityConfig(BookstoreUserDetailsService bookstoreUserDetailsService, JWTRequestFilter jwtRequestFilter) {
+    public SecurityConfig(
+            BookstoreUserDetailsService bookstoreUserDetailsService,
+            JWTRequestFilter jwtRequestFilter,
+            InactiveJwtService inactiveJwtService
+            ) {
         this.bookstoreUserDetailsService = bookstoreUserDetailsService;
         this.jwtRequestFilter = jwtRequestFilter;
+        this.inactiveJwtService = inactiveJwtService;
     }
 
     @Bean
@@ -54,7 +61,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/**").permitAll()
                 .and().formLogin()
                 .loginPage("/signin").failureUrl("/signin")
-                .and().logout().logoutUrl("/logout").logoutSuccessUrl("/")
+                .and().logout().logoutUrl("/logout")
+                .addLogoutHandler(((request, response, authentication) -> inactiveJwtService.putJwtToInactiveRepo(request)))
+                .logoutSuccessUrl("/")
                 .deleteCookies("token").clearAuthentication(true)
                 .and().oauth2Login()
                 .defaultSuccessUrl("/my")

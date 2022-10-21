@@ -3,6 +3,7 @@ package com.github.flotskiy.FlotskiyBookShopApp.security.jwt;
 import com.google.common.hash.Hashing;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
@@ -54,6 +55,7 @@ public class InactiveJwtService {
         return Hashing.sha256().hashString(inputString, StandardCharsets.UTF_8).toString();
     }
 
+    @Transactional
     public void removeExpired() {
         inactiveJwtRepository.removeInactiveJwtsByExpiryBefore(LocalDateTime.now());
     }

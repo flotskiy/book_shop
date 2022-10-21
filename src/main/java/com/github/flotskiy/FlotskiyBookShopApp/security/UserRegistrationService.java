@@ -16,12 +16,15 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.oauth2.core.user.DefaultOAuth2User;
 import org.springframework.security.oauth2.jwt.JwtException;
 import org.springframework.stereotype.Service;
 
 import javax.management.InstanceAlreadyExistsException;
 import java.time.LocalDateTime;
+import java.util.Map;
 import java.util.logging.Logger;
 
 @Service
@@ -68,7 +71,11 @@ public class UserRegistrationService {
         UserEntity newUserEntity = new UserEntity();
         int newUserId = userRepository.getMaxId() + 1;
         newUserEntity.setId(newUserId);
-        newUserEntity.setHash(passwordEncoder.encode(registrationForm.getPass()));
+        if (registrationForm.getPass().isBlank()) {
+            newUserEntity.setHash("");
+        } else {
+            newUserEntity.setHash(passwordEncoder.encode(registrationForm.getPass()));
+        }
         newUserEntity.setBalance(0);
         newUserEntity.setRegTime(LocalDateTime.now());
         newUserEntity.setName(registrationForm.getName());
@@ -116,8 +123,7 @@ public class UserRegistrationService {
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(payload.getContact(), payload.getCode())
         );
-        BookstoreUserDetails userDetails =
-                (BookstoreUserDetails) bookstoreUserDetailsService.loadUserByUsername(payload.getContact());
+        BookstoreUserDetails userDetails = bookstoreUserDetailsService.loadUserByUsername(payload.getContact());
         String jwtToken = jwtService.generateToken(userDetails);
         ContactConfirmationResponse response = new ContactConfirmationResponse();
         response.setResult(jwtToken);
@@ -125,15 +131,28 @@ public class UserRegistrationService {
     }
 
     public UserDto gerCurrentUser() {
-        System.out.println(SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString()); // TODO: REMOVE
         Object userObject = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         BookstoreUserDetails userDetails = null;
         if (userObject instanceof BookstoreUserDetails) {
-            userDetails = (BookstoreUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+            userDetails = (BookstoreUserDetails) userObject;
         } else {
-            UserDto userDto = new UserDto();
-            userDto.setName("Google User");
-            userDetails = new BookstoreUserDetails(userDto);
+            DefaultOAuth2User oAuth2User = (DefaultOAuth2User) userObject;
+            Map<String, Object> userAttr = oAuth2User.getAttributes();
+            String userEmail = userAttr.get("email").toString();
+            try {
+                userDetails = bookstoreUserDetailsService.loadUserByUsername(userEmail);
+                logger.info("Google user found in database");
+            } catch (UsernameNotFoundException usernameNotFoundException) {
+                logger.info("New google user creation");
+                RegistrationForm googleRegistrationForm = new RegistrationForm();
+                String userName = userAttr.get("name").toString();
+                googleRegistrationForm.setName(userName);
+                googleRegistrationForm.setEmail(userEmail);
+                googleRegistrationForm.setPass("");
+                UserEntity newUserEntity = registerNewUser(googleRegistrationForm);
+                registerNewUserContact(googleRegistrationForm, newUserEntity);
+                userDetails = bookstoreUserDetailsService.loadUserByUsername(userEmail);
+            }
         }
         return userDetails.getUserDto();
     }

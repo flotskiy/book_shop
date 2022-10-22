@@ -157,6 +157,10 @@ public class UserRegistrationService {
         return userDetails.getUserDto();
     }
 
+    public Integer getCurrentUserId() {
+        return gerCurrentUser().getId();
+    }
+
     public String getExceptionInfo(Exception exception) {
         try {
             throw exception;

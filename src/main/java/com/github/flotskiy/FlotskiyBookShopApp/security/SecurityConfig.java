@@ -56,7 +56,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         http
                 .csrf().disable()
                 .authorizeRequests()
-//                .antMatchers("/my", "/profile").hasRole("USER") // custom
                 .antMatchers("/my", "/profile").authenticated()
                 .antMatchers("/**").permitAll()
                 .and().formLogin()
@@ -69,7 +68,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .defaultSuccessUrl("/my")
                 .and().oauth2Client();
 
-//        http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
         http.addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);
     }
 }

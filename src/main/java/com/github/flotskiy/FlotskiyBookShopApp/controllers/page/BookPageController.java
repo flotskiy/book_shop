@@ -16,6 +16,7 @@ import org.springframework.core.io.ByteArrayResource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -25,16 +26,17 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.nio.file.Path;
+import java.util.HashMap;
 import java.util.logging.Logger;
 
 @Controller
 @RequestMapping("/books")
 public class BookPageController extends HeaderController {
 
-    private final BookService bookService;
     private final ReviewAndLikeService reviewAndLikeService;
     private final BooksRatingAndPopularityService booksRatingAndPopularityService;
     private final ResourceStorage storage;
+    private final Logger logger = Logger.getLogger(this.getClass().getSimpleName());
 
     @Autowired
     public BookPageController(
@@ -44,8 +46,7 @@ public class BookPageController extends HeaderController {
             BooksRatingAndPopularityService booksRatingAndPopularityService,
             ResourceStorage storage
     ) {
-        super(userRegistrationService);
-        this.bookService = bookService;
+        super(userRegistrationService, bookService);
         this.reviewAndLikeService = reviewAndLikeService;
         this.booksRatingAndPopularityService = booksRatingAndPopularityService;
         this.storage = storage;
@@ -53,7 +54,7 @@ public class BookPageController extends HeaderController {
 
     @GetMapping("/{slug}")
     public String bookPage(@PathVariable("slug") String slug, Model model) {
-        BookSlugDto bookSlugDto = bookService.getBookSlugBySlug(slug);
+        BookSlugDto bookSlugDto = getBookService().getBookSlugBySlug(slug);
         model.addAttribute("slugBook", bookSlugDto);
         model.addAttribute("detailedRating",
                 booksRatingAndPopularityService.getDetailedRatingDto(bookSlugDto.getId()));
@@ -64,9 +65,9 @@ public class BookPageController extends HeaderController {
     public String saveNewBookImage(@RequestParam("file") MultipartFile file, @PathVariable("slug") String slug)
             throws IOException {
         String savedPath = storage.saveNewBookImage(file, slug);
-        BookEntity bookToUpdate = bookService.getBookEntityBySlug(slug);
+        BookEntity bookToUpdate = getBookService().getBookEntityBySlug(slug);
         bookToUpdate.setImage(savedPath);
-        bookService.saveBookEntity(bookToUpdate);
+        getBookService().saveBookEntity(bookToUpdate);
         return "redirect:/books/" + slug;
     }
 
@@ -97,33 +98,44 @@ public class BookPageController extends HeaderController {
             HttpServletResponse response,
             Model model
     ) {
-        bookService.changeBookStatus(slug, payload.getStatus(), request, response, model);
+        getBookService().changeBookStatus(slug, payload.getStatus(), request, response, model);
         if (slug.split(",").length == 1) {
             return "redirect:/books/" + slug;
         }
         return "redirect:/books/postponed";
     }
 
+    @Secured("ROLE_USER")
     @PostMapping("/rateBook")
-    public String rateBook(@RequestBody RateBookDto payload) throws RateBookByUserException {
-        Integer userId = 1; // Current user ID
-        String slug = booksRatingAndPopularityService
+    @ResponseBody
+    public HashMap<String, Object> rateBook(@RequestBody RateBookDto payload) throws RateBookByUserException {
+        HashMap<String, Object> result = new HashMap<>();
+        Integer userId = getUserRegistrationService().getCurrentUserId();
+        booksRatingAndPopularityService
                 .setRatingToBookByUser(payload.getBookId(), userId, Integer.parseInt(payload.getValue()));
-        return "redirect:/books/" + slug;
+        result.put("result", true);
+        return result;
     }
 
+    @Secured("ROLE_USER")
     @PostMapping("/rateBookReview")
-    public String rateBookReview(@RequestBody RateBookReviewDto payload) throws RateBookReviewException {
-        Integer userId = 1; // Current user ID
-        String slug = booksRatingAndPopularityService
-                .rateBookReview(payload.getReviewId(), userId, payload.getValue());
-        return "redirect:/books/" + slug;
+    @ResponseBody
+    public HashMap<String, Object> rateBookReview(@RequestBody RateBookReviewDto payload) throws RateBookReviewException {
+        HashMap<String, Object> result = new HashMap<>();
+        Integer userId = getUserRegistrationService().getCurrentUserId();
+        booksRatingAndPopularityService.rateBookReview(payload.getReviewId(), userId, payload.getValue());
+        result.put("result", true);
+        return result;
     }
 
+    @Secured("ROLE_USER")
     @PostMapping("/bookReview")
-    public String bookReview(@RequestBody BookReviewDto payload) throws BookReviewException {
-        Integer userId = 1; // Current user ID
-        String slug = reviewAndLikeService.bookReview(payload.getBookId(), userId, payload.getText());
-        return "redirect:/books/" + slug;
+    @ResponseBody
+    public HashMap<String, Object> bookReview(@RequestBody BookReviewDto payload) throws BookReviewException {
+        HashMap<String, Object> result = new HashMap<>();
+        Integer userId = getUserRegistrationService().getCurrentUserId();
+        reviewAndLikeService.bookReview(payload.getBookId(), userId, payload.getText());
+        result.put("result", true);
+        return result;
     }
 }

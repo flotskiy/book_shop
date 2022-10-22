@@ -18,15 +18,13 @@ import java.util.List;
 public class GenresPageController extends HeaderController {
 
     private final GenreService genreService;
-    private final BookService bookService;
 
     @Autowired
     public GenresPageController(
             UserRegistrationService userRegistrationService, GenreService genreService, BookService bookService
     ) {
-        super(userRegistrationService);
+        super(userRegistrationService, bookService);
         this.genreService = genreService;
-        this.bookService = bookService;
     }
 
     @ModelAttribute("genresLinks")
@@ -42,7 +40,7 @@ public class GenresPageController extends HeaderController {
     @GetMapping("/genres/{genreSlug}")
     public String genresPage(@PathVariable("genreSlug") String genreSlug, Model model) {
         GenreEntity genreEntity = genreService.findGenreIdBySlug(genreSlug);
-        List<BookDto> bookDtos = bookService.getPageOfBooksByGenreId(genreEntity.getId(), 0, 20).getContent();
+        List<BookDto> bookDtos = getBookService().getPageOfBooksByGenreId(genreEntity.getId(), 0, 20).getContent();
         GenreEntity parentEntity = genreService.getParentEntity(genreEntity);
         GenreEntity rootEntity = genreService.getParentEntity(parentEntity);
         model.addAttribute("genreBookList", bookDtos);
@@ -59,6 +57,6 @@ public class GenresPageController extends HeaderController {
             @RequestParam("offset") Integer offset,
             @RequestParam("limit") Integer limit
     ) {
-        return new CountedBooksDto(bookService.getPageOfBooksByGenreId(genreId, offset, limit).getContent());
+        return new CountedBooksDto(getBookService().getPageOfBooksByGenreId(genreId, offset, limit).getContent());
     }
 }

@@ -13,7 +13,11 @@
 
 <head th:replace="~{fragments/common_head_tag_fragment :: headTagFragment (${slugBook.title} + ' - Flotskiy Bookshop')}"></head>
 <body class="Site">
-  <header th:replace="~{fragments/common_header_fragment :: headFragment ('')}"></header>
+  <header th:replace="${isAuthenticated} ?
+  ~{fragments/authorized_header_fragment :: headFragmentAuth ('')} : ~{fragments/common_header_fragment :: headFragment ('')}">
+  </header>
+<!--  <header th:if="${not isAuthenticated}" th:replace="~{fragments/common_header_fragment :: headFragment ('')}"></header>-->
+<!--  <header th:if="${isAuthenticated}" th:replace="~{fragments/authorized_header_fragment :: headFragmentAuth ('')}"></header>-->
   <div class="Middle">
     <div class="wrap">
       <main class="Middle-main" th:object="${slugBook}">
@@ -411,8 +415,8 @@
     </div>
   </div>
   <footer th:replace="~{fragments/common_footer_fragment :: footFragment}"></footer>
-  <footer>
-    <div id="err_dialog" title="Грамота">
+  <footer hidden>
+    <div id="err_dialog" title="Attention! ">
       <p>Такое могут делать только авторизованные пользователи. 🤔</p>
     </div>
   </footer>

@@ -15,18 +15,16 @@ import java.util.List;
 @Controller
 public class RecentPageController extends HeaderController {
 
-    private final BookService bookService;
     private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");
 
     @Autowired
     public RecentPageController(UserRegistrationService userRegistrationService, BookService bookService) {
-        super(userRegistrationService);
-        this.bookService = bookService;
+        super(userRegistrationService, bookService);
     }
 
     @ModelAttribute("recentBooksPage")
     public List<BookDto> recentBooks() {
-        return bookService.getRecentBooks(0, 20);
+        return getBookService().getRecentBooks(0, 20);
     }
 
     @GetMapping("/recent")
@@ -40,9 +38,9 @@ public class RecentPageController extends HeaderController {
                                              @RequestParam(value = "to", required = false) String to,
                                              @RequestParam(value = "offset", required = false) Integer offset,
                                              @RequestParam(value = "limit", required = false) Integer limit) {
-        from = bookService.checkFrom(from);
-        to = bookService.checkTo(to);
-        return new CountedBooksDto(bookService
+        from = getBookService().checkFrom(from);
+        to = getBookService().checkTo(to);
+        return new CountedBooksDto(getBookService()
                 .getPageOfRecentBooks(LocalDate.parse(from, formatter), LocalDate.parse(to, formatter), offset, limit)
                 .getContent()
         );

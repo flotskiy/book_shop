@@ -20,16 +20,14 @@ import java.util.List;
 public class AuthorsPageController extends HeaderController {
 
     private final AuthorService authorService;
-    private final BookService bookService;
 
     @Autowired
     public AuthorsPageController(
             UserRegistrationService userRegistrationService,
             AuthorService authorService,
             BookService bookService) {
-        super(userRegistrationService);
+        super(userRegistrationService, bookService);
         this.authorService = authorService;
-        this.bookService = bookService;
     }
 
     @GetMapping("/authors")
@@ -42,7 +40,7 @@ public class AuthorsPageController extends HeaderController {
     public String author(@PathVariable("authorSlug") String authorSlug, Model model) {
         AuthorDto authorDto = authorService.getAuthorBySlug(authorSlug);
         model.addAttribute("author", authorService.getAuthorBySlug(authorSlug));
-        model.addAttribute("authorBooks", bookService.getPageOfBooksByAuthorId(authorDto.getId(), 0, 9));
+        model.addAttribute("authorBooks", getBookService().getPageOfBooksByAuthorId(authorDto.getId(), 0, 9));
         return "/authors/slug";
     }
 
@@ -52,7 +50,7 @@ public class AuthorsPageController extends HeaderController {
         model.addAttribute("authorObj", authorDto);
         model.addAttribute(
                 "authorBooksAll",
-                bookService.getPageOfBooksByAuthorId(authorDto.getId(), 0, 20)
+                getBookService().getPageOfBooksByAuthorId(authorDto.getId(), 0, 20)
         );
         return "/books/author";
     }
@@ -65,7 +63,7 @@ public class AuthorsPageController extends HeaderController {
             @RequestParam("limit") Integer limit
     ) {
 
-        return new CountedBooksDto(bookService.getPageOfBooksByAuthorId(authorId, offset, limit).getContent());
+        return new CountedBooksDto(getBookService().getPageOfBooksByAuthorId(authorId, offset, limit).getContent());
     }
 
     @ApiOperation("method to get map of authors")

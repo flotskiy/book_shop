@@ -36,8 +36,11 @@ public class BookstoreUserDetailsService implements UserDetailsService {
     }
 
     private UserDto convertUserEntityToUserDto(UserEntity userEntity) {
-        UserContactEntity userContactEntity = userContactRepository.findUserContactEntityByUserEntityId(userEntity.getId());
+        int userId = userEntity.getId();
+        UserContactEntity userContactEntity = userContactRepository.findUserContactEntityByUserEntityId(userId);
+
         UserDto userDto = new UserDto();
+        userDto.setId(userId);
         userDto.setName(userEntity.getName());
         userDto.setPassword(userEntity.getHash());
         userDto.setBalance(userEntity.getBalance());

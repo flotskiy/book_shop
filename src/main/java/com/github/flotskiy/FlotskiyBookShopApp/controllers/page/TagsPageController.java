@@ -16,22 +16,20 @@ import java.util.List;
 @Controller
 public class TagsPageController extends HeaderController {
 
-    private final BookService bookService;
     private final TagService tagService;
 
     @Autowired
     public TagsPageController(
             UserRegistrationService userRegistrationService, BookService bookService, TagService tagService
     ) {
-        super(userRegistrationService);
-        this.bookService = bookService;
+        super(userRegistrationService, bookService);
         this.tagService = tagService;
     }
 
     @GetMapping("/tags/{tagSlug}")
     public String tagPage(@PathVariable("tagSlug") String tagSlug, Model model) {
         BookTagEntity tagEntity = tagService.getBookTagBySlug(tagSlug);
-        List<BookDto> bookDtos = bookService.getPageOfBooksByTag(tagEntity.getId(), 0, 20).getContent();
+        List<BookDto> bookDtos = getBookService().getPageOfBooksByTag(tagEntity.getId(), 0, 20).getContent();
         model.addAttribute("tagBookList", bookDtos);
         model.addAttribute("tagObject", tagEntity);
         return "/tags/index";
@@ -44,6 +42,6 @@ public class TagsPageController extends HeaderController {
             @RequestParam("offset") Integer offset,
             @RequestParam("limit") Integer limit
     ) {
-        return new CountedBooksDto(bookService.getPageOfBooksByTag(tagId, offset, limit).getContent());
+        return new CountedBooksDto(getBookService().getPageOfBooksByTag(tagId, offset, limit).getContent());
     }
 }

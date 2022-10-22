@@ -17,12 +17,9 @@ import java.util.List;
 @Controller
 public class SearchPageController extends HeaderController {
 
-    private final BookService bookService;
-
     @Autowired
     public SearchPageController(UserRegistrationService userRegistrationService, BookService bookService) {
-        super(userRegistrationService);
-        this.bookService = bookService;
+        super(userRegistrationService, bookService);
     }
 
     @ModelAttribute("searchResults")
@@ -38,9 +35,9 @@ public class SearchPageController extends HeaderController {
         }
         model.addAttribute("headerInfoDto", headerInfoDto);
         model.addAttribute("searchResults",
-                bookService.getPageOfSearchResultBooks(headerInfoDto.getSearchQuery(), 0, 5).getContent());
+                getBookService().getPageOfSearchResultBooks(headerInfoDto.getSearchQuery(), 0, 5).getContent());
         model.addAttribute("searchResultsSize",
-                bookService.getSearchResultsSize(headerInfoDto.getSearchQuery()));
+                getBookService().getSearchResultsSize(headerInfoDto.getSearchQuery()));
         return "/search/index";
     }
 
@@ -52,7 +49,7 @@ public class SearchPageController extends HeaderController {
             @PathVariable(value = "searchWord", required = false) HeaderInfoDto headerInfoDto
     ) {
         return new CountedBooksDto(
-                bookService.getPageOfSearchResultBooks(headerInfoDto.getSearchQuery(), offset, limit).getContent()
+                getBookService().getPageOfSearchResultBooks(headerInfoDto.getSearchQuery(), offset, limit).getContent()
         );
     }
 }

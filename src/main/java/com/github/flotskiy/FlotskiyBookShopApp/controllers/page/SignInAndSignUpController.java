@@ -4,6 +4,7 @@ import com.github.flotskiy.FlotskiyBookShopApp.model.dto.post.ContactConfirmPayl
 import com.github.flotskiy.FlotskiyBookShopApp.security.RegistrationForm;
 import com.github.flotskiy.FlotskiyBookShopApp.security.ContactConfirmationResponse;
 import com.github.flotskiy.FlotskiyBookShopApp.security.UserRegistrationService;
+import com.github.flotskiy.FlotskiyBookShopApp.service.BookService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -22,8 +23,8 @@ import java.util.logging.Logger;
 public class SignInAndSignUpController extends HeaderController {
 
     @Autowired
-    public SignInAndSignUpController(UserRegistrationService userRegistrationService) {
-        super(userRegistrationService);
+    public SignInAndSignUpController(UserRegistrationService userRegistrationService, BookService bookService) {
+        super(userRegistrationService, bookService);
     }
 
     @GetMapping("/signin")
@@ -99,17 +100,4 @@ public class SignInAndSignUpController extends HeaderController {
         model.addAttribute("curUser", getUserRegistrationService().gerCurrentUser());
         return "/profile";
     }
-
-//    @GetMapping("/logout")
-//    public String handleLogout(HttpServletRequest request) {
-//        HttpSession session = request.getSession();
-//        SecurityContextHolder.clearContext();
-//        if (session != null) {
-//            session.invalidate();
-//        }
-//        for (Cookie cookie : request.getCookies()) {
-//            cookie.setMaxAge(0);
-//        }
-//        return "redirect:/";
-//    }
 }

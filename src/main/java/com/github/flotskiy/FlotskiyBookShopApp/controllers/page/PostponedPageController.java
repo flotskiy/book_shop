@@ -18,7 +18,6 @@ import java.util.List;
 @Controller
 public class PostponedPageController extends HeaderController {
 
-    private final BookService bookService;
     private final CustomStringHandler customStringHandler;
 
     @Autowired
@@ -27,8 +26,7 @@ public class PostponedPageController extends HeaderController {
             BookService bookService,
             CustomStringHandler customStringHandler
     ) {
-        super(userRegistrationService);
-        this.bookService = bookService;
+        super(userRegistrationService, bookService);
         this.customStringHandler = customStringHandler;
     }
 
@@ -54,7 +52,7 @@ public class PostponedPageController extends HeaderController {
             String[] cookiesSlugs = customStringHandler.getCookieSlugs(keptContents);
             List<String> slugsList = List.of(cookiesSlugs);
             String slugsString = String.join(",", slugsList);
-            List<BookDto> booksFromCookiesSlugs = bookService.getBooksBySlugIn(slugsList);
+            List<BookDto> booksFromCookiesSlugs = getBookService().getBooksBySlugIn(slugsList);
             model.addAttribute("booksKept", booksFromCookiesSlugs);
             model.addAttribute("booksKeptSlugs", slugsString);
         }

@@ -4,6 +4,7 @@ import com.github.flotskiy.FlotskiyBookShopApp.model.dto.post.ContactConfirmPayl
 import com.github.flotskiy.FlotskiyBookShopApp.security.RegistrationForm;
 import com.github.flotskiy.FlotskiyBookShopApp.security.ContactConfirmationResponse;
 import com.github.flotskiy.FlotskiyBookShopApp.security.UserRegistrationService;
+import com.github.flotskiy.FlotskiyBookShopApp.service.BookService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -15,14 +16,15 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import javax.management.InstanceAlreadyExistsException;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
+import java.util.HashMap;
 import java.util.logging.Logger;
 
 @Controller
 public class SignInAndSignUpController extends HeaderController {
 
     @Autowired
-    public SignInAndSignUpController(UserRegistrationService userRegistrationService) {
-        super(userRegistrationService);
+    public SignInAndSignUpController(UserRegistrationService userRegistrationService, BookService bookService) {
+        super(userRegistrationService, bookService);
     }
 
     @GetMapping("/signin")
@@ -67,13 +69,20 @@ public class SignInAndSignUpController extends HeaderController {
 
     @PostMapping("/login")
     @ResponseBody
-    public ContactConfirmationResponse handleLogin(
+    public HashMap<String, String> handleLogin(
             @RequestBody ContactConfirmPayloadDto payload, HttpServletResponse httpServletResponse
     ) {
-        ContactConfirmationResponse loginResponse = getUserRegistrationService().jwtLogin(payload);
-        Cookie cookie = new Cookie("token", loginResponse.getResult());
-        httpServletResponse.addCookie(cookie);
-        return loginResponse;
+        HashMap<String, String> result = new HashMap<>();
+        try {
+            ContactConfirmationResponse loginResponse = getUserRegistrationService().jwtLogin(payload);
+            Cookie cookie = new Cookie("token", loginResponse.getResult());
+            httpServletResponse.addCookie(cookie);
+            result.put("result", loginResponse.getResult());
+        } catch (Exception exception) {
+            String message = getUserRegistrationService().getExceptionInfo(exception);
+            result.put("error", message);
+        }
+        return result;
     }
 
     @GetMapping("/my")
@@ -91,17 +100,4 @@ public class SignInAndSignUpController extends HeaderController {
         model.addAttribute("curUser", getUserRegistrationService().gerCurrentUser());
         return "/profile";
     }
-
-//    @GetMapping("/logout")
-//    public String handleLogout(HttpServletRequest request) {
-//        HttpSession session = request.getSession();
-//        SecurityContextHolder.clearContext();
-//        if (session != null) {
-//            session.invalidate();
-//        }
-//        for (Cookie cookie : request.getCookies()) {
-//            cookie.setMaxAge(0);
-//        }
-//        return "redirect:/";
-//    }
 }

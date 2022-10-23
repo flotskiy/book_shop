@@ -132,7 +132,7 @@ public class BooksRatingAndPopularityService {
                 .subList(firstElement, lastElement);
     }
 
-    public String setRatingToBookByUser(Integer bookId, Integer userId, Integer ratingValue)
+    public void setRatingToBookByUser(Integer bookId, Integer userId, Integer ratingValue)
             throws RateBookByUserException {
         if (ratingValue < 1 || ratingValue > 5) {
             throw new RateBookByUserException("Rating value is unacceptable");
@@ -151,10 +151,9 @@ public class BooksRatingAndPopularityService {
             bookRatingEntity.setRating(ratingValue.shortValue());
             bookRatingRepository.save(bookRatingEntity);
         }
-        return bookEntity.get().getSlug();
     }
 
-    public String rateBookReview(Integer reviewId, Integer userId, Integer likeValue) throws RateBookReviewException {
+    public void rateBookReview(Integer reviewId, Integer userId, Integer likeValue) throws RateBookReviewException {
         if (likeValue != 1 && likeValue != -1) {
             throw new RateBookReviewException("Like value is unacceptable");
         }
@@ -181,6 +180,5 @@ public class BooksRatingAndPopularityService {
             bookReviewLikeEntity.setTime(LocalDateTime.now());
             bookReviewLikeRepository.save(bookReviewLikeEntity);
         }
-        return bookEntity.get().getSlug();
     }
 }

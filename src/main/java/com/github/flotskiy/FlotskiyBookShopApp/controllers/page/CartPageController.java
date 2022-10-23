@@ -18,7 +18,6 @@ import java.util.List;
 @Controller
 public class CartPageController extends HeaderController {
 
-    private final BookService bookService;
     private final CustomStringHandler customStringHandler;
 
     @Autowired
@@ -27,8 +26,7 @@ public class CartPageController extends HeaderController {
             BookService bookService,
             CustomStringHandler customStringHandler
     ) {
-        super(userRegistrationService);
-        this.bookService = bookService;
+        super(userRegistrationService, bookService);
         this.customStringHandler = customStringHandler;
     }
 
@@ -47,7 +45,7 @@ public class CartPageController extends HeaderController {
         } else {
             model.addAttribute("isCartEmpty", false);
             String[] cookiesSlugs = customStringHandler.getCookieSlugs(cartContents);
-            List<BookDto> booksFromCookiesSlugs = bookService.getBooksBySlugIn(List.of(cookiesSlugs));
+            List<BookDto> booksFromCookiesSlugs = getBookService().getBooksBySlugIn(List.of(cookiesSlugs));
             model.addAttribute("bookCart", booksFromCookiesSlugs);
         }
         return "/cart";

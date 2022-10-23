@@ -7,7 +7,6 @@ import com.github.flotskiy.FlotskiyBookShopApp.model.enums.ContactType;
 import com.github.flotskiy.FlotskiyBookShopApp.repository.UserContactRepository;
 import com.github.flotskiy.FlotskiyBookShopApp.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
@@ -25,7 +24,7 @@ public class BookstoreUserDetailsService implements UserDetailsService {
     }
 
     @Override
-    public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
+    public BookstoreUserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
         UserEntity userEntity = userRepository
                 .findUserEntityByUserContactEntity_TypeAndUserContactEntity_Contact(ContactType.EMAIL, email);
         if (userEntity != null) {
@@ -37,8 +36,11 @@ public class BookstoreUserDetailsService implements UserDetailsService {
     }
 
     private UserDto convertUserEntityToUserDto(UserEntity userEntity) {
-        UserContactEntity userContactEntity = userContactRepository.findUserContactEntityByUserEntityId(userEntity.getId());
+        int userId = userEntity.getId();
+        UserContactEntity userContactEntity = userContactRepository.findUserContactEntityByUserEntityId(userId);
+
         UserDto userDto = new UserDto();
+        userDto.setId(userId);
         userDto.setName(userEntity.getName());
         userDto.setPassword(userEntity.getHash());
         userDto.setBalance(userEntity.getBalance());

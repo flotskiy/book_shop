@@ -16,17 +16,14 @@ import java.util.List;
 @Controller
 public class PopularPageController extends HeaderController {
 
-    private final BookService bookService;
-
     @Autowired
     public PopularPageController(UserRegistrationService userRegistrationService, BookService bookService) {
-        super(userRegistrationService);
-        this.bookService = bookService;
+        super(userRegistrationService, bookService);
     }
 
     @ModelAttribute("popularBooksPage")
     public List<BookDto> recentBooks() {
-        return bookService.getPopularBooks(0, 20);
+        return getBookService().getPopularBooks(0, 20);
     }
 
     @GetMapping("/popular")
@@ -38,6 +35,6 @@ public class PopularPageController extends HeaderController {
     @ResponseBody
     public CountedBooksDto getNextPopularPage(@RequestParam(value = "offset", required = false) Integer offset,
                                              @RequestParam(value = "limit", required = false) Integer limit) {
-        return new CountedBooksDto(bookService.getPopularBooks(offset, limit));
+        return new CountedBooksDto(getBookService().getPopularBooks(offset, limit));
     }
 }

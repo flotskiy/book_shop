@@ -3,6 +3,7 @@ package com.github.flotskiy.FlotskiyBookShopApp.controllers.page;
 import com.github.flotskiy.FlotskiyBookShopApp.model.dto.HeaderInfoDto;
 import com.github.flotskiy.FlotskiyBookShopApp.model.dto.user.UserDto;
 import com.github.flotskiy.FlotskiyBookShopApp.security.UserRegistrationService;
+import com.github.flotskiy.FlotskiyBookShopApp.service.BookService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -20,10 +21,17 @@ import java.util.Arrays;
 public class HeaderController {
 
     private final UserRegistrationService userRegistrationService;
+    private final BookService bookService;
 
     @Autowired
-    public HeaderController(UserRegistrationService userRegistrationService) {
+    public HeaderController(UserRegistrationService userRegistrationService, BookService bookService) {
         this.userRegistrationService = userRegistrationService;
+        this.bookService = bookService;
+    }
+
+    @ModelAttribute("isAuthenticated")
+    public Boolean isAuthenticated() {
+        return bookService.isAuthenticated();
     }
 
     @ModelAttribute("headerInfoDto")
@@ -56,5 +64,9 @@ public class HeaderController {
 
     protected UserRegistrationService getUserRegistrationService() {
         return userRegistrationService;
+    }
+
+    protected BookService getBookService() {
+        return bookService;
     }
 }

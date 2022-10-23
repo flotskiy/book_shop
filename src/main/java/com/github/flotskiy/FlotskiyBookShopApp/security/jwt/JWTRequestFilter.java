@@ -15,22 +15,30 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.logging.Logger;
 
 @Component
 public class JWTRequestFilter extends OncePerRequestFilter {
 
     private final BookstoreUserDetailsService bookstoreUserDetailsService;
     private final JWTService jwtService;
+    private final InactiveJwtService inactiveJwtService;
 
     @Autowired
-    public JWTRequestFilter(BookstoreUserDetailsService bookstoreUserDetailsService, JWTService jwtService) {
+    public JWTRequestFilter(
+            BookstoreUserDetailsService bookstoreUserDetailsService,
+            JWTService jwtService,
+            InactiveJwtService inactiveJwtService
+    ) {
         this.bookstoreUserDetailsService = bookstoreUserDetailsService;
         this.jwtService = jwtService;
+        this.inactiveJwtService = inactiveJwtService;
     }
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
+        boolean isTokenInactive = false;
         String token = null;
         String userName = null;
         Cookie[] cookies = request.getCookies();
@@ -42,7 +50,17 @@ public class JWTRequestFilter extends OncePerRequestFilter {
                     userName = jwtService.extractUserName(token);
                 }
 
-                if (userName != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+                if (userName != null) {
+                    String hash = inactiveJwtService.getStringHash(token);
+                    inactiveJwtService.removeExpired();
+                    InactiveJwt inactiveJwt = inactiveJwtService.findInactiveJwtByHash(hash);
+                    if (inactiveJwt != null) {
+                        Logger.getLogger(this.getClass().getSimpleName()).info("current token is inactive, access denied");
+                        isTokenInactive = true;
+                    }
+                }
+
+                if (userName != null && !isTokenInactive && SecurityContextHolder.getContext().getAuthentication() == null) {
                     BookstoreUserDetails userDetails =
                             (BookstoreUserDetails) bookstoreUserDetailsService.loadUserByUsername(userName);
                     if (jwtService.validateToken(token, userDetails)) {

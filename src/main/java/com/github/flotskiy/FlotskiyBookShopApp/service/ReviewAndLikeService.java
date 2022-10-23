@@ -55,7 +55,7 @@ public class ReviewAndLikeService {
         return result;
     }
 
-    public String bookReview(Integer bookId, Integer userId, String text) throws BookReviewException {
+    public void bookReview(Integer bookId, Integer userId, String text) throws BookReviewException {
         if (text.length() < 15) {
             throw new BookReviewException("Review is to short");
         }
@@ -79,7 +79,6 @@ public class ReviewAndLikeService {
             bookReviewEntity.setText(text);
             bookReviewRepository.save(bookReviewEntity);
         }
-        return bookEntity.get().getSlug();
     }
 
     private List<BookReviewDto> convertBookReviewEntitiesListToBookReviewDtoList(List<BookReviewEntity> bookReviewEntities) {

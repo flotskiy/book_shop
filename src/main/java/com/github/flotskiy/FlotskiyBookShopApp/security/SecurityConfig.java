@@ -1,5 +1,6 @@
 package com.github.flotskiy.FlotskiyBookShopApp.security;
 
+import com.github.flotskiy.FlotskiyBookShopApp.security.jwt.InactiveJwtService;
 import com.github.flotskiy.FlotskiyBookShopApp.security.jwt.JWTRequestFilter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -19,11 +20,17 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     private final BookstoreUserDetailsService bookstoreUserDetailsService;
     private final JWTRequestFilter jwtRequestFilter;
+    private final InactiveJwtService inactiveJwtService;
 
     @Autowired
-    public SecurityConfig(BookstoreUserDetailsService bookstoreUserDetailsService, JWTRequestFilter jwtRequestFilter) {
+    public SecurityConfig(
+            BookstoreUserDetailsService bookstoreUserDetailsService,
+            JWTRequestFilter jwtRequestFilter,
+            InactiveJwtService inactiveJwtService
+            ) {
         this.bookstoreUserDetailsService = bookstoreUserDetailsService;
         this.jwtRequestFilter = jwtRequestFilter;
+        this.inactiveJwtService = inactiveJwtService;
     }
 
     @Bean
@@ -49,18 +56,18 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         http
                 .csrf().disable()
                 .authorizeRequests()
-//                .antMatchers("/my", "/profile").hasRole("USER") // custom
                 .antMatchers("/my", "/profile").authenticated()
                 .antMatchers("/**").permitAll()
                 .and().formLogin()
                 .loginPage("/signin").failureUrl("/signin")
-                .and().logout().logoutUrl("/logout").logoutSuccessUrl("/signin")
+                .and().logout().logoutUrl("/logout")
+                .addLogoutHandler(((request, response, authentication) -> inactiveJwtService.putJwtToInactiveRepo(request)))
+                .logoutSuccessUrl("/")
                 .deleteCookies("token").clearAuthentication(true)
                 .and().oauth2Login()
                 .defaultSuccessUrl("/my")
                 .and().oauth2Client();
 
-//        http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
         http.addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);
     }
 }

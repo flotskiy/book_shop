@@ -15,31 +15,29 @@ import java.util.List;
 @Controller
 public class MainPageController extends HeaderController {
 
-    private final BookService bookService;
     private final TagService tagService;
 
     @Autowired
     public MainPageController(
             UserRegistrationService userRegistrationService, BookService bookService, TagService tagService
     ) {
-        super(userRegistrationService);
-        this.bookService = bookService;
+        super(userRegistrationService, bookService);
         this.tagService = tagService;
     }
 
     @ModelAttribute("recommendedBooks")
     public List<BookDto> recommendedBooks() {
-        return bookService.getPageOfBooks(0, 6).getContent();
+        return getBookService().getPageOfBooks(0, 6).getContent();
     }
 
     @ModelAttribute("recentBooks")
     public List<BookDto> recentBooks() {
-        return bookService.getRecentBooks(0,6);
+        return getBookService().getRecentBooks(0,6);
     }
 
     @ModelAttribute("popularBooks")
     public List<BookDto> popularBooks() {
-        return bookService.getPopularBooks(0, 6);
+        return getBookService().getPopularBooks(0, 6);
     }
 
     @ModelAttribute("tagsCloud")
@@ -55,18 +53,18 @@ public class MainPageController extends HeaderController {
     @GetMapping("/books/card/recommended")
     @ResponseBody
     public CountedBooksDto getRecommendedBooksPage(@RequestParam("offset") int offset, @RequestParam("limit") int limit) {
-        return new CountedBooksDto(bookService.getPageOfBooks(offset, limit).getContent());
+        return new CountedBooksDto(getBookService().getPageOfBooks(offset, limit).getContent());
     }
 
     @GetMapping("/books/card/recent")
     @ResponseBody
     public CountedBooksDto getRecentBooksPage(@RequestParam("offset") int offset, @RequestParam("limit") int limit) {
-        return new CountedBooksDto(bookService.getRecentBooks(offset, limit));
+        return new CountedBooksDto(getBookService().getRecentBooks(offset, limit));
     }
 
     @GetMapping("/books/card/popular")
     @ResponseBody
     public CountedBooksDto getPopularBooksPage(@RequestParam("offset") int offset, @RequestParam("limit") int limit) {
-        return new CountedBooksDto(bookService.getPopularBooks(offset, limit));
+        return new CountedBooksDto(getBookService().getPopularBooks(offset, limit));
     }
 }

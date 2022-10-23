@@ -23,6 +23,7 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Logger;
 
 @RestController
@@ -203,7 +204,7 @@ public class BooksRestApiController {
             "'slug' parameter represents the definite book/books to change status. " +
             "'status' parameter is designed to receive from user the new value of book status to set." +
             "Returns 'true' in case of success and 'false' in case of failure.")
-    public ResponseEntity<HashMap<String, Object>> changeBookStatus(
+    public ResponseEntity<Map<String, Object>> changeBookStatus(
             @PathVariable(value = "slug") String slug,
             @RequestParam("status") String status,
             HttpServletRequest request,
@@ -221,7 +222,7 @@ public class BooksRestApiController {
             "'bookId' parameter represents the ID number of definite book to rate. " +
             "'value' parameter is designed to set the level of rating from user. " +
             "Returns 'true' in case of success and 'false' in case of failure.")
-    public ResponseEntity<HashMap<String, Object>> rateCurrentBook(
+    public ResponseEntity<Map<String, Object>> rateCurrentBook(
             @RequestParam("bookId") Integer bookId, @RequestParam("value") Integer value
     ) {
         Integer userId = 1; // ID of current user
@@ -242,7 +243,7 @@ public class BooksRestApiController {
             "'reviewid' parameter represents the ID number of definite book review to like or dislike. " +
             "'value' parameter is designed to receive like (1) or dislike (-1) from user. " +
             "Returns 'true' in case of success and 'false' in case of failure.")
-    public ResponseEntity<HashMap<String, Object>> rateBookReview(
+    public ResponseEntity<Map<String, Object>> rateBookReview(
             @RequestParam("reviewid") Integer reviewId, @RequestParam("value") Integer value
     ) {
         Integer userId = 1; // ID of current user
@@ -263,7 +264,7 @@ public class BooksRestApiController {
             "'bookId' parameter represents the ID number of definite book to review. " +
             "'text' parameter is designed to receive review contents from user. " +
             "Returns 'true' in case of success and 'false' in case of failure.")
-    public ResponseEntity<HashMap<String, Object>> bookReview(
+    public ResponseEntity<Map<String, Object>> bookReview(
             @RequestParam("bookId") Integer bookId, @RequestParam("text") String text
     ) {
         Integer userId = 1; // ID of current user

@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.HashMap;
+import java.util.Map;
 import java.util.logging.Logger;
 
 @ControllerAdvice
@@ -23,7 +24,7 @@ public class GlobalExceptionHandlerController {
 
     @ExceptionHandler(AccessDeniedException.class)
     @ResponseBody
-    public HashMap<String, Object> handleAccessDeniedException(AccessDeniedException exception) {
+    public Map<String, Object> handleAccessDeniedException(AccessDeniedException exception) {
         logger.warning(exception.getLocalizedMessage());
         HashMap<String, Object> result = new HashMap<>();
         result.put("result", false);

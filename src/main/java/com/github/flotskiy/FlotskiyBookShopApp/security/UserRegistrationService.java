@@ -162,19 +162,14 @@ public class UserRegistrationService {
     }
 
     public String getExceptionInfo(Exception exception) {
-        try {
-            throw exception;
-        } catch (JwtException jwtException) {
-            logger.warning(jwtException.getLocalizedMessage());
+        logger.warning(exception.getLocalizedMessage());
+        if (exception instanceof JwtException) {
             return "Access denied! Try to sign in again!";
-        } catch (BadCredentialsException bce) {
-            logger.warning(bce.getLocalizedMessage());
+        } else if (exception instanceof BadCredentialsException) {
             return "Wrong user name and/or password!";
-        } catch (AuthenticationException ae) {
-            logger.warning(ae.getLocalizedMessage());
+        } else if (exception instanceof AuthenticationException) {
             return "Error during authentication occurred!";
-        } catch (Exception ex) {
-            logger.warning(ex.getLocalizedMessage());
+        } else {
             return "Something went wrong!";
         }
     }

@@ -27,6 +27,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.logging.Logger;
 
 @Controller
@@ -108,7 +109,7 @@ public class BookPageController extends HeaderController {
     @Secured("ROLE_USER")
     @PostMapping("/rateBook")
     @ResponseBody
-    public HashMap<String, Object> rateBook(@RequestBody RateBookDto payload) throws RateBookByUserException {
+    public Map<String, Object> rateBook(@RequestBody RateBookDto payload) throws RateBookByUserException {
         HashMap<String, Object> result = new HashMap<>();
         Integer userId = getUserRegistrationService().getCurrentUserId();
         booksRatingAndPopularityService
@@ -120,7 +121,7 @@ public class BookPageController extends HeaderController {
     @Secured("ROLE_USER")
     @PostMapping("/rateBookReview")
     @ResponseBody
-    public HashMap<String, Object> rateBookReview(@RequestBody RateBookReviewDto payload) throws RateBookReviewException {
+    public Map<String, Object> rateBookReview(@RequestBody RateBookReviewDto payload) throws RateBookReviewException {
         HashMap<String, Object> result = new HashMap<>();
         Integer userId = getUserRegistrationService().getCurrentUserId();
         booksRatingAndPopularityService.rateBookReview(payload.getReviewId(), userId, payload.getValue());
@@ -131,7 +132,7 @@ public class BookPageController extends HeaderController {
     @Secured("ROLE_USER")
     @PostMapping("/bookReview")
     @ResponseBody
-    public HashMap<String, Object> bookReview(@RequestBody BookReviewDto payload) throws BookReviewException {
+    public Map<String, Object> bookReview(@RequestBody BookReviewDto payload) throws BookReviewException {
         HashMap<String, Object> result = new HashMap<>();
         Integer userId = getUserRegistrationService().getCurrentUserId();
         reviewAndLikeService.bookReview(payload.getBookId(), userId, payload.getText());

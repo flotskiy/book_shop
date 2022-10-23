@@ -17,6 +17,7 @@ import javax.management.InstanceAlreadyExistsException;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.logging.Logger;
 
 @Controller
@@ -69,7 +70,7 @@ public class SignInAndSignUpController extends HeaderController {
 
     @PostMapping("/login")
     @ResponseBody
-    public HashMap<String, String> handleLogin(
+    public Map<String, String> handleLogin(
             @RequestBody ContactConfirmPayloadDto payload, HttpServletResponse httpServletResponse
     ) {
         HashMap<String, String> result = new HashMap<>();

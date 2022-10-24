@@ -67,7 +67,7 @@ public class UserRegistrationService {
         }
     }
 
-    private UserEntity registerNewUser(RegistrationForm registrationForm) {
+    public UserEntity registerNewUser(RegistrationForm registrationForm) {
         UserEntity newUserEntity = new UserEntity();
         int newUserId = userRepository.getMaxId() + 1;
         newUserEntity.setId(newUserId);
@@ -79,11 +79,10 @@ public class UserRegistrationService {
         newUserEntity.setBalance(0);
         newUserEntity.setRegTime(LocalDateTime.now());
         newUserEntity.setName(registrationForm.getName());
-        userRepository.save(newUserEntity);
-        return newUserEntity;
+        return userRepository.save(newUserEntity);
     }
 
-    private void registerNewUserContact(RegistrationForm registrationForm, UserEntity userEntity) {
+    public UserContactEntity registerNewUserContact(RegistrationForm registrationForm, UserEntity userEntity) {
         UserContactEntity newUserContactEntity = new UserContactEntity();
         Integer currentMaxId = userContactRepository.getMaxId();
         int newUserContactId = 0;
@@ -106,7 +105,7 @@ public class UserRegistrationService {
         newUserContactEntity.setCode(RandomStringUtils.random(6, true, true));
         newUserContactEntity.setCodeTrails(0);
         newUserContactEntity.setCodeTime(LocalDateTime.now());
-        userContactRepository.save(newUserContactEntity);
+        return userContactRepository.save(newUserContactEntity);
     }
 
     public ContactConfirmationResponse login(ContactConfirmPayloadDto payload) {

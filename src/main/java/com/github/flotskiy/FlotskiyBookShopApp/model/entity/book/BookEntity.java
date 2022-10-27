@@ -53,7 +53,7 @@ public class BookEntity {
     @ApiModelProperty("Discount Value, percent. No Discount if value = 0")
     private short discount;
 
-    @ManyToMany(cascade = {CascadeType.ALL})
+    @ManyToMany(cascade = {CascadeType.ALL}, fetch = FetchType.EAGER)
     @JoinTable(name = "book2author",
             joinColumns = {@JoinColumn(name = "book_id")},
             inverseJoinColumns = {@JoinColumn(name = "author_id")})
@@ -234,5 +234,16 @@ public class BookEntity {
 
     public void setRatedByUserEntities(Set<UserEntity> ratedByUserEntities) {
         this.ratedByUserEntities = ratedByUserEntities;
+    }
+
+    @Override
+    public String toString() {
+        return "BookEntity{" +
+                "id=" + id +
+                ", pubDate=" + pubDate +
+                ", title='" + title + '\'' +
+                ", price=" + price +
+                ", discount=" + discount +
+                '}';
     }
 }

@@ -10,6 +10,7 @@ import com.github.flotskiy.FlotskiyBookShopApp.repository.UserRepository;
 import com.github.flotskiy.FlotskiyBookShopApp.security.jwt.JWTService;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -171,5 +172,10 @@ public class UserRegistrationService {
         } else {
             return "Something went wrong!";
         }
+    }
+
+    public boolean isAuthenticated() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        return !(authentication instanceof AnonymousAuthenticationToken);
     }
 }

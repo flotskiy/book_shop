@@ -5,6 +5,7 @@ import com.github.flotskiy.FlotskiyBookShopApp.security.RegistrationForm;
 import com.github.flotskiy.FlotskiyBookShopApp.security.ContactConfirmationResponse;
 import com.github.flotskiy.FlotskiyBookShopApp.security.UserRegistrationService;
 import com.github.flotskiy.FlotskiyBookShopApp.service.BookService;
+import com.github.flotskiy.FlotskiyBookShopApp.service.UserBookService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -23,9 +24,13 @@ import java.util.logging.Logger;
 @Controller
 public class SignInAndSignUpController extends HeaderController {
 
+    private final UserBookService userBookService;
+
     @Autowired
-    public SignInAndSignUpController(UserRegistrationService userRegistrationService, BookService bookService) {
+    public SignInAndSignUpController(
+            UserRegistrationService userRegistrationService, BookService bookService, UserBookService userBookService) {
         super(userRegistrationService, bookService);
+        this.userBookService = userBookService;
     }
 
     @GetMapping("/signin")
@@ -87,12 +92,14 @@ public class SignInAndSignUpController extends HeaderController {
     }
 
     @GetMapping("/my")
-    public String handleMy() {
+    public String handleMy(Model model) {
+        userBookService.handleUnreadRequest(model);
         return "/my";
     }
 
     @GetMapping("/myarchive")
-    public String handleMyArchive() {
+    public String handleMyArchive(Model model) {
+        userBookService.handleArchivedRequest(model);
         return "/myarchive";
     }
 

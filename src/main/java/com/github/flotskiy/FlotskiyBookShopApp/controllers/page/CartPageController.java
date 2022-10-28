@@ -3,7 +3,7 @@ package com.github.flotskiy.FlotskiyBookShopApp.controllers.page;
 import com.github.flotskiy.FlotskiyBookShopApp.model.dto.book.BookDto;
 import com.github.flotskiy.FlotskiyBookShopApp.service.BookService;
 import com.github.flotskiy.FlotskiyBookShopApp.security.UserRegistrationService;
-import com.github.flotskiy.FlotskiyBookShopApp.util.CustomStringHandler;
+import com.github.flotskiy.FlotskiyBookShopApp.service.UserBookService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -18,16 +18,16 @@ import java.util.List;
 @Controller
 public class CartPageController extends HeaderController {
 
-    private final CustomStringHandler customStringHandler;
+    private final UserBookService userBookService;
 
     @Autowired
     public CartPageController(
             UserRegistrationService userRegistrationService,
             BookService bookService,
-            CustomStringHandler customStringHandler
+            UserBookService userBookService
     ) {
         super(userRegistrationService, bookService);
-        this.customStringHandler = customStringHandler;
+        this.userBookService = userBookService;
     }
 
     @ModelAttribute(name = "bookCart")
@@ -37,16 +37,12 @@ public class CartPageController extends HeaderController {
 
     @GetMapping("/books/cart")
     public String handleCartRequest(
-            @CookieValue(value = "cartContents", required = false) String cartContents,
-            Model model
+            @CookieValue(value = "cartContents", required = false) String cartContents, Model model
             ) {
-        if (cartContents == null || cartContents.equals("")) {
-            model.addAttribute("isCartEmpty", true);
+        if (!userBookService.isUserAuthenticated()) {
+            userBookService.guestHandleCartRequest(cartContents, model);
         } else {
-            model.addAttribute("isCartEmpty", false);
-            String[] cookiesSlugs = customStringHandler.getCookieSlugs(cartContents);
-            List<BookDto> booksFromCookiesSlugs = getBookService().getBooksBySlugIn(List.of(cookiesSlugs));
-            model.addAttribute("bookCart", booksFromCookiesSlugs);
+            userBookService.registeredUserHandleCartRequest(model);
         }
         return "/cart";
     }

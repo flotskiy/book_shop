@@ -31,31 +31,33 @@ public class HeaderController {
 
     @ModelAttribute("isAuthenticated")
     public Boolean isAuthenticated() {
-        return bookService.isAuthenticated();
+        return userRegistrationService.isAuthenticated();
     }
 
     @ModelAttribute("headerInfoDto")
     public HeaderInfoDto headerInfoDto(HttpServletRequest request) {
         HeaderInfoDto headerInfoDto = new HeaderInfoDto();
 
-        Cookie cartContents = WebUtils.getCookie(request, "cartContents");
-        if (cartContents != null && !cartContents.getValue().equals("")) {
-            String cartCookieString = cartContents.getValue();
-            ArrayList<String> cookieBooks = new ArrayList<>(Arrays.asList(cartCookieString.split("/")));
-            headerInfoDto.setCartBooksCount(cookieBooks.size());
-        }
-
-        Cookie keptContents = WebUtils.getCookie(request, "keptContents");
-        if (keptContents != null && !keptContents.getValue().equals("")) {
-            String keptCookieString = keptContents.getValue();
-            ArrayList<String> cookieBooks = new ArrayList<>(Arrays.asList(keptCookieString.split("/")));
-            headerInfoDto.setKeptBooksCount(cookieBooks.size());
-        }
-
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (!(authentication instanceof AnonymousAuthenticationToken)) {
+        if (authentication instanceof AnonymousAuthenticationToken) {
+            Cookie cartContents = WebUtils.getCookie(request, "cartContents");
+            if (cartContents != null && !cartContents.getValue().equals("")) {
+                String cartCookieString = cartContents.getValue();
+                ArrayList<String> cookieBooks = new ArrayList<>(Arrays.asList(cartCookieString.split("/")));
+                headerInfoDto.setCartBooksCount(cookieBooks.size());
+            }
+
+            Cookie keptContents = WebUtils.getCookie(request, "keptContents");
+            if (keptContents != null && !keptContents.getValue().equals("")) {
+                String keptCookieString = keptContents.getValue();
+                ArrayList<String> cookieBooks = new ArrayList<>(Arrays.asList(keptCookieString.split("/")));
+                headerInfoDto.setKeptBooksCount(cookieBooks.size());
+            }
+        } else {
             UserDto userDto = userRegistrationService.gerCurrentUser();
-            headerInfoDto.setMyBooksCount(5); // TODO: remove hardcode later
+            headerInfoDto.setMyBooksCount(userDto.getUserBooksData().getPaid().size());
+            headerInfoDto.setCartBooksCount(userDto.getUserBooksData().getCart().size());
+            headerInfoDto.setKeptBooksCount(userDto.getUserBooksData().getKept().size());
             headerInfoDto.setUserName(userDto.getName());
             headerInfoDto.setUserBalance(userDto.getBalance());
         }

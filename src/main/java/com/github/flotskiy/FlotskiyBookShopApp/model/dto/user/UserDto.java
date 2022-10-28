@@ -8,6 +8,7 @@ public class UserDto {
     private Integer balance;
     private String email;
     private String phone;
+    private UserBooksData userBooksData;
 
     public Integer getId() {
         return id;
@@ -55,5 +56,13 @@ public class UserDto {
 
     public void setPhone(String phone) {
         this.phone = phone;
+    }
+
+    public UserBooksData getUserBooksData() {
+        return userBooksData;
+    }
+
+    public void setUserBooksData(UserBooksData userBooksData) {
+        this.userBooksData = userBooksData;
     }
 }

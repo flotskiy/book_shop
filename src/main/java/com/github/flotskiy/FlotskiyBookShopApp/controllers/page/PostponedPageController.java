@@ -3,6 +3,7 @@ package com.github.flotskiy.FlotskiyBookShopApp.controllers.page;
 import com.github.flotskiy.FlotskiyBookShopApp.model.dto.book.BookDto;
 import com.github.flotskiy.FlotskiyBookShopApp.service.BookService;
 import com.github.flotskiy.FlotskiyBookShopApp.security.UserRegistrationService;
+import com.github.flotskiy.FlotskiyBookShopApp.service.UserBookService;
 import com.github.flotskiy.FlotskiyBookShopApp.util.CustomStringHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -19,15 +20,18 @@ import java.util.List;
 public class PostponedPageController extends HeaderController {
 
     private final CustomStringHandler customStringHandler;
+    private final UserBookService userBookService;
 
     @Autowired
     public PostponedPageController(
             UserRegistrationService userRegistrationService,
             BookService bookService,
-            CustomStringHandler customStringHandler
+            CustomStringHandler customStringHandler,
+            UserBookService userBookService
     ) {
         super(userRegistrationService, bookService);
         this.customStringHandler = customStringHandler;
+        this.userBookService = userBookService;
     }
 
     @ModelAttribute(name = "booksKept")
@@ -45,16 +49,10 @@ public class PostponedPageController extends HeaderController {
             @CookieValue(value = "keptContents", required = false) String keptContents,
             Model model
     ) {
-        if (keptContents == null || keptContents.equals("")) {
-            model.addAttribute("isKeptEmpty", true);
+        if (!userBookService.isUserAuthenticated()) {
+            userBookService.guestHandlePostponedRequest(keptContents, model);
         } else {
-            model.addAttribute("isKeptEmpty", false);
-            String[] cookiesSlugs = customStringHandler.getCookieSlugs(keptContents);
-            List<String> slugsList = List.of(cookiesSlugs);
-            String slugsString = String.join(",", slugsList);
-            List<BookDto> booksFromCookiesSlugs = getBookService().getBooksBySlugIn(slugsList);
-            model.addAttribute("booksKept", booksFromCookiesSlugs);
-            model.addAttribute("booksKeptSlugs", slugsString);
+            userBookService.registeredUserHandlePostponedRequest(model);
         }
         return "/postponed";
     }

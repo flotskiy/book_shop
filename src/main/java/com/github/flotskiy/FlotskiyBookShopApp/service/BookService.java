@@ -15,9 +15,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.security.authentication.AnonymousAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.ui.Model;
 
@@ -215,23 +212,22 @@ public class BookService {
         }
     }
 
-    public boolean isAuthenticated() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        return !(authentication instanceof AnonymousAuthenticationToken);
+    public List<BookEntity> findBookEntitiesByIdIsIn(List<Integer> bookIdList) {
+        return bookRepository.findBookEntitiesByIdIsIn(bookIdList);
+    }
+
+    public List<BookDto> convertBookEntitiesToBookDtoWithRatingList(List<BookEntity> booksListToConvert) {
+        List<BookDto> booksDtoList = new ArrayList<>();
+        for (BookEntity book : booksListToConvert) {
+            booksDtoList.add(convertBookEntityToBookDtoWithRatingValue(book));
+        }
+        return booksDtoList;
     }
 
     private List<BookDto> convertBookEntitiesToBookDtoList(List<BookEntity> booksListToConvert) {
         List<BookDto> booksDtoList = new ArrayList<>();
         for (BookEntity book : booksListToConvert) {
             booksDtoList.add(convertBookEntityToBookDto(book));
-        }
-        return booksDtoList;
-    }
-
-    private List<BookDto> convertBookEntitiesToBookDtoWithRatingList(List<BookEntity> booksListToConvert) {
-        List<BookDto> booksDtoList = new ArrayList<>();
-        for (BookEntity book : booksListToConvert) {
-            booksDtoList.add(convertBookEntityToBookDtoWithRatingValue(book));
         }
         return booksDtoList;
     }

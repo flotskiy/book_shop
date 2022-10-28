@@ -28,7 +28,7 @@
                 </div>
             </div>
         </div>
-        <div class="Cards-footer Cards-footer_center">
+        <div class="Cards-footer Cards-footer_center" th:if="${not #strings.equals(pageName, 'none')}">
             <a class="btn btn_primary" href="#" data-refreshshow="recent"
                th:attr="data-refreshshow=${pageName},data-refreshid=${objId}"
                data-refreshoffset="0" data-refreshlimit="20"

@@ -40,7 +40,7 @@ public class CartPageController extends HeaderController {
             @CookieValue(value = "cartContents", required = false) String cartContents, Model model
             ) {
         if (!userBookService.isUserAuthenticated()) {
-            userBookService.guestHandleCartRequest(cartContents, model);
+            userBookService.guestHandleCartRequest(cartContents, model, getUserRegistrationService().getCurrentUserId());
         } else {
             userBookService.registeredUserHandleCartRequest(model);
         }

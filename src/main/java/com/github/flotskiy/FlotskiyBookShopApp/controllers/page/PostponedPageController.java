@@ -4,7 +4,6 @@ import com.github.flotskiy.FlotskiyBookShopApp.model.dto.book.BookDto;
 import com.github.flotskiy.FlotskiyBookShopApp.service.BookService;
 import com.github.flotskiy.FlotskiyBookShopApp.security.UserRegistrationService;
 import com.github.flotskiy.FlotskiyBookShopApp.service.UserBookService;
-import com.github.flotskiy.FlotskiyBookShopApp.util.CustomStringHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -19,18 +18,15 @@ import java.util.List;
 @Controller
 public class PostponedPageController extends HeaderController {
 
-    private final CustomStringHandler customStringHandler;
     private final UserBookService userBookService;
 
     @Autowired
     public PostponedPageController(
             UserRegistrationService userRegistrationService,
             BookService bookService,
-            CustomStringHandler customStringHandler,
             UserBookService userBookService
     ) {
         super(userRegistrationService, bookService);
-        this.customStringHandler = customStringHandler;
         this.userBookService = userBookService;
     }
 
@@ -50,7 +46,7 @@ public class PostponedPageController extends HeaderController {
             Model model
     ) {
         if (!userBookService.isUserAuthenticated()) {
-            userBookService.guestHandlePostponedRequest(keptContents, model);
+            userBookService.guestHandlePostponedRequest(keptContents, model, getUserRegistrationService().getCurrentUserId());
         } else {
             userBookService.registeredUserHandlePostponedRequest(model);
         }

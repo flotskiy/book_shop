@@ -55,7 +55,7 @@ public class BookPageController extends HeaderController {
 
     @GetMapping("/{slug}")
     public String bookPage(@PathVariable("slug") String slug, Model model) {
-        BookSlugDto bookSlugDto = getBookService().getBookSlugBySlug(slug);
+        BookSlugDto bookSlugDto = getBookService().getBookSlugBySlug(slug, getUserRegistrationService().getCurrentUserId());
         model.addAttribute("slugBook", bookSlugDto);
         model.addAttribute("detailedRating",
                 booksRatingAndPopularityService.getDetailedRatingDto(bookSlugDto.getId()));

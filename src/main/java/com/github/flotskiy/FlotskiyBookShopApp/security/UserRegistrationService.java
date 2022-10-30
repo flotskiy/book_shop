@@ -158,7 +158,7 @@ public class UserRegistrationService {
     }
 
     public Integer getCurrentUserId() {
-        return gerCurrentUser().getId();
+        return bookstoreUserDetailsService.gerCurrentUserId();
     }
 
     public String getExceptionInfo(Exception exception) {

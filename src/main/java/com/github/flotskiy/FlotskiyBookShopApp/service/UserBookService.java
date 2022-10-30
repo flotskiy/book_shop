@@ -34,13 +34,13 @@ public class UserBookService {
         return !(authentication instanceof AnonymousAuthenticationToken);
     }
 
-    public void guestHandleCartRequest(String cartContents, Model model) {
+    public void guestHandleCartRequest(String cartContents, Model model, Integer userId) {
         if (cartContents == null || cartContents.equals("")) {
             model.addAttribute("isCartEmpty", true);
         } else {
             model.addAttribute("isCartEmpty", false);
             String[] cookiesSlugs = customStringHandler.getCookieSlugs(cartContents);
-            List<BookDto> booksFromCookiesSlugs = bookService.getBooksBySlugIn(List.of(cookiesSlugs));
+            List<BookDto> booksFromCookiesSlugs = bookService.getBooksBySlugIn(List.of(cookiesSlugs), userId);
             model.addAttribute("bookCart", booksFromCookiesSlugs);
         }
     }
@@ -56,7 +56,7 @@ public class UserBookService {
         }
     }
 
-    public void guestHandlePostponedRequest(String keptContents, Model model) {
+    public void guestHandlePostponedRequest(String keptContents, Model model, Integer userId) {
         if (keptContents == null || keptContents.equals("")) {
             model.addAttribute("isKeptEmpty", true);
         } else {
@@ -64,7 +64,7 @@ public class UserBookService {
             String[] cookiesSlugs = customStringHandler.getCookieSlugs(keptContents);
             List<String> slugsList = List.of(cookiesSlugs);
             String slugsString = String.join(",", slugsList);
-            List<BookDto> booksFromCookiesSlugs = bookService.getBooksBySlugIn(slugsList);
+            List<BookDto> booksFromCookiesSlugs = bookService.getBooksBySlugIn(slugsList, userId);
             model.addAttribute("booksKept", booksFromCookiesSlugs);
             model.addAttribute("booksKeptSlugs", slugsString);
         }

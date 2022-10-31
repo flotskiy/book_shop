@@ -1,7 +1,6 @@
 package com.github.flotskiy.FlotskiyBookShopApp.security.jwt;
 
 import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import org.springframework.beans.factory.annotation.Value;
@@ -44,14 +43,7 @@ public class JWTService {
     }
 
     public String extractUserName(String token) {
-        String userName = null;
-        try {
-            userName = extractClaim(token, Claims::getSubject);
-        } catch (JwtException exception) {
-            // TODO: throw custom exception
-            System.out.println("JwtException");
-        }
-        return userName;
+        return extractClaim(token, Claims::getSubject);
     }
 
     public Date extractExpiration(String token) {

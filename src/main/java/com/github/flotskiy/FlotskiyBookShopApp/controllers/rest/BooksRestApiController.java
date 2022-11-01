@@ -34,6 +34,7 @@ import java.util.logging.Logger;
 public class BooksRestApiController {
 
     private final BookService bookService;
+    private final UserBookService userBookService;
     private final TagService tagService;
     private final GenreService genreService;
     private final BooksRatingAndPopularityService booksRatingAndPopularityService;
@@ -43,6 +44,7 @@ public class BooksRestApiController {
     @Autowired
     public BooksRestApiController(
             BookService bookService,
+            UserBookService userBookService,
             TagService tagService,
             GenreService genreService,
             BooksRatingAndPopularityService booksRatingAndPopularityService,
@@ -50,6 +52,7 @@ public class BooksRestApiController {
             UserRegistrationService userRegistrationService
             ) {
         this.bookService = bookService;
+        this.userBookService = userBookService;
         this.tagService = tagService;
         this.genreService = genreService;
         this.booksRatingAndPopularityService = booksRatingAndPopularityService;
@@ -230,7 +233,7 @@ public class BooksRestApiController {
             HttpServletResponse response,
             Model model
     ) {
-        bookService.changeBookStatus(slug, status, request, response, model);
+        userBookService.guestChangeBookStatus(slug, status, request, response, model);
         HashMap<String, Object> result = new HashMap<>();
         result.put("result", true); // TODO: 'false' result in case of some problems
         return ResponseEntity.ok().body(result);

@@ -6,19 +6,19 @@ import com.github.flotskiy.FlotskiyBookShopApp.security.UserRegistrationService;
 import com.github.flotskiy.FlotskiyBookShopApp.service.UserBookService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
+import java.util.logging.Logger;
 
 @Controller
 public class CartPageController extends HeaderController {
 
     private final UserBookService userBookService;
+    private final Logger logger = Logger.getLogger(this.getClass().getSimpleName());
 
     @Autowired
     public CartPageController(
@@ -41,29 +41,34 @@ public class CartPageController extends HeaderController {
             ) {
         if (!userBookService.isUserAuthenticated()) {
             userBookService.guestHandleCartRequest(cartContents, model, getUserRegistrationService().getCurrentUserId());
+            logger.info("Displaying CART page for GUEST");
         } else {
             userBookService.registeredUserHandleCartRequest(model);
+            logger.info("Displaying CART page for REGISTERED USER");
         }
         return "/cart";
     }
 
     @PostMapping("/books/changeBookStatus/cart/remove/{slug}")
-    public String handleRemoveBookFromCartRequest(
+    @ResponseBody
+    @Transactional
+    public Map<String, Object> handleRemoveBookFromCartRequest(
             @PathVariable("slug") String slug,
             @CookieValue(name = "cartContents", required = false) String cartContents,
             HttpServletResponse response,
             Model model
     ) {
-        if (cartContents != null && !cartContents.equals("")) {
-            ArrayList<String> cookieBooks = new ArrayList<>(Arrays.asList(cartContents.split("/")));
-            cookieBooks.remove(slug);
-            Cookie cookie = new Cookie("cartContents", String.join("/", cookieBooks));
-            cookie.setPath("/");
-            response.addCookie(cookie);
-            model.addAttribute("isCartEmpty", false);
-        } else {
-            model.addAttribute("isCartEmpty", true);
+        Map<String, Object> result = new HashMap<>();
+        Integer userId = getUserRegistrationService().getCurrentUserId();
+        try {
+            userBookService.removeBookFromCartRequest(slug, cartContents, response, model, userId);
+            result.put("result", true);
+            logger.info("Book SUCCESSFUL removing from the CART page");
+        } catch (Exception exception) {
+            result.put("result", false);
+            result.put("error", "Failed to remove book");
+            logger.info("Book FAILED to remove from the CART page");
         }
-        return "redirect:/books/cart";
+        return result;
     }
 }

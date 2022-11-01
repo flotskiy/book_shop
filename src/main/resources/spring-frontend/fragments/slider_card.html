@@ -16,10 +16,21 @@
                 <div th:if="${book.discountPrice} lt ${book.price}">
                   <div class="Card-sale" th:text="|${book.discount}% скидка|">Скидка</div>
                 </div>
-                <div th:if="${book.isBestseller}">
-                  <div class="Card-ribbon"><span class="Card-ribbonText">Бестселлер</span>
-                  </div>
+                <div class="Card-ribbon">
+                  <span class="Card-ribbonText" th:if="${book.isBestseller}">Бестселлер</span>
                 </div>
+                <a class="Card-status" title="Куплена" th:if="${#strings.equals(book.status, 'PAID')}">
+                  <img src="/assets/img/icons/check.svg" alt="check.svg"/>
+                </a>
+                <a class="Card-status" title="В корзине" th:if="${#strings.equals(book.status, 'CART')}">
+                  <img src="/assets/img/icons/shopping-basket.svg" alt="shopping-basket.svg"/>
+                </a>
+                <a class="Card-status" title="Отложена" th:if="${#strings.equals(book.status, 'KEPT')}">
+                  <img src="/assets/img/icons/heart.svg" alt="heart.svg"/>
+                </a>
+                <a class="Card-status" title="Заархивирована" th:if="${#strings.equals(book.status, 'ARCHIVED')}">
+                  <img src="/assets/img/icons/archive.svg" alt="archive.svg"/>
+                </a>
               </a>
               <div class="Card-content">
                 <strong class="Card-title">

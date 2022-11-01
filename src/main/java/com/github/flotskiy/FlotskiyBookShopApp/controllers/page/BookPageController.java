@@ -34,6 +34,7 @@ import java.util.logging.Logger;
 @RequestMapping("/books")
 public class BookPageController extends HeaderController {
 
+    private final UserBookService userBookService;
     private final ReviewAndLikeService reviewAndLikeService;
     private final BooksRatingAndPopularityService booksRatingAndPopularityService;
     private final ResourceStorage storage;
@@ -43,11 +44,13 @@ public class BookPageController extends HeaderController {
     public BookPageController(
             UserRegistrationService userRegistrationService,
             BookService bookService,
+            UserBookService userBookService,
             ReviewAndLikeService reviewAndLikeService,
             BooksRatingAndPopularityService booksRatingAndPopularityService,
             ResourceStorage storage
     ) {
         super(userRegistrationService, bookService);
+        this.userBookService = userBookService;
         this.reviewAndLikeService = reviewAndLikeService;
         this.booksRatingAndPopularityService = booksRatingAndPopularityService;
         this.storage = storage;
@@ -92,25 +95,33 @@ public class BookPageController extends HeaderController {
     }
 
     @PostMapping("/changeBookStatus/{slug}")
-    public String handleChangeBookStatus(
+    @ResponseBody
+    public Map<String, Object> handleChangeBookStatus(
             @PathVariable(value = "slug") String slug,
             @RequestBody BookStatusDto payload,
             HttpServletRequest request,
             HttpServletResponse response,
             Model model
     ) {
-        getBookService().changeBookStatus(slug, payload.getStatus(), request, response, model);
-        if (slug.split(",").length == 1) {
-            return "redirect:/books/" + slug;
+        Map<String, Object> result = new HashMap<>();
+        try {
+            Integer userId = getUserRegistrationService().getCurrentUserId();
+            userBookService.changeBookStatus(slug, payload.getStatus(), request, response, model, userId);
+            result.put("result", true);
+            logger.info("Book status SUCCESSFULLY changed");
+        } catch (Exception exception) {
+            result.put("result", false);
+            result.put("error", "An error occurred, try again later");
+            logger.info("Book status change FAILED");
         }
-        return "redirect:/books/postponed";
+        return result;
     }
 
     @Secured("ROLE_USER")
     @PostMapping("/rateBook")
     @ResponseBody
     public Map<String, Object> rateBook(@RequestBody RateBookDto payload) throws RateBookByUserException {
-        HashMap<String, Object> result = new HashMap<>();
+        Map<String, Object> result = new HashMap<>();
         Integer userId = getUserRegistrationService().getCurrentUserId();
         booksRatingAndPopularityService
                 .setRatingToBookByUser(payload.getBookId(), userId, Integer.parseInt(payload.getValue()));
@@ -122,7 +133,7 @@ public class BookPageController extends HeaderController {
     @PostMapping("/rateBookReview")
     @ResponseBody
     public Map<String, Object> rateBookReview(@RequestBody RateBookReviewDto payload) throws RateBookReviewException {
-        HashMap<String, Object> result = new HashMap<>();
+        Map<String, Object> result = new HashMap<>();
         Integer userId = getUserRegistrationService().getCurrentUserId();
         booksRatingAndPopularityService.rateBookReview(payload.getReviewId(), userId, payload.getValue());
         result.put("result", true);
@@ -133,7 +144,7 @@ public class BookPageController extends HeaderController {
     @PostMapping("/bookReview")
     @ResponseBody
     public Map<String, Object> bookReview(@RequestBody BookReviewDto payload) throws BookReviewException {
-        HashMap<String, Object> result = new HashMap<>();
+        Map<String, Object> result = new HashMap<>();
         Integer userId = getUserRegistrationService().getCurrentUserId();
         reviewAndLikeService.bookReview(payload.getBookId(), userId, payload.getText());
         result.put("result", true);

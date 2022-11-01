@@ -22,6 +22,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -55,6 +56,15 @@ public class BookstoreUserDetailsService implements UserDetailsService {
         if (userEntity != null) {
             UserDto userDto = convertUserEntityToUserDto(userEntity);
             return new BookstoreUserDetails(userDto);
+        } else {
+            throw new UsernameNotFoundException("UserEntity not found");
+        }
+    }
+
+    public UserDto getUserDtoById(Integer id) throws UsernameNotFoundException {
+        Optional<UserEntity> userEntityOptional = userRepository.findById(id);
+        if (userEntityOptional.isPresent()) {
+            return convertUserEntityToUserDto(userEntityOptional.get());
         } else {
             throw new UsernameNotFoundException("UserEntity not found");
         }

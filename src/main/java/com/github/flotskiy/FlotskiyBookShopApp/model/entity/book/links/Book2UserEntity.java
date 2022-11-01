@@ -8,7 +8,7 @@ import java.time.LocalDateTime;
 public class Book2UserEntity {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+//    @GeneratedValue(strategy = GenerationType.IDENTITY) TODO: REMOVE COMMENT LATER
     private int id;
 
     @Column(columnDefinition = "TIMESTAMP NOT NULL")

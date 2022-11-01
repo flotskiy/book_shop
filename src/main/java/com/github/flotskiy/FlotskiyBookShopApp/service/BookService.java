@@ -15,14 +15,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
-import org.springframework.ui.Model;
 
-import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
@@ -35,7 +29,6 @@ public class BookService {
     private final BooksRatingAndPopularityService booksRatingAndPopularityService;
     private final TagService tagService;
     private final AuthorService authorService;
-    private final CookieService cookieService;
     private final ReviewAndLikeService reviewAndLikeService;
     private final Book2UserService book2UserService;
 
@@ -45,7 +38,6 @@ public class BookService {
             BooksRatingAndPopularityService booksRatingAndPopularityService,
             TagService tagService,
             AuthorService authorService,
-            CookieService cookieService,
             ReviewAndLikeService reviewAndLikeService,
             Book2UserService book2UserService
     ) {
@@ -53,7 +45,6 @@ public class BookService {
         this.booksRatingAndPopularityService = booksRatingAndPopularityService;
         this.tagService = tagService;
         this.authorService = authorService;
-        this.cookieService = cookieService;
         this.reviewAndLikeService = reviewAndLikeService;
         this.book2UserService = book2UserService;
     }
@@ -194,27 +185,6 @@ public class BookService {
             to = LocalDate.now().format(DateTimeFormatter.ofPattern("dd.MM.yyyy"));
         }
         return to;
-    }
-
-    public void changeBookStatus(
-            String slug, String status, HttpServletRequest request, HttpServletResponse response, Model model
-    ) {
-        String newCookie = slug.replaceAll(",", "/");
-        String cartContents = "";
-        String keptContents = "";
-        Cookie[] cookiesFromRequest = request.getCookies();
-
-        if (cookiesFromRequest != null) {
-            Map<String, String> cookiesMap = Arrays.stream(cookiesFromRequest)
-                    .collect(Collectors.toMap(Cookie::getName, Cookie::getValue));
-            cartContents = cookiesMap.get("cartContents");
-            keptContents = cookiesMap.get("keptContents");
-        }
-        if (status.equals("CART")) {
-            cookieService.handleCartCookie(cartContents, newCookie, response, model);
-        } else if (status.equals("KEPT")) {
-            cookieService.handleKeptCookie(keptContents, newCookie, response, model);
-        }
     }
 
     public List<BookEntity> findBookEntitiesByIdIsIn(List<Integer> bookIdList) {

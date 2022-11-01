@@ -69,8 +69,13 @@ public class UserRegistrationService {
     }
 
     public UserEntity registerNewUser(RegistrationForm registrationForm) {
+        Integer currentMaxId = userRepository.getMaxId();
+        int newUserId = 1;
+        if (currentMaxId != null) {
+            newUserId = currentMaxId + 1;
+        }
+
         UserEntity newUserEntity = new UserEntity();
-        int newUserId = userRepository.getMaxId() + 1;
         newUserEntity.setId(newUserId);
         if (registrationForm.getPass().isBlank()) {
             newUserEntity.setHash("");
@@ -84,14 +89,13 @@ public class UserRegistrationService {
     }
 
     public UserContactEntity registerNewUserContact(RegistrationForm registrationForm, UserEntity userEntity) {
-        UserContactEntity newUserContactEntity = new UserContactEntity();
         Integer currentMaxId = userContactRepository.getMaxId();
-        int newUserContactId = 0;
-        if (currentMaxId == null) {
-            newUserContactId = 1;
-        } else {
-            newUserContactId =  currentMaxId + 1;
+        int newUserContactId = 1;
+        if (currentMaxId != null) {
+            newUserContactId = currentMaxId + 1;
         }
+
+        UserContactEntity newUserContactEntity = new UserContactEntity();
         newUserContactEntity.setId(newUserContactId);
         newUserContactEntity.setUserEntity(userEntity);
         String email = registrationForm.getEmail();
@@ -159,6 +163,10 @@ public class UserRegistrationService {
 
     public Integer getCurrentUserId() {
         return bookstoreUserDetailsService.gerCurrentUserId();
+    }
+
+    public UserDto getCurrentUserDtoById(Integer userId) {
+        return bookstoreUserDetailsService.getUserDtoById(userId);
     }
 
     public String getExceptionInfo(Exception exception) {

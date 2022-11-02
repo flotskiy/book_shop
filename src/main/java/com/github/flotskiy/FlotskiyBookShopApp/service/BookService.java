@@ -6,11 +6,18 @@ import com.github.flotskiy.FlotskiyBookShopApp.model.dto.book.BookDto;
 import com.github.flotskiy.FlotskiyBookShopApp.model.dto.book.PopularityDto;
 import com.github.flotskiy.FlotskiyBookShopApp.model.dto.book.page.BookFileDto;
 import com.github.flotskiy.FlotskiyBookShopApp.model.dto.book.page.BookSlugDto;
+import com.github.flotskiy.FlotskiyBookShopApp.model.dto.user.UserDto;
 import com.github.flotskiy.FlotskiyBookShopApp.model.entity.author.AuthorEntity;
 import com.github.flotskiy.FlotskiyBookShopApp.model.entity.book.BookEntity;
 import com.github.flotskiy.FlotskiyBookShopApp.model.entity.book.BookTagEntity;
 import com.github.flotskiy.FlotskiyBookShopApp.model.entity.book.file.BookFileEntity;
+import com.github.flotskiy.FlotskiyBookShopApp.repository.Book2AuthorRepository;
+import com.github.flotskiy.FlotskiyBookShopApp.repository.Book2GenreRepository;
 import com.github.flotskiy.FlotskiyBookShopApp.repository.BookRepository;
+import com.github.flotskiy.FlotskiyBookShopApp.repository.BookTag2BookRepository;
+import com.google.common.collect.Iterables;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -21,6 +28,7 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Service
 public class BookService {
@@ -31,6 +39,9 @@ public class BookService {
     private final AuthorService authorService;
     private final ReviewAndLikeService reviewAndLikeService;
     private final Book2UserService book2UserService;
+    private final BookTag2BookRepository bookTag2BookRepository;
+    private final Book2GenreRepository book2GenreRepository;
+    private final Book2AuthorRepository book2AuthorRepository;
 
     @Autowired
     public BookService(
@@ -39,7 +50,10 @@ public class BookService {
             TagService tagService,
             AuthorService authorService,
             ReviewAndLikeService reviewAndLikeService,
-            Book2UserService book2UserService
+            Book2UserService book2UserService,
+            BookTag2BookRepository bookTag2BookRepository,
+            Book2GenreRepository book2GenreRepository,
+            Book2AuthorRepository book2AuthorRepository
     ) {
         this.bookRepository = bookRepository;
         this.booksRatingAndPopularityService = booksRatingAndPopularityService;
@@ -47,16 +61,25 @@ public class BookService {
         this.authorService = authorService;
         this.reviewAndLikeService = reviewAndLikeService;
         this.book2UserService = book2UserService;
+        this.bookTag2BookRepository = bookTag2BookRepository;
+        this.book2GenreRepository = book2GenreRepository;
+        this.book2AuthorRepository = book2AuthorRepository;
     }
 
     public List<BookDto> getAllBooksData(Integer userId) {
         return convertBookEntitiesToBookDtoList(bookRepository.findAll(), userId);
     }
 
-    public Page<BookDto> getPageOfBooks(int offset, int limit, int userId) {
-        Pageable nextPage = PageRequest.of(offset, limit);
-        Page<BookEntity> bookEntities = bookRepository.findAll(nextPage);
-        return bookEntities.map(bookEntity -> convertBookEntityToBookDto(bookEntity, userId));
+    public List<BookDto> getListOfRecommendedBooks(Integer offset, Integer limit, Integer userId, UserDto userDto) {
+        if (userId == -1) {
+            return getRecommendedBooksForGuestWithoutCartAndPostponed(userId).subList(offset, limit);
+        } else {
+            Pageable nextPage = PageRequest.of(offset, limit);
+            List<Integer> bookIdsList = getRecommendedBookIdsForUser(userDto);
+            List<BookEntity> recommendedBookEntities =
+                    bookRepository.findBookEntitiesByIdIsInOrderByPubDageDesc(bookIdsList, nextPage).getContent();
+            return convertBookEntitiesToBookDtoWithRatingList(recommendedBookEntities, userId);
+        }
     }
 
     public List<BookDto> getBooksByAuthor(String authorName, Integer userId) {
@@ -104,7 +127,7 @@ public class BookService {
         Pageable nextPage = PageRequest.of(offset, limit);
         Page<BookEntity> bookEntities =
                 bookRepository.findBookEntitiesByPubDateBetweenOrderByPubDateDesc(from, to, nextPage);
-        return bookEntities.map(bookEntity -> convertBookEntityToBookDto(bookEntity, userId));
+        return bookEntities.map(bookEntity -> convertBookEntityToBookDtoWithRatingValue(bookEntity, userId));
     }
 
     public List<BookDto> getRecentBooks(int offset, int limit, int userId) {
@@ -270,5 +293,39 @@ public class BookService {
         bookFileDto.setTypeId(bookFileEntity.getTypeId());
         bookFileDto.setPath(bookFileEntity.getPath());
         return bookFileDto;
+    }
+
+    private List<BookDto> getRecommendedBooksForGuestWithoutCartAndPostponed(Integer userId) {
+        List<Integer> first30bookIdsListWithMaxRating =
+                booksRatingAndPopularityService.getFirst30bookIdsWithMaxUsersRating();
+        List<BookDto> first30booksListWithMaxRating = convertBookEntitiesToBookDtoWithRatingList(
+                bookRepository.findBookEntitiesByIdIsIn(first30bookIdsListWithMaxRating), userId
+        );
+        List<BookDto> first30BooksForTheLast30days = getRecentBooks(0, 30, userId);
+        List<BookDto> result = Stream
+                .concat(first30booksListWithMaxRating.stream(), first30BooksForTheLast30days.stream())
+                .distinct()
+                .collect(Collectors.toList());
+        Collections.shuffle(result);
+        return result;
+    }
+
+    private List<Integer> getRecommendedBookIdsForUser(UserDto userDto) {
+        List<Integer> allUserBooksId = userDto.getUserBooksData().getAllBooks()
+                .stream().map(BookDto::getId).collect(Collectors.toList());
+
+        List<Integer> allTagsId = bookTag2BookRepository.getTagIdsForBooksIdsInList(allUserBooksId);
+        List<Integer> allGenresId = book2GenreRepository.getGenreIdsForBooksIdsInList(allUserBooksId);
+        List<Integer> allAuthorsId = book2AuthorRepository.getAuthorIdsForBookIdsInList(allUserBooksId);
+
+        List<Integer> allBooksIdsByTags = bookTag2BookRepository.getBookIdsForTagIdsInList(allTagsId);
+        List<Integer> allBooksIdsByGenres = book2GenreRepository.getBookIdsForGenreIdsInList(allGenresId);
+        List<Integer> allBooksIdsByAuthors = book2AuthorRepository.getBookIdsForAuthorIdsInList(allAuthorsId);
+
+        Iterable<Integer> allBookIdsIterable = Iterables.unmodifiableIterable(
+                Iterables.concat(allBooksIdsByTags, allBooksIdsByGenres, allBooksIdsByAuthors));
+        List<Integer> allBookIdsList = Lists.newArrayList(Sets.newHashSet(allBookIdsIterable));
+        allBookIdsList.removeAll(allUserBooksId);
+        return allBookIdsList;
     }
 }

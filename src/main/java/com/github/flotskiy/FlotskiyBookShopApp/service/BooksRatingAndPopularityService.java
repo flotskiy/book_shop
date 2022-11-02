@@ -181,4 +181,8 @@ public class BooksRatingAndPopularityService {
             bookReviewLikeRepository.save(bookReviewLikeEntity);
         }
     }
+
+    public List<Integer> getFirst30bookIdsWithMaxUsersRating() {
+        return bookRatingRepository.getFirst30bookIdsWithMaxUsersRating();
+    }
 }

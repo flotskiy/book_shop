@@ -2,7 +2,10 @@ package com.github.flotskiy.FlotskiyBookShopApp.model.dto.user;
 
 import com.github.flotskiy.FlotskiyBookShopApp.model.dto.book.BookDto;
 
+import java.util.Collection;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class UserBooksData {
 
@@ -41,5 +44,11 @@ public class UserBooksData {
 
     public void setArchived(List<BookDto> archived) {
         this.archived = archived;
+    }
+
+    public List<BookDto> getAllBooks() {
+        return Stream.of(kept, cart, paid, archived)
+                .flatMap(Collection::stream)
+                .collect(Collectors.toList());
     }
 }

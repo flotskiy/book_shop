@@ -36,6 +36,9 @@ public interface BookRepository extends JpaRepository<BookEntity, Integer> {
     @Query(value = "SELECT * FROM book b WHERE b.id IN :idList", nativeQuery = true)
     List<BookEntity> findBookEntitiesByIdIsIn(@Param("idList") Collection<Integer> idList);
 
+    @Query(value = "SELECT * FROM book b WHERE b.id IN :idList ORDER BY b.pub_date DESC", nativeQuery = true)
+    Page<BookEntity> findBookEntitiesByIdIsInOrderByPubDageDesc(@Param("idList") Collection<Integer> idList, Pageable nextPage);
+
     Page<BookEntity> findBookEntitiesByBookTagsIdOrderByPubDateDesc(Integer tagId, Pageable nextPage);
 
     Page<BookEntity> findBookEntitiesByGenreEntitiesIdOrderByPubDateDesc(Integer genreId, Pageable nextPage);

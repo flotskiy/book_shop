@@ -166,6 +166,9 @@ public class UserRegistrationService {
     }
 
     public UserDto getCurrentUserDtoById(Integer userId) {
+        if (userId < 1) {
+            return new UserDto();
+        }
         return bookstoreUserDetailsService.getUserDtoById(userId);
     }
 

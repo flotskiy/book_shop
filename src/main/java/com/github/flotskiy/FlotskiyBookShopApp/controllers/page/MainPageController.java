@@ -3,6 +3,7 @@ package com.github.flotskiy.FlotskiyBookShopApp.controllers.page;
 import com.github.flotskiy.FlotskiyBookShopApp.model.dto.book.BookDto;
 import com.github.flotskiy.FlotskiyBookShopApp.model.dto.book.CountedBooksDto;
 import com.github.flotskiy.FlotskiyBookShopApp.model.dto.book.page.TagDto;
+import com.github.flotskiy.FlotskiyBookShopApp.model.dto.user.UserDto;
 import com.github.flotskiy.FlotskiyBookShopApp.service.BookService;
 import com.github.flotskiy.FlotskiyBookShopApp.service.TagService;
 import com.github.flotskiy.FlotskiyBookShopApp.security.UserRegistrationService;
@@ -28,7 +29,8 @@ public class MainPageController extends HeaderController {
     @ModelAttribute("recommendedBooks")
     public List<BookDto> recommendedBooks() {
         Integer userId = getUserRegistrationService().getCurrentUserId();
-        return getBookService().getPageOfBooks(0, 6, userId).getContent();
+        UserDto currentUserDto = getUserRegistrationService().getCurrentUserDtoById(userId);
+        return  getBookService().getListOfRecommendedBooks(0, 6, userId, currentUserDto);
     }
 
     @ModelAttribute("recentBooks")
@@ -57,7 +59,8 @@ public class MainPageController extends HeaderController {
     @ResponseBody
     public CountedBooksDto getRecommendedBooksPage(@RequestParam("offset") int offset, @RequestParam("limit") int limit) {
         Integer userId = getUserRegistrationService().getCurrentUserId();
-        return new CountedBooksDto(getBookService().getPageOfBooks(offset, limit, userId).getContent());
+        UserDto currentUserDto = getUserRegistrationService().getCurrentUserDtoById(userId);
+        return new CountedBooksDto(getBookService().getListOfRecommendedBooks(offset, limit, userId, currentUserDto));
     }
 
     @GetMapping("/books/card/recent")

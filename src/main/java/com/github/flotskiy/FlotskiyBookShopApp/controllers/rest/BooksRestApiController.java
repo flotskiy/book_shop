@@ -6,6 +6,7 @@ import com.github.flotskiy.FlotskiyBookShopApp.model.dto.book.BookDto;
 import com.github.flotskiy.FlotskiyBookShopApp.model.dto.book.CountedBooksDto;
 import com.github.flotskiy.FlotskiyBookShopApp.model.dto.book.GenreDto;
 import com.github.flotskiy.FlotskiyBookShopApp.model.dto.book.page.TagDto;
+import com.github.flotskiy.FlotskiyBookShopApp.model.dto.user.UserDto;
 import com.github.flotskiy.FlotskiyBookShopApp.security.UserRegistrationService;
 import com.github.flotskiy.FlotskiyBookShopApp.service.*;
 import io.swagger.annotations.Api;
@@ -109,7 +110,9 @@ public class BooksRestApiController {
     public ResponseEntity<CountedBooksDto> recommendedBooks(
             @RequestParam("offset") Integer offset, @RequestParam("limit") Integer limit) {
         int currentUserId = userRegistrationService.getCurrentUserId();
-        return ResponseEntity.ok(new CountedBooksDto(bookService.getPageOfBooks(offset, limit, currentUserId).getContent()));
+        UserDto currentUserDto = userRegistrationService.getCurrentUserDtoById(currentUserId);
+        return ResponseEntity
+                .ok(new CountedBooksDto(bookService.getListOfRecommendedBooks(offset, limit, currentUserId, currentUserDto)));
     }
 
     @GetMapping("/recent")

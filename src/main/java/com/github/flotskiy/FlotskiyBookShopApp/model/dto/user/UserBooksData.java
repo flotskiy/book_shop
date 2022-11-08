@@ -4,6 +4,7 @@ import com.github.flotskiy.FlotskiyBookShopApp.model.dto.book.BookDto;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -48,6 +49,7 @@ public class UserBooksData {
 
     public List<BookDto> getAllBooks() {
         return Stream.of(kept, cart, paid, archived)
+                .filter(Objects::nonNull)
                 .flatMap(Collection::stream)
                 .collect(Collectors.toList());
     }

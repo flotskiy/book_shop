@@ -86,7 +86,7 @@ public class Page {
 
     public Page openBook() {
         WebElement element = driver
-                .findElement(By.xpath("/html/body/div/div/main/div/div[2]/div[6]/div[1]/a/div[2]/div"));
+                .findElement(By.cssSelector("a[href='/books/book-page-ltz-901-hpaqvpkc']"));
         element.click();
         return this;
     }

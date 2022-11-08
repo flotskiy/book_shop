@@ -72,7 +72,15 @@ public class BookService {
 
     public List<BookDto> getListOfRecommendedBooks(Integer offset, Integer limit, Integer userId, UserDto userDto) {
         if (userId == -1) {
-            return getRecommendedBooksForGuestWithoutCartAndPostponed(userId).subList(offset, limit);
+            List<BookDto> resultForGuestWithoutCartAndPostponed =
+                    getRecommendedBooksForGuestWithoutCartAndPostponed(userId);
+            if (offset >= resultForGuestWithoutCartAndPostponed.size() - 1) {
+                return Collections.EMPTY_LIST;
+            }
+            if (limit > resultForGuestWithoutCartAndPostponed.size()) {
+                limit = resultForGuestWithoutCartAndPostponed.size();
+            }
+            return resultForGuestWithoutCartAndPostponed.subList(offset, limit);
         } else {
             Pageable nextPage = PageRequest.of(offset, limit);
             List<Integer> bookIdsList = getRecommendedBookIdsForUser(userDto);
@@ -297,7 +305,7 @@ public class BookService {
 
     private List<BookDto> getRecommendedBooksForGuestWithoutCartAndPostponed(Integer userId) {
         List<Integer> first30bookIdsListWithMaxRating =
-                booksRatingAndPopularityService.getFirst30bookIdsWithMaxUsersRating();
+                booksRatingAndPopularityService.getFirst30bookIdsWithMaxUsersRatingMoreOrEquals4();
         List<BookDto> first30booksListWithMaxRating = convertBookEntitiesToBookDtoWithRatingList(
                 bookRepository.findBookEntitiesByIdIsIn(first30bookIdsListWithMaxRating), userId
         );

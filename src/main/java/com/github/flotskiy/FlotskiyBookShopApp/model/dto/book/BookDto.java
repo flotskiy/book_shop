@@ -142,22 +142,16 @@ public class BookDto {
         BookDto bookDto = (BookDto) o;
         return isBestseller == bookDto.isBestseller
                 && id.equals(bookDto.id)
-                && slug.equals(bookDto.slug)
-                && image.equals(bookDto.image)
                 && authors.equals(bookDto.authors)
                 && title.equals(bookDto.title)
-                && discount.equals(bookDto.discount)
                 && rating.equals(bookDto.rating)
-                && status.equals(bookDto.status)
-                && price.equals(bookDto.price)
-                && discountPrice.equals(bookDto.discountPrice)
                 && pubDate.equals(bookDto.pubDate);
     }
 
     @Override
     public int hashCode() {
         return Objects.hash(
-                id, slug, image, authors, title, discount, isBestseller, rating, status, price, discountPrice, pubDate
+                id, authors, title, isBestseller, rating, pubDate
         );
     }
 }

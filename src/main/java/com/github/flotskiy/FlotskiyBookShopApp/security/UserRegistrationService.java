@@ -56,16 +56,17 @@ public class UserRegistrationService {
         this.jwtService = jwtService;
     }
 
-    public void registerNewUserWithContact(RegistrationForm registrationForm) throws InstanceAlreadyExistsException {
+    public UserEntity registerNewUserWithContact(RegistrationForm registrationForm) throws InstanceAlreadyExistsException {
         UserEntity userEntity = userRepository.findUserEntityByUserContactEntity_TypeAndUserContactEntity_Contact(
                 ContactType.EMAIL, registrationForm.getEmail()
         );
         if (userEntity == null) {
-            UserEntity newUserEntity = registerNewUser(registrationForm);
-            registerNewUserContact(registrationForm, newUserEntity);
+            userEntity = registerNewUser(registrationForm);
+            registerNewUserContact(registrationForm, userEntity);
         } else {
             throw new InstanceAlreadyExistsException("User with that email already exists");
         }
+        return userEntity;
     }
 
     public UserEntity registerNewUser(RegistrationForm registrationForm) {

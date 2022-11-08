@@ -16,8 +16,9 @@ public interface BookRatingRepository extends JpaRepository<BookRatingEntity, In
     Integer getMaxId();
 
     @Query(
-            value = "SELECT r.book_id FROM rating r GROUP BY book_id ORDER BY AVG(r.rating) DESC LIMIT 30",
+            value = "SELECT r.book_id FROM rating r GROUP BY book_id HAVING (AVG(r.rating) >= 4) " +
+                    "ORDER BY AVG(r.rating) DESC LIMIT 30",
             nativeQuery = true
     )
-    List<Integer> getFirst30bookIdsWithMaxUsersRating();
+    List<Integer> getFirst30bookIdsWithMaxUsersRatingMoreOrEquals4();
 }

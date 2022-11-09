@@ -11,10 +11,13 @@ import org.junit.jupiter.api.*;
 import org.mockito.InjectMocks;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.MediaType;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.test.web.servlet.MockMvc;
 
 import javax.management.InstanceAlreadyExistsException;
 
@@ -22,10 +25,16 @@ import java.util.logging.Logger;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.view;
 
 @SpringBootTest
+@AutoConfigureMockMvc
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class UserRegistrationServiceTests {
+
+    private final MockMvc mockMvc;
 
     @InjectMocks
     private final UserRegistrationService userRegistrationService;
@@ -45,10 +54,12 @@ class UserRegistrationServiceTests {
 
     @Autowired
     public UserRegistrationServiceTests(
+            MockMvc mockMvc,
             UserRegistrationService userRegistrationService,
             PasswordEncoder passwordEncoder,
             AuthenticationManager authenticationManager
     ) {
+        this.mockMvc = mockMvc;
         this.userRegistrationService = userRegistrationService;
         this.passwordEncoder = passwordEncoder;
         this.authenticationManager = authenticationManager;
@@ -131,5 +142,23 @@ class UserRegistrationServiceTests {
 
         assertNotNull(contactConfirmationResponse);
         assertTrue(contactConfirmationResponse.getResult().matches(".+\\..+\\..+"));
+    }
+
+    @Test
+    void newUserRegistration() throws Exception {
+        mockMvc.perform(
+                        post("/reg")
+                                .contentType(MediaType.APPLICATION_FORM_URLENCODED)
+                                .param("name", "Hello Test User")
+                                .param("email", "test@test.test")
+                                .param("pass", "testpass")
+                )
+                .andExpect(status().isOk())
+                .andExpect(view().name("/signin"));
+
+        Mockito.verify(userRepositoryMock, Mockito.times(1))
+                .save(Mockito.any(UserEntity.class));
+        Mockito.verify(userContactRepositoryMock, Mockito.times(1))
+                .save(Mockito.any(UserContactEntity.class));
     }
 }

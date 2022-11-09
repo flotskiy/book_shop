@@ -69,7 +69,6 @@ public class SignInAndSignUpController extends HeaderController {
             Logger.getLogger(this.getClass().getSimpleName()).warning(ex.getMessage());
             model.addAttribute("regOk", false);
         }
-
         return "/signin";
     }
 

@@ -132,7 +132,7 @@ public class BooksRatingAndPopularityService {
                 .subList(firstElement, lastElement);
     }
 
-    public void setRatingToBookByUser(Integer bookId, Integer userId, Integer ratingValue)
+    public BookRatingEntity setRatingToBookByUser(Integer bookId, Integer userId, Integer ratingValue)
             throws RateBookByUserException {
         if (ratingValue < 1 || ratingValue > 5) {
             throw new RateBookByUserException("Rating value is unacceptable");
@@ -145,15 +145,15 @@ public class BooksRatingAndPopularityService {
         if (bookRatingEntity == null) {
             Integer newId = bookRatingRepository.getMaxId() + 1;
             BookRatingEntity newBookRatingEntity = new BookRatingEntity(newId, bookId, userId, ratingValue.shortValue());
-            bookRatingRepository.save(newBookRatingEntity);
+            return bookRatingRepository.save(newBookRatingEntity);
         } else {
             bookRatingRepository.delete(bookRatingEntity);
             bookRatingEntity.setRating(ratingValue.shortValue());
-            bookRatingRepository.save(bookRatingEntity);
+            return bookRatingRepository.save(bookRatingEntity);
         }
     }
 
-    public void rateBookReview(Integer reviewId, Integer userId, Integer likeValue) throws RateBookReviewException {
+    public BookReviewLikeEntity rateBookReview(Integer reviewId, Integer userId, Integer likeValue) throws RateBookReviewException {
         if (likeValue != 1 && likeValue != -1) {
             throw new RateBookReviewException("Like value is unacceptable");
         }
@@ -173,12 +173,16 @@ public class BooksRatingAndPopularityService {
             BookReviewLikeEntity newBookReviewLikeEntity =
                     new BookReviewLikeEntity(newId, reviewId, userEntity, LocalDateTime.now(), likeValue.shortValue());
             System.out.println(newBookReviewLikeEntity);
-            bookReviewLikeRepository.save(newBookReviewLikeEntity);
+            return bookReviewLikeRepository.save(newBookReviewLikeEntity);
         } else {
             bookReviewLikeRepository.delete(bookReviewLikeEntity);
             bookReviewLikeEntity.setValue(likeValue.shortValue());
             bookReviewLikeEntity.setTime(LocalDateTime.now());
-            bookReviewLikeRepository.save(bookReviewLikeEntity);
+            return bookReviewLikeRepository.save(bookReviewLikeEntity);
         }
+    }
+
+    public List<Integer> getFirst30bookIdsWithMaxUsersRatingMoreOrEquals4() {
+        return bookRatingRepository.getFirst30bookIdsWithMaxUsersRatingMoreOrEquals4();
     }
 }

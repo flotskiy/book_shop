@@ -1,6 +1,7 @@
 package com.github.flotskiy.FlotskiyBookShopApp.security.jwt;
 
 import com.google.common.hash.Hashing;
+import io.jsonwebtoken.ExpiredJwtException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -18,6 +19,8 @@ public class InactiveJwtService {
 
     private final JWTService jwtService;
     private final InactiveJwtRepository inactiveJwtRepository;
+
+    private final Logger logger = Logger.getLogger(this.getClass().getSimpleName());
 
     @Autowired
     public InactiveJwtService(JWTService jwtService, InactiveJwtRepository inactiveJwtRepository) {
@@ -37,12 +40,18 @@ public class InactiveJwtService {
         }
 
         if (token == null) {
-            Logger.getLogger(this.getClass().getSimpleName()).info("No token found. Nothing to save in InactiveRepo");
+            logger.info("No token found. Nothing to save in InactiveRepo");
             return;
         }
 
         String hash = getStringHash(token);
-        Date expiry = jwtService.extractExpiration(token);
+        Date expiry = null;
+        try {
+            expiry = jwtService.extractExpiration(token);
+        } catch (ExpiredJwtException expiredJwtException) {
+            logger.warning("JWT Expired. No need to put it in inactiveJwtRepository");
+            return;
+        }
         LocalDateTime localDateTimeExpiry = LocalDateTime.ofInstant(expiry.toInstant(), ZoneId.systemDefault());
 
         InactiveJwt newInactiveJwt = new InactiveJwt();

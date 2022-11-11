@@ -6,6 +6,8 @@ import com.github.flotskiy.FlotskiyBookShopApp.model.dto.book.BookDto;
 import com.github.flotskiy.FlotskiyBookShopApp.model.dto.book.CountedBooksDto;
 import com.github.flotskiy.FlotskiyBookShopApp.model.dto.book.GenreDto;
 import com.github.flotskiy.FlotskiyBookShopApp.model.dto.book.page.TagDto;
+import com.github.flotskiy.FlotskiyBookShopApp.model.dto.user.UserDto;
+import com.github.flotskiy.FlotskiyBookShopApp.security.UserRegistrationService;
 import com.github.flotskiy.FlotskiyBookShopApp.service.*;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -33,30 +35,37 @@ import java.util.logging.Logger;
 public class BooksRestApiController {
 
     private final BookService bookService;
+    private final UserBookService userBookService;
     private final TagService tagService;
     private final GenreService genreService;
     private final BooksRatingAndPopularityService booksRatingAndPopularityService;
     private final ReviewAndLikeService reviewAndLikeService;
+    private final UserRegistrationService userRegistrationService;
 
     @Autowired
     public BooksRestApiController(
             BookService bookService,
+            UserBookService userBookService,
             TagService tagService,
             GenreService genreService,
             BooksRatingAndPopularityService booksRatingAndPopularityService,
-            ReviewAndLikeService reviewAndLikeService
+            ReviewAndLikeService reviewAndLikeService,
+            UserRegistrationService userRegistrationService
             ) {
         this.bookService = bookService;
+        this.userBookService = userBookService;
         this.tagService = tagService;
         this.genreService = genreService;
         this.booksRatingAndPopularityService = booksRatingAndPopularityService;
         this.reviewAndLikeService = reviewAndLikeService;
+        this.userRegistrationService = userRegistrationService;
     }
 
     @GetMapping("/by-author")
     @ApiOperation("Receiving List of Books with Specified Author's Name")
     public ResponseEntity<List<BookDto>> booksByAuthor(@RequestParam("author") String authorName) {
-        return ResponseEntity.ok(bookService.getBooksByAuthor(authorName));
+        int currentUserId = userRegistrationService.getCurrentUserId();
+        return ResponseEntity.ok(bookService.getBooksByAuthor(authorName, currentUserId));
     }
 
     @GetMapping("/by-title")
@@ -64,7 +73,8 @@ public class BooksRestApiController {
     public ResponseEntity<ApiResponse<BookDto>> booksByTitle(@RequestParam("title") String title)
             throws BookstoreApiWrongParameterException {
         ApiResponse<BookDto> response = new ApiResponse<>();
-        List<BookDto> data = bookService.getBooksByTitle(title);
+        int currentUserId = userRegistrationService.getCurrentUserId();
+        List<BookDto> data = bookService.getBooksByTitle(title, currentUserId);
         response.setDebugMessage("Successful request: /api/books/by-title");
         response.setMessage("Data size: " + data.size() + " books");
         response.setStatus(HttpStatus.OK);
@@ -75,19 +85,22 @@ public class BooksRestApiController {
     @GetMapping("/by-price-range")
     @ApiOperation("Receiving List of Books with Specified Range of Prices")
     public ResponseEntity<List<BookDto>> priceRangeBooks(@RequestParam("min") int min, @RequestParam("max") int max) {
-        return ResponseEntity.ok(bookService.getBooksWithPriceBetween(min, max));
+        int currentUserId = userRegistrationService.getCurrentUserId();
+        return ResponseEntity.ok(bookService.getBooksWithPriceBetween(min, max, currentUserId));
     }
 
     @GetMapping("/with-max-discount")
     @ApiOperation("Receiving List of Books with Maximum Discount Value")
     public ResponseEntity<List<BookDto>> maxDiscountBooks() {
-        return ResponseEntity.ok(bookService.getBooksWithMaxDiscount());
+        int currentUserId = userRegistrationService.getCurrentUserId();
+        return ResponseEntity.ok(bookService.getBooksWithMaxDiscount(currentUserId));
     }
 
     @GetMapping("/bestsellers")
     @ApiOperation("Receiving List of Books which are Bestsellers (if field 'is_bestseller' has value = 1)")
     public ResponseEntity<List<BookDto>> bestsellerBooks() {
-        return ResponseEntity.ok(bookService.getBestsellers());
+        int currentUserId = userRegistrationService.getCurrentUserId();
+        return ResponseEntity.ok(bookService.getBestsellers(currentUserId));
     }
 
     @GetMapping("/recommended")
@@ -96,7 +109,10 @@ public class BooksRestApiController {
             "and 'limit' parameter is helps to specify the number of books to show")
     public ResponseEntity<CountedBooksDto> recommendedBooks(
             @RequestParam("offset") Integer offset, @RequestParam("limit") Integer limit) {
-        return ResponseEntity.ok(new CountedBooksDto(bookService.getPageOfBooks(offset, limit).getContent()));
+        int currentUserId = userRegistrationService.getCurrentUserId();
+        UserDto currentUserDto = userRegistrationService.getCurrentUserDtoById(currentUserId);
+        return ResponseEntity
+                .ok(new CountedBooksDto(bookService.getListOfRecommendedBooks(offset, limit, currentUserId, currentUserDto)));
     }
 
     @GetMapping("/recent")
@@ -113,9 +129,10 @@ public class BooksRestApiController {
         from = bookService.checkFrom(from);
         to = bookService.checkTo(to);
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");
+        int currentUserId = userRegistrationService.getCurrentUserId();
         return ResponseEntity.ok(
                 new CountedBooksDto(bookService.getPageOfRecentBooks(
-                        LocalDate.parse(from, formatter), LocalDate.parse(to, formatter), offset, limit
+                        LocalDate.parse(from, formatter), LocalDate.parse(to, formatter), offset, limit, currentUserId
                 ).getContent()));
     }
 
@@ -125,7 +142,8 @@ public class BooksRestApiController {
             "and 'limit' parameter is helps to specify the number of books to show")
     public ResponseEntity<CountedBooksDto> popularBooks(@RequestParam(value = "offset") Integer offset,
                                                       @RequestParam(value = "limit") Integer limit) {
-        return ResponseEntity.ok(new CountedBooksDto(bookService.getPopularBooks(offset, limit)));
+        int currentUserId = userRegistrationService.getCurrentUserId();
+        return ResponseEntity.ok(new CountedBooksDto(bookService.getPopularBooks(offset, limit, currentUserId)));
     }
 
     @GetMapping("/tags")
@@ -146,8 +164,9 @@ public class BooksRestApiController {
             @RequestParam("offset") Integer offset,
             @RequestParam("limit") Integer limit
     ) {
+        int currentUserId = userRegistrationService.getCurrentUserId();
         return ResponseEntity
-                .ok(new CountedBooksDto(bookService.getPageOfBooksByTag(tagId, offset, limit).getContent()));
+                .ok(new CountedBooksDto(bookService.getPageOfBooksByTag(tagId, offset, limit, currentUserId).getContent()));
     }
 
     @GetMapping("/genres")
@@ -167,8 +186,10 @@ public class BooksRestApiController {
             @RequestParam("offset") Integer offset,
             @RequestParam("limit") Integer limit
     ) {
+        int currentUserId = userRegistrationService.getCurrentUserId();
         return ResponseEntity
-                .ok(new CountedBooksDto(bookService.getPageOfBooksByGenreId(genreId, offset, limit).getContent()));
+                .ok(new CountedBooksDto(bookService.getPageOfBooksByGenreId(genreId, offset, limit, currentUserId)
+                        .getContent()));
     }
 
     @GetMapping(value = {"/search", "/search/{searchWord}"})
@@ -180,8 +201,10 @@ public class BooksRestApiController {
             @RequestParam("offset") int offset,
             @RequestParam("limit") int limit
     ) {
+        int currentUserId = userRegistrationService.getCurrentUserId();
         return ResponseEntity
-                .ok(new CountedBooksDto(bookService.getPageOfSearchResultBooks(searchWord, offset, limit).getContent()));
+                .ok(new CountedBooksDto(bookService.getPageOfSearchResultBooks(searchWord, offset, limit, currentUserId)
+                        .getContent()));
     }
 
     @GetMapping("/author/{authorId}")
@@ -195,8 +218,10 @@ public class BooksRestApiController {
             @RequestParam("offset") Integer offset,
             @RequestParam("limit") Integer limit
     ) {
+        int currentUserId = userRegistrationService.getCurrentUserId();
         return ResponseEntity
-                .ok(new CountedBooksDto(bookService.getPageOfBooksByAuthorId(authorId, offset, limit).getContent()));
+                .ok(new CountedBooksDto(bookService.getPageOfBooksByAuthorId(authorId, offset, limit, currentUserId)
+                        .getContent()));
     }
 
     @RequestMapping("/changeBookStatus/{slug}")
@@ -211,7 +236,7 @@ public class BooksRestApiController {
             HttpServletResponse response,
             Model model
     ) {
-        bookService.changeBookStatus(slug, status, request, response, model);
+        userBookService.guestChangeBookStatus(slug, status, request, response, model);
         HashMap<String, Object> result = new HashMap<>();
         result.put("result", true); // TODO: 'false' result in case of some problems
         return ResponseEntity.ok().body(result);
@@ -225,10 +250,10 @@ public class BooksRestApiController {
     public ResponseEntity<Map<String, Object>> rateCurrentBook(
             @RequestParam("bookId") Integer bookId, @RequestParam("value") Integer value
     ) {
-        Integer userId = 1; // ID of current user
+        int currentUserId = userRegistrationService.getCurrentUserId();
         HashMap<String, Object> result = new HashMap<>();
         try {
-            booksRatingAndPopularityService.setRatingToBookByUser(bookId, userId, value);
+            booksRatingAndPopularityService.setRatingToBookByUser(bookId, currentUserId, value);
             result.put("result", true);
             return ResponseEntity.ok().body(result);
         } catch (Exception ex) {
@@ -246,10 +271,10 @@ public class BooksRestApiController {
     public ResponseEntity<Map<String, Object>> rateBookReview(
             @RequestParam("reviewid") Integer reviewId, @RequestParam("value") Integer value
     ) {
-        Integer userId = 1; // ID of current user
+        int currentUserId = userRegistrationService.getCurrentUserId();
         HashMap<String, Object> result = new HashMap<>();
         try {
-            booksRatingAndPopularityService.rateBookReview(reviewId, userId, value);
+            booksRatingAndPopularityService.rateBookReview(reviewId, currentUserId, value);
             result.put("result", true);
             return ResponseEntity.ok().body(result);
         } catch (Exception ex) {
@@ -267,10 +292,10 @@ public class BooksRestApiController {
     public ResponseEntity<Map<String, Object>> bookReview(
             @RequestParam("bookId") Integer bookId, @RequestParam("text") String text
     ) {
-        Integer userId = 1; // ID of current user
+        int currentUserId = userRegistrationService.getCurrentUserId();
         HashMap<String, Object> result = new HashMap<>();
         try {
-            reviewAndLikeService.bookReview(bookId, userId, text);
+            reviewAndLikeService.bookReview(bookId, currentUserId, text);
             result.put("result", true);
             return ResponseEntity.ok().body(result);
         }  catch (Exception ex) {

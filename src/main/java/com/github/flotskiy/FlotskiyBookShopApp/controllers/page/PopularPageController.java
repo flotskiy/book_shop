@@ -23,7 +23,8 @@ public class PopularPageController extends HeaderController {
 
     @ModelAttribute("popularBooksPage")
     public List<BookDto> recentBooks() {
-        return getBookService().getPopularBooks(0, 20);
+        Integer userId = getUserRegistrationService().getCurrentUserId();
+        return getBookService().getPopularBooks(0, 20, userId);
     }
 
     @GetMapping("/popular")
@@ -35,6 +36,7 @@ public class PopularPageController extends HeaderController {
     @ResponseBody
     public CountedBooksDto getNextPopularPage(@RequestParam(value = "offset", required = false) Integer offset,
                                              @RequestParam(value = "limit", required = false) Integer limit) {
-        return new CountedBooksDto(getBookService().getPopularBooks(offset, limit));
+        Integer userId = getUserRegistrationService().getCurrentUserId();
+        return new CountedBooksDto(getBookService().getPopularBooks(offset, limit, userId));
     }
 }

@@ -6,28 +6,29 @@ import com.github.flotskiy.FlotskiyBookShopApp.model.dto.book.BookDto;
 import com.github.flotskiy.FlotskiyBookShopApp.model.dto.book.PopularityDto;
 import com.github.flotskiy.FlotskiyBookShopApp.model.dto.book.page.BookFileDto;
 import com.github.flotskiy.FlotskiyBookShopApp.model.dto.book.page.BookSlugDto;
+import com.github.flotskiy.FlotskiyBookShopApp.model.dto.user.UserDto;
 import com.github.flotskiy.FlotskiyBookShopApp.model.entity.author.AuthorEntity;
 import com.github.flotskiy.FlotskiyBookShopApp.model.entity.book.BookEntity;
 import com.github.flotskiy.FlotskiyBookShopApp.model.entity.book.BookTagEntity;
 import com.github.flotskiy.FlotskiyBookShopApp.model.entity.book.file.BookFileEntity;
+import com.github.flotskiy.FlotskiyBookShopApp.repository.Book2AuthorRepository;
+import com.github.flotskiy.FlotskiyBookShopApp.repository.Book2GenreRepository;
 import com.github.flotskiy.FlotskiyBookShopApp.repository.BookRepository;
+import com.github.flotskiy.FlotskiyBookShopApp.repository.BookTag2BookRepository;
+import com.google.common.collect.Iterables;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.security.authentication.AnonymousAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
-import org.springframework.ui.Model;
 
-import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Service
 public class BookService {
@@ -36,8 +37,11 @@ public class BookService {
     private final BooksRatingAndPopularityService booksRatingAndPopularityService;
     private final TagService tagService;
     private final AuthorService authorService;
-    private final CookieService cookieService;
     private final ReviewAndLikeService reviewAndLikeService;
+    private final Book2UserService book2UserService;
+    private final BookTag2BookRepository bookTag2BookRepository;
+    private final Book2GenreRepository book2GenreRepository;
+    private final Book2AuthorRepository book2AuthorRepository;
 
     @Autowired
     public BookService(
@@ -45,115 +49,135 @@ public class BookService {
             BooksRatingAndPopularityService booksRatingAndPopularityService,
             TagService tagService,
             AuthorService authorService,
-            CookieService cookieService,
-            ReviewAndLikeService reviewAndLikeService
+            ReviewAndLikeService reviewAndLikeService,
+            Book2UserService book2UserService,
+            BookTag2BookRepository bookTag2BookRepository,
+            Book2GenreRepository book2GenreRepository,
+            Book2AuthorRepository book2AuthorRepository
     ) {
         this.bookRepository = bookRepository;
         this.booksRatingAndPopularityService = booksRatingAndPopularityService;
         this.tagService = tagService;
         this.authorService = authorService;
-        this.cookieService = cookieService;
         this.reviewAndLikeService = reviewAndLikeService;
+        this.book2UserService = book2UserService;
+        this.bookTag2BookRepository = bookTag2BookRepository;
+        this.book2GenreRepository = book2GenreRepository;
+        this.book2AuthorRepository = book2AuthorRepository;
     }
 
-    public List<BookDto> getAllBooksData() {
-        return convertBookEntitiesToBookDtoList(bookRepository.findAll());
+    public List<BookDto> getAllBooksData(Integer userId) {
+        return convertBookEntitiesToBookDtoList(bookRepository.findAll(), userId);
     }
 
-    public Page<BookDto> getPageOfBooks(int offset, int limit) {
-        Pageable nextPage = PageRequest.of(offset, limit);
-        Page<BookEntity> bookEntities = bookRepository.findAll(nextPage);
-        return bookEntities.map(this::convertBookEntityToBookDto);
+    public List<BookDto> getListOfRecommendedBooks(Integer offset, Integer limit, Integer userId, UserDto userDto) {
+        if (userId == -1) {
+            List<BookDto> resultForGuestWithoutCartAndPostponed =
+                    getRecommendedBooksForGuestWithoutCartAndPostponed(userId);
+            if (offset >= resultForGuestWithoutCartAndPostponed.size() - 1) {
+                return Collections.EMPTY_LIST;
+            }
+            if (limit > resultForGuestWithoutCartAndPostponed.size()) {
+                limit = resultForGuestWithoutCartAndPostponed.size();
+            }
+            return resultForGuestWithoutCartAndPostponed.subList(offset, limit);
+        } else {
+            Pageable nextPage = PageRequest.of(offset, limit);
+            List<Integer> bookIdsList = getRecommendedBookIdsForUser(userDto);
+            List<BookEntity> recommendedBookEntities =
+                    bookRepository.findBookEntitiesByIdIsInOrderByPubDageDesc(bookIdsList, nextPage).getContent();
+            return convertBookEntitiesToBookDtoWithRatingList(recommendedBookEntities, userId);
+        }
     }
 
-    public List<BookDto> getBooksByAuthor(String authorName) {
-        return convertBookEntitiesToBookDtoList(bookRepository.findBookEntitiesByAuthorEntitiesNameContaining(authorName));
+    public List<BookDto> getBooksByAuthor(String authorName, Integer userId) {
+        return convertBookEntitiesToBookDtoList(bookRepository.findBookEntitiesByAuthorEntitiesNameContaining(authorName), userId);
     }
 
-    public List<BookDto> getBooksByTitle(String title) throws BookstoreApiWrongParameterException {
+    public List<BookDto> getBooksByTitle(String title, Integer userId) throws BookstoreApiWrongParameterException {
         if (title.length() <= 1) {
             throw new BookstoreApiWrongParameterException("Wrong value passed to parameter");
         }
-        List<BookDto> data = convertBookEntitiesToBookDtoList(bookRepository.findBookEntitiesByTitleContaining(title));
+        List<BookDto> data = convertBookEntitiesToBookDtoList(bookRepository.findBookEntitiesByTitleContaining(title), userId);
         if (data.size() < 1) {
             throw new BookstoreApiWrongParameterException("No data found with specified parameter...");
         }
         return data;
     }
 
-    public List<BookDto> getBooksWithPriceBetween(int min, int max) {
-        return convertBookEntitiesToBookDtoList(bookRepository.findBookEntitiesByPriceBetween(min, max));
+    public List<BookDto> getBooksWithPriceBetween(int min, int max, Integer userId) {
+        return convertBookEntitiesToBookDtoList(bookRepository.findBookEntitiesByPriceBetween(min, max), userId);
     }
 
-    public List<BookDto> getBooksWithPrice(int price) {
-        return convertBookEntitiesToBookDtoList(bookRepository.findBookEntitiesByPriceIs(price));
+    public List<BookDto> getBooksWithPrice(int price, Integer userId) {
+        return convertBookEntitiesToBookDtoList(bookRepository.findBookEntitiesByPriceIs(price), userId);
     }
 
-    public List<BookDto> getBooksWithMaxDiscount() {
-        return convertBookEntitiesToBookDtoList(bookRepository.getBookEntitiesWithMaxDiscount());
+    public List<BookDto> getBooksWithMaxDiscount(Integer userId) {
+        return convertBookEntitiesToBookDtoList(bookRepository.getBookEntitiesWithMaxDiscount(), userId);
     }
 
-    public List<BookDto> getBestsellers() {
-        return convertBookEntitiesToBookDtoList(bookRepository.getBestsellers());
+    public List<BookDto> getBestsellers(Integer userId) {
+        return convertBookEntitiesToBookDtoList(bookRepository.getBestsellers(), userId);
     }
 
-    public Page<BookDto> getPageOfSearchResultBooks(String searchWord, int offset, int limit) {
+    public Page<BookDto> getPageOfSearchResultBooks(String searchWord, int offset, int limit, int userId) {
         Pageable nextPage = PageRequest.of(offset, limit);
         Page<BookEntity> bookEntities = bookRepository.findBookEntitiesByTitleContaining(searchWord, nextPage);
-        return bookEntities.map(this::convertBookEntityToBookDto);
+        return bookEntities.map(bookEntity -> convertBookEntityToBookDto(bookEntity, userId));
     }
 
     public Integer getSearchResultsSize(String searchWord) {
         return bookRepository.countBookEntitiesByTitleContaining(searchWord);
     }
 
-    public Page<BookDto> getPageOfRecentBooks(LocalDate from, LocalDate to, int offset, int limit) {
+    public Page<BookDto> getPageOfRecentBooks(LocalDate from, LocalDate to, int offset, int limit, int userId) {
         Pageable nextPage = PageRequest.of(offset, limit);
         Page<BookEntity> bookEntities =
                 bookRepository.findBookEntitiesByPubDateBetweenOrderByPubDateDesc(from, to, nextPage);
-        return bookEntities.map(this::convertBookEntityToBookDto);
+        return bookEntities.map(bookEntity -> convertBookEntityToBookDtoWithRatingValue(bookEntity, userId));
     }
 
-    public List<BookDto> getRecentBooks(int offset, int limit) {
+    public List<BookDto> getRecentBooks(int offset, int limit, int userId) {
         LocalDate to = LocalDate.now();
         LocalDate from = to.minusMonths(1);
-        return getPageOfRecentBooks(from, to, offset, limit).getContent();
+        return getPageOfRecentBooks(from, to, offset, limit, userId).getContent();
     }
 
-    public List<BookDto> getPopularBooks(int offset, int limit) {
+    public List<BookDto> getPopularBooks(int offset, int limit, int userId) {
         List<PopularityDto> popularityDtoList = booksRatingAndPopularityService.getAllPopularBooks();
         List<Integer> bookIds = booksRatingAndPopularityService.getPopularBookIds(popularityDtoList, offset, limit);
         List<BookEntity> bookEntities = bookRepository.findBookEntitiesByIdIsIn(bookIds);
         List<BookDto> result = new ArrayList<>();
         for (BookEntity book : bookEntities) {
-            result.add(convertBookEntityToBookDtoWithPopularityValue(book, popularityDtoList));
+            result.add(convertBookEntityToBookDtoWithPopularityValue(book, popularityDtoList, userId));
         }
         result.sort(Comparator.comparing(BookDto::getRating).reversed());
         return result;
     }
 
-    public Page<BookDto> getPageOfBooksByTag(Integer tagId, Integer offset, Integer limit) {
+    public Page<BookDto> getPageOfBooksByTag(Integer tagId, Integer offset, Integer limit, Integer userId) {
         Pageable nextPage = PageRequest.of(offset, limit);
         Page<BookEntity> bookEntities = bookRepository.findBookEntitiesByBookTagsIdOrderByPubDateDesc(tagId, nextPage);
-        return bookEntities.map(this::convertBookEntityToBookDto);
+        return bookEntities.map(bookEntity -> convertBookEntityToBookDto(bookEntity, userId));
     }
 
-    public Page<BookDto> getPageOfBooksByGenreId(Integer genreId, Integer offset, Integer limit) {
+    public Page<BookDto> getPageOfBooksByGenreId(Integer genreId, Integer offset, Integer limit, Integer userId) {
         Pageable nextPage = PageRequest.of(offset, limit);
         Page<BookEntity> bookEntities =
                 bookRepository.findBookEntitiesByGenreEntitiesIdOrderByPubDateDesc(genreId, nextPage);
-        return bookEntities.map(this::convertBookEntityToBookDto);
+        return bookEntities.map(bookEntity -> convertBookEntityToBookDto(bookEntity, userId));
     }
 
-    public Page<BookDto> getPageOfBooksByAuthorId(Integer authorId, Integer offset, Integer limit) {
+    public Page<BookDto> getPageOfBooksByAuthorId(Integer authorId, Integer offset, Integer limit, Integer userId) {
         Pageable nextPage = PageRequest.of(offset, limit);
         Page<BookEntity> bookEntities =
                 bookRepository.findBookEntitiesByAuthorEntitiesIdOrderByPubDateDesc(authorId, nextPage);
-        return bookEntities.map(this::convertBookEntityToBookDto);
+        return bookEntities.map(bookEntity -> convertBookEntityToBookDto(bookEntity, userId));
     }
 
-    public List<BookDto> getBooksBySlugIn(List<String> slugs) {
-        return convertBookEntitiesToBookDtoWithRatingList(bookRepository.findBookEntitiesBySlugIn(slugs));
+    public List<BookDto> getBooksBySlugIn(List<String> slugs, Integer userId) {
+        return convertBookEntitiesToBookDtoWithRatingList(bookRepository.findBookEntitiesBySlugIn(slugs), userId);
     }
 
     public BookEntity getBookEntityBySlug(String slug) {
@@ -164,9 +188,9 @@ public class BookService {
         bookRepository.save(bookEntity);
     }
 
-    public BookSlugDto getBookSlugBySlug(String slug) {
+    public BookSlugDto getBookSlugBySlug(String slug, Integer userId) {
         BookEntity bookEntity = bookRepository.findBookEntityBySlug(slug);
-        BookSlugDto bookSlugDto = new BookSlugDto(convertBookEntityToBookDtoWithRatingValue(bookEntity));
+        BookSlugDto bookSlugDto = new BookSlugDto(convertBookEntityToBookDtoWithRatingValue(bookEntity, userId));
         bookSlugDto.setDescription(bookEntity.getDescription());
         Set<BookTagEntity> tagEntities = bookEntity.getBookTags();
         Set<AuthorDto> authorDtos = bookEntity.getAuthorEntities().stream()
@@ -194,49 +218,27 @@ public class BookService {
         return to;
     }
 
-    public void changeBookStatus(
-            String slug, String status, HttpServletRequest request, HttpServletResponse response, Model model
-    ) {
-        String newCookie = slug.replaceAll(",", "/");
-        String cartContents = "";
-        String keptContents = "";
-        Cookie[] cookiesFromRequest = request.getCookies();
-
-        if (cookiesFromRequest != null) {
-            Map<String, String> cookiesMap = Arrays.stream(cookiesFromRequest)
-                    .collect(Collectors.toMap(Cookie::getName, Cookie::getValue));
-            cartContents = cookiesMap.get("cartContents");
-            keptContents = cookiesMap.get("keptContents");
-        }
-        if (status.equals("CART")) {
-            cookieService.handleCartCookie(cartContents, newCookie, response, model);
-        } else if (status.equals("KEPT")) {
-            cookieService.handleKeptCookie(keptContents, newCookie, response, model);
-        }
+    public List<BookEntity> findBookEntitiesByIdIsIn(List<Integer> bookIdList) {
+        return bookRepository.findBookEntitiesByIdIsIn(bookIdList);
     }
 
-    public boolean isAuthenticated() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        return !(authentication instanceof AnonymousAuthenticationToken);
-    }
-
-    private List<BookDto> convertBookEntitiesToBookDtoList(List<BookEntity> booksListToConvert) {
+    public List<BookDto> convertBookEntitiesToBookDtoWithRatingList(List<BookEntity> booksListToConvert, Integer userId) {
         List<BookDto> booksDtoList = new ArrayList<>();
         for (BookEntity book : booksListToConvert) {
-            booksDtoList.add(convertBookEntityToBookDto(book));
+            booksDtoList.add(convertBookEntityToBookDtoWithRatingValue(book, userId));
         }
         return booksDtoList;
     }
 
-    private List<BookDto> convertBookEntitiesToBookDtoWithRatingList(List<BookEntity> booksListToConvert) {
+    private List<BookDto> convertBookEntitiesToBookDtoList(List<BookEntity> booksListToConvert, Integer userId) {
         List<BookDto> booksDtoList = new ArrayList<>();
         for (BookEntity book : booksListToConvert) {
-            booksDtoList.add(convertBookEntityToBookDtoWithRatingValue(book));
+            booksDtoList.add(convertBookEntityToBookDto(book, userId));
         }
         return booksDtoList;
     }
 
-    private BookDto convertBookEntityToBookDto(BookEntity bookEntity) {
+    private BookDto convertBookEntityToBookDto(BookEntity bookEntity, Integer userId) {
         BookDto bookDto = new BookDto();
         int bookId = bookEntity.getId();
         bookDto.setId(bookId);
@@ -265,22 +267,22 @@ public class BookService {
         }
         bookDto.setAuthors(authorName.toString());
 
-        bookDto.setStatus("false"); // TODO later
+        bookDto.setStatus(book2UserService.getBookStatus(bookDto.getId(), userId));
         bookDto.setRating((short) 0);
 
         return bookDto;
     }
 
-    private BookDto convertBookEntityToBookDtoWithRatingValue(BookEntity bookEntity) {
-        BookDto bookDto = convertBookEntityToBookDto(bookEntity);
+    private BookDto convertBookEntityToBookDtoWithRatingValue(BookEntity bookEntity, Integer userId) {
+        BookDto bookDto = convertBookEntityToBookDto(bookEntity, userId);
         short rating = booksRatingAndPopularityService.calculateBookRating(bookEntity.getId()).shortValue();
         bookDto.setRating(rating);
         return bookDto;
     }
 
-    private BookDto convertBookEntityToBookDtoWithPopularityValue(BookEntity bookEntity,
-                                                                  List<PopularityDto> popularityDtoList) {
-        BookDto bookDto = convertBookEntityToBookDto(bookEntity);
+    private BookDto convertBookEntityToBookDtoWithPopularityValue(
+            BookEntity bookEntity, List<PopularityDto> popularityDtoList, Integer userId) {
+        BookDto bookDto = convertBookEntityToBookDto(bookEntity, userId);
 
         short rating = 0;
         for (PopularityDto popularityDto : popularityDtoList) {
@@ -299,5 +301,39 @@ public class BookService {
         bookFileDto.setTypeId(bookFileEntity.getTypeId());
         bookFileDto.setPath(bookFileEntity.getPath());
         return bookFileDto;
+    }
+
+    private List<BookDto> getRecommendedBooksForGuestWithoutCartAndPostponed(Integer userId) {
+        List<Integer> first30bookIdsListWithMaxRating =
+                booksRatingAndPopularityService.getFirst30bookIdsWithMaxUsersRatingMoreOrEquals4();
+        List<BookDto> first30booksListWithMaxRating = convertBookEntitiesToBookDtoWithRatingList(
+                bookRepository.findBookEntitiesByIdIsIn(first30bookIdsListWithMaxRating), userId
+        );
+        List<BookDto> first30BooksForTheLast30days = getRecentBooks(0, 30, userId);
+        List<BookDto> result = Stream
+                .concat(first30booksListWithMaxRating.stream(), first30BooksForTheLast30days.stream())
+                .distinct()
+                .collect(Collectors.toList());
+        Collections.shuffle(result);
+        return result;
+    }
+
+    private List<Integer> getRecommendedBookIdsForUser(UserDto userDto) {
+        List<Integer> allUserBooksId = userDto.getUserBooksData().getAllBooks()
+                .stream().map(BookDto::getId).collect(Collectors.toList());
+
+        List<Integer> allTagsId = bookTag2BookRepository.getTagIdsForBooksIdsInList(allUserBooksId);
+        List<Integer> allGenresId = book2GenreRepository.getGenreIdsForBooksIdsInList(allUserBooksId);
+        List<Integer> allAuthorsId = book2AuthorRepository.getAuthorIdsForBookIdsInList(allUserBooksId);
+
+        List<Integer> allBooksIdsByTags = bookTag2BookRepository.getBookIdsForTagIdsInList(allTagsId);
+        List<Integer> allBooksIdsByGenres = book2GenreRepository.getBookIdsForGenreIdsInList(allGenresId);
+        List<Integer> allBooksIdsByAuthors = book2AuthorRepository.getBookIdsForAuthorIdsInList(allAuthorsId);
+
+        Iterable<Integer> allBookIdsIterable = Iterables.unmodifiableIterable(
+                Iterables.concat(allBooksIdsByTags, allBooksIdsByGenres, allBooksIdsByAuthors));
+        List<Integer> allBookIdsList = Lists.newArrayList(Sets.newHashSet(allBookIdsIterable));
+        allBookIdsList.removeAll(allUserBooksId);
+        return allBookIdsList;
     }
 }

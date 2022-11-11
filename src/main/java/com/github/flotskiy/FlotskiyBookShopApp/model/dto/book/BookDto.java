@@ -3,6 +3,7 @@ package com.github.flotskiy.FlotskiyBookShopApp.model.dto.book;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.time.LocalDate;
+import java.util.Objects;
 
 public class BookDto {
 
@@ -132,5 +133,25 @@ public class BookDto {
                 ", discountPrice=" + discountPrice +
                 ", pubDate=" + pubDate +
                 '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        BookDto bookDto = (BookDto) o;
+        return isBestseller == bookDto.isBestseller
+                && id.equals(bookDto.id)
+                && authors.equals(bookDto.authors)
+                && title.equals(bookDto.title)
+                && rating.equals(bookDto.rating)
+                && pubDate.equals(bookDto.pubDate);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(
+                id, authors, title, isBestseller, rating, pubDate
+        );
     }
 }

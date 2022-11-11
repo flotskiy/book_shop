@@ -29,7 +29,8 @@ public class TagsPageController extends HeaderController {
     @GetMapping("/tags/{tagSlug}")
     public String tagPage(@PathVariable("tagSlug") String tagSlug, Model model) {
         BookTagEntity tagEntity = tagService.getBookTagBySlug(tagSlug);
-        List<BookDto> bookDtos = getBookService().getPageOfBooksByTag(tagEntity.getId(), 0, 20).getContent();
+        Integer userId = getUserRegistrationService().getCurrentUserId();
+        List<BookDto> bookDtos = getBookService().getPageOfBooksByTag(tagEntity.getId(), 0, 20, userId).getContent();
         model.addAttribute("tagBookList", bookDtos);
         model.addAttribute("tagObject", tagEntity);
         return "/tags/index";
@@ -42,6 +43,7 @@ public class TagsPageController extends HeaderController {
             @RequestParam("offset") Integer offset,
             @RequestParam("limit") Integer limit
     ) {
-        return new CountedBooksDto(getBookService().getPageOfBooksByTag(tagId, offset, limit).getContent());
+        Integer userId = getUserRegistrationService().getCurrentUserId();
+        return new CountedBooksDto(getBookService().getPageOfBooksByTag(tagId, offset, limit, userId).getContent());
     }
 }

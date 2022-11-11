@@ -1,6 +1,7 @@
 package com.github.flotskiy.FlotskiyBookShopApp.controllers.page;
 
 import com.github.flotskiy.FlotskiyBookShopApp.model.dto.book.AuthorDto;
+import com.github.flotskiy.FlotskiyBookShopApp.model.dto.book.BookDto;
 import com.github.flotskiy.FlotskiyBookShopApp.model.dto.book.CountedBooksDto;
 import com.github.flotskiy.FlotskiyBookShopApp.model.entity.author.AuthorEntity;
 import com.github.flotskiy.FlotskiyBookShopApp.service.AuthorService;
@@ -9,6 +10,7 @@ import com.github.flotskiy.FlotskiyBookShopApp.security.UserRegistrationService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -39,19 +41,20 @@ public class AuthorsPageController extends HeaderController {
     @GetMapping("/authors/{authorSlug}")
     public String author(@PathVariable("authorSlug") String authorSlug, Model model) {
         AuthorDto authorDto = authorService.getAuthorBySlug(authorSlug);
+        int userId = getUserRegistrationService().getCurrentUserId();
+        Page<BookDto> authorBooks = getBookService().getPageOfBooksByAuthorId(authorDto.getId(), 0, 9, userId);
         model.addAttribute("author", authorService.getAuthorBySlug(authorSlug));
-        model.addAttribute("authorBooks", getBookService().getPageOfBooksByAuthorId(authorDto.getId(), 0, 9));
+        model.addAttribute("authorBooks", authorBooks);
         return "/authors/slug";
     }
 
     @GetMapping("/books/authors/{authorSlug}")
     public String getAuthorBooksPage(@PathVariable("authorSlug") String authorSlug, Model model) {
         AuthorDto authorDto = authorService.getAuthorBySlug(authorSlug);
-        model.addAttribute("authorObj", authorDto);
-        model.addAttribute(
-                "authorBooksAll",
-                getBookService().getPageOfBooksByAuthorId(authorDto.getId(), 0, 20)
-        );
+        int userId = getUserRegistrationService().getCurrentUserId();
+        Page<BookDto> authorBooks = getBookService().getPageOfBooksByAuthorId(authorDto.getId(), 0, 20, userId);
+                model.addAttribute("authorObj", authorDto);
+        model.addAttribute("authorBooksAll", authorBooks);
         return "/books/author";
     }
 
@@ -62,8 +65,8 @@ public class AuthorsPageController extends HeaderController {
             @RequestParam("offset") Integer offset,
             @RequestParam("limit") Integer limit
     ) {
-
-        return new CountedBooksDto(getBookService().getPageOfBooksByAuthorId(authorId, offset, limit).getContent());
+        int userId = getUserRegistrationService().getCurrentUserId();
+        return new CountedBooksDto(getBookService().getPageOfBooksByAuthorId(authorId, offset, limit, userId).getContent());
     }
 
     @ApiOperation("method to get map of authors")

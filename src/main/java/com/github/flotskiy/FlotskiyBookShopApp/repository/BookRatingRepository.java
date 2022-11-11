@@ -1,6 +1,5 @@
 package com.github.flotskiy.FlotskiyBookShopApp.repository;
 
-import com.github.flotskiy.FlotskiyBookShopApp.model.entity.book.BookEntity;
 import com.github.flotskiy.FlotskiyBookShopApp.model.entity.book.review.BookRatingEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -15,4 +14,11 @@ public interface BookRatingRepository extends JpaRepository<BookRatingEntity, In
 
     @Query(value = "SELECT max(id) FROM rating", nativeQuery = true)
     Integer getMaxId();
+
+    @Query(
+            value = "SELECT r.book_id FROM rating r GROUP BY book_id HAVING (AVG(r.rating) >= 4) " +
+                    "ORDER BY AVG(r.rating) DESC LIMIT 30",
+            nativeQuery = true
+    )
+    List<Integer> getFirst30bookIdsWithMaxUsersRatingMoreOrEquals4();
 }

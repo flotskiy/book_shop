@@ -414,7 +414,9 @@
       </main>
     </div>
   </div>
-  <footer th:replace="~{fragments/common_footer_fragment :: footFragment}"></footer>
+  <footer th:replace="${isAuthenticated} ?
+   ~{fragments/authorized_footer_fragment :: footFragmentAuth} : ~{fragments/common_footer_fragment :: footFragment}">
+  </footer>
   <footer hidden>
     <div id="err_dialog" title="Attention! ">
       <p>Такое могут делать только авторизованные пользователи. 🤔</p>

@@ -24,7 +24,8 @@ public class RecentPageController extends HeaderController {
 
     @ModelAttribute("recentBooksPage")
     public List<BookDto> recentBooks() {
-        return getBookService().getRecentBooks(0, 20);
+        Integer userId = getUserRegistrationService().getCurrentUserId();
+        return getBookService().getRecentBooks(0, 20, userId);
     }
 
     @GetMapping("/recent")
@@ -40,8 +41,9 @@ public class RecentPageController extends HeaderController {
                                              @RequestParam(value = "limit", required = false) Integer limit) {
         from = getBookService().checkFrom(from);
         to = getBookService().checkTo(to);
+        Integer userId = getUserRegistrationService().getCurrentUserId();
         return new CountedBooksDto(getBookService()
-                .getPageOfRecentBooks(LocalDate.parse(from, formatter), LocalDate.parse(to, formatter), offset, limit)
+                .getPageOfRecentBooks(LocalDate.parse(from, formatter), LocalDate.parse(to, formatter), offset, limit, userId)
                 .getContent()
         );
     }

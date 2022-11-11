@@ -10,6 +10,7 @@ import com.github.flotskiy.FlotskiyBookShopApp.repository.UserRepository;
 import com.github.flotskiy.FlotskiyBookShopApp.security.jwt.JWTService;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -55,21 +56,27 @@ public class UserRegistrationService {
         this.jwtService = jwtService;
     }
 
-    public void registerNewUserWithContact(RegistrationForm registrationForm) throws InstanceAlreadyExistsException {
+    public UserEntity registerNewUserWithContact(RegistrationForm registrationForm) throws InstanceAlreadyExistsException {
         UserEntity userEntity = userRepository.findUserEntityByUserContactEntity_TypeAndUserContactEntity_Contact(
                 ContactType.EMAIL, registrationForm.getEmail()
         );
         if (userEntity == null) {
-            UserEntity newUserEntity = registerNewUser(registrationForm);
-            registerNewUserContact(registrationForm, newUserEntity);
+            userEntity = registerNewUser(registrationForm);
+            registerNewUserContact(registrationForm, userEntity);
         } else {
             throw new InstanceAlreadyExistsException("User with that email already exists");
         }
+        return userEntity;
     }
 
-    private UserEntity registerNewUser(RegistrationForm registrationForm) {
+    public UserEntity registerNewUser(RegistrationForm registrationForm) {
+        Integer currentMaxId = userRepository.getMaxId();
+        int newUserId = 1;
+        if (currentMaxId != null) {
+            newUserId = currentMaxId + 1;
+        }
+
         UserEntity newUserEntity = new UserEntity();
-        int newUserId = userRepository.getMaxId() + 1;
         newUserEntity.setId(newUserId);
         if (registrationForm.getPass().isBlank()) {
             newUserEntity.setHash("");
@@ -79,19 +86,17 @@ public class UserRegistrationService {
         newUserEntity.setBalance(0);
         newUserEntity.setRegTime(LocalDateTime.now());
         newUserEntity.setName(registrationForm.getName());
-        userRepository.save(newUserEntity);
-        return newUserEntity;
+        return userRepository.save(newUserEntity);
     }
 
-    private void registerNewUserContact(RegistrationForm registrationForm, UserEntity userEntity) {
-        UserContactEntity newUserContactEntity = new UserContactEntity();
+    public UserContactEntity registerNewUserContact(RegistrationForm registrationForm, UserEntity userEntity) {
         Integer currentMaxId = userContactRepository.getMaxId();
-        int newUserContactId = 0;
-        if (currentMaxId == null) {
-            newUserContactId = 1;
-        } else {
-            newUserContactId =  currentMaxId + 1;
+        int newUserContactId = 1;
+        if (currentMaxId != null) {
+            newUserContactId = currentMaxId + 1;
         }
+
+        UserContactEntity newUserContactEntity = new UserContactEntity();
         newUserContactEntity.setId(newUserContactId);
         newUserContactEntity.setUserEntity(userEntity);
         String email = registrationForm.getEmail();
@@ -106,7 +111,7 @@ public class UserRegistrationService {
         newUserContactEntity.setCode(RandomStringUtils.random(6, true, true));
         newUserContactEntity.setCodeTrails(0);
         newUserContactEntity.setCodeTime(LocalDateTime.now());
-        userContactRepository.save(newUserContactEntity);
+        return userContactRepository.save(newUserContactEntity);
     }
 
     public ContactConfirmationResponse login(ContactConfirmPayloadDto payload) {
@@ -158,7 +163,14 @@ public class UserRegistrationService {
     }
 
     public Integer getCurrentUserId() {
-        return gerCurrentUser().getId();
+        return bookstoreUserDetailsService.gerCurrentUserId();
+    }
+
+    public UserDto getCurrentUserDtoById(Integer userId) {
+        if (userId < 1) {
+            return new UserDto();
+        }
+        return bookstoreUserDetailsService.getUserDtoById(userId);
     }
 
     public String getExceptionInfo(Exception exception) {
@@ -172,5 +184,10 @@ public class UserRegistrationService {
         } else {
             return "Something went wrong!";
         }
+    }
+
+    public boolean isAuthenticated() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        return !(authentication instanceof AnonymousAuthenticationToken);
     }
 }

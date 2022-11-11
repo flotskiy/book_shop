@@ -36,48 +36,8 @@
               <span class="Section-header-link Section-header-link_ACTIVE" th:text="#{menu.archive}">Архив</span>
             </div>
           </div>
-          <div class="Cards">
-            <div class="Card">
-              <div class="Card-picture"><a href="#"><img src="/assets/img/content/main/card.jpg" alt="card.jpg"/></a><a class="Card-status" title="В корзине"><img src="/assets/img/icons/shopping-basket.svg" alt="shopping-basket.svg"/></a>
-              </div>
-              <div class="Card-content">
-                <strong class="Card-title"><a href="#">Великая Отечественная война. 1941-1945</a>
-                </strong>
-                <div class="Card-description">Солопенко Алла, Меркулов Дмитрий
-                </div>
-                <div class="Card-cost"><span class="Card-price">₽50.00</span>
-                </div>
-              </div>
-            </div>
-            <div class="Card">
-              <div class="Card-picture"><a href="#"><img src="/assets/img/content/main/card.jpg" alt="card.jpg"/></a><a class="Card-status" title="Отложена"><img src="/assets/img/icons/heart.svg" alt="heart.svg"/></a>
-              </div>
-              <div class="Card-content">
-                <strong class="Card-title"><a href="#">Большое путешествие по телу человека</a>
-                </strong>
-                <div class="Card-description">Джон Фарндон
-                </div>
-                <div class="Card-cost"><span class="Card-price">₽900.00</span>
-                </div>
-              </div>
-            </div>
-            <div class="Card">
-              <div class="Card-picture"><a href="#"><img src="/assets/img/content/main/card.jpg" alt="card.jpg"/></a>
-                <div class="Card-sale">30% скидка
-                </div>
-                <div class="Card-ribbon"><span class="Card-ribbonText">Бестселлер</span>
-                </div><a class="Card-status" title="Куплена"><img src="/assets/img/icons/check.svg" alt="check.svg"/></a>
-              </div>
-              <div class="Card-content">
-                <strong class="Card-title"><a href="#">Великая Отечественная война. 1941-1945</a>
-                </strong>
-                <div class="Card-description">Солопенко Алла, Меркулов Дмитрий
-                </div>
-                <div class="Card-cost"><span class="Card-price">₽50.00</span>
-                </div>
-              </div>
-            </div>
-          </div>
+          <h3 th:if="${isArchivedEmpty}" th:text="#{page.my.nothing}">No books found</h3>
+          <div th:replace="~{fragments/books_pool_fragment :: cardFragment (${booksArchived}, 'none', '')}"></div>
         </div>
       </main>
     </div>

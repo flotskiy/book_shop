@@ -33,9 +33,10 @@ public class SearchPageController extends HeaderController {
         if (headerInfoDto == null) {
             throw new EmptySearchQueryException("Search with null query parameter is Impossible");
         }
+        Integer userId = getUserRegistrationService().getCurrentUserId();
         model.addAttribute("headerInfoDto", headerInfoDto);
         model.addAttribute("searchResults",
-                getBookService().getPageOfSearchResultBooks(headerInfoDto.getSearchQuery(), 0, 5).getContent());
+                getBookService().getPageOfSearchResultBooks(headerInfoDto.getSearchQuery(), 0, 5, userId).getContent());
         model.addAttribute("searchResultsSize",
                 getBookService().getSearchResultsSize(headerInfoDto.getSearchQuery()));
         return "/search/index";
@@ -48,8 +49,9 @@ public class SearchPageController extends HeaderController {
             @RequestParam("limit") int limit,
             @PathVariable(value = "searchWord", required = false) HeaderInfoDto headerInfoDto
     ) {
+        Integer userId = getUserRegistrationService().getCurrentUserId();
         return new CountedBooksDto(
-                getBookService().getPageOfSearchResultBooks(headerInfoDto.getSearchQuery(), offset, limit).getContent()
+                getBookService().getPageOfSearchResultBooks(headerInfoDto.getSearchQuery(), offset, limit, userId).getContent()
         );
     }
 }

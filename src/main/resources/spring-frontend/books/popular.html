@@ -35,6 +35,8 @@
       </main>
     </div>
   </div>
-  <footer th:replace="~{fragments/common_footer_fragment :: footFragment}"></footer>
+  <footer th:replace="${isAuthenticated} ?
+   ~{fragments/authorized_footer_fragment :: footFragmentAuth} : ~{fragments/common_footer_fragment :: footFragment}">
+  </footer>
   <script src="/assets/plg/jQuery/jquery-3.5.1.min.js"></script>
 </body></html>

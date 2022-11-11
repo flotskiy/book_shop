@@ -55,7 +55,7 @@ public class ReviewAndLikeService {
         return result;
     }
 
-    public void bookReview(Integer bookId, Integer userId, String text) throws BookReviewException {
+    public BookReviewEntity bookReview(Integer bookId, Integer userId, String text) throws BookReviewException {
         if (text.length() < 15) {
             throw new BookReviewException("Review is to short");
         }
@@ -72,20 +72,16 @@ public class ReviewAndLikeService {
             newBookReviewEntity.setUserId(userId);
             newBookReviewEntity.setTime(LocalDateTime.now());
             newBookReviewEntity.setText(text);
-            bookReviewRepository.save(newBookReviewEntity);
+            return bookReviewRepository.save(newBookReviewEntity);
         } else {
             bookReviewRepository.delete(bookReviewEntity);
             bookReviewEntity.setTime(LocalDateTime.now());
             bookReviewEntity.setText(text);
-            bookReviewRepository.save(bookReviewEntity);
+            return bookReviewRepository.save(bookReviewEntity);
         }
     }
 
-    private List<BookReviewDto> convertBookReviewEntitiesListToBookReviewDtoList(List<BookReviewEntity> bookReviewEntities) {
-        return bookReviewEntities.stream().map(this::convertBookReviewEntityToBookReviewDto).collect(Collectors.toList());
-    }
-
-    private BookReviewDto convertBookReviewEntityToBookReviewDto(BookReviewEntity bookReviewEntity) {
+    public BookReviewDto convertBookReviewEntityToBookReviewDto(BookReviewEntity bookReviewEntity) {
         BookReviewDto bookReviewDto = new BookReviewDto();
         bookReviewDto.setId(bookReviewEntity.getId());
         String userName = userRepository.findById(bookReviewEntity.getUserId()).get().getName();
@@ -123,7 +119,7 @@ public class ReviewAndLikeService {
         return bookReviewDto;
     }
 
-    private int calculateReviewRating(int likes, int dislikes) {
+    public int calculateReviewRating(int likes, int dislikes) {
         int secondStarLimit = 20;
         int thirdStarLimit = 40;
         int fourthStarLimit = 60;
@@ -147,6 +143,10 @@ public class ReviewAndLikeService {
             return 2;
         }
         return 1;
+    }
+
+    private List<BookReviewDto> convertBookReviewEntitiesListToBookReviewDtoList(List<BookReviewEntity> bookReviewEntities) {
+        return bookReviewEntities.stream().map(this::convertBookReviewEntityToBookReviewDto).collect(Collectors.toList());
     }
 
     private DateTimeFormatter getFormatter() {

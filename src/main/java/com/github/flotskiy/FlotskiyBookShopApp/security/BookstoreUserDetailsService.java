@@ -70,6 +70,26 @@ public class BookstoreUserDetailsService implements UserDetailsService {
         }
     }
 
+    public int gerCurrentUserId() {
+        Object userObject = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        BookstoreUserDetails userDetails = null;
+        if (userObject instanceof BookstoreUserDetails) {
+            userDetails = (BookstoreUserDetails) userObject;
+        } else if (userObject instanceof DefaultOAuth2User) {
+            DefaultOAuth2User oAuth2User = (DefaultOAuth2User) userObject;
+            Map<String, Object> userAttr = oAuth2User.getAttributes();
+            String userEmail = userAttr.get("email").toString();
+            try {
+                userDetails = loadUserByUsername(userEmail);
+            } catch (UsernameNotFoundException usernameNotFoundException) {
+                return -1;
+            }
+        } else {
+            return -1;
+        }
+        return userDetails.getUserDto().getId();
+    }
+
     private UserDto convertUserEntityToUserDto(UserEntity userEntity) {
         int userId = userEntity.getId();
         UserContactEntity userContactEntity = userContactRepository.findUserContactEntityByUserEntityId(userId);
@@ -120,25 +140,5 @@ public class BookstoreUserDetailsService implements UserDetailsService {
         List<Integer> bookIdList = book2UserEntities.stream().map(Book2UserEntity::getBookId).collect(Collectors.toList());
         List<BookEntity> bookEntityList = bookService.findBookEntitiesByIdIsIn(bookIdList);
         return bookService.convertBookEntitiesToBookDtoWithRatingList(bookEntityList, userId);
-    }
-
-    public int gerCurrentUserId() {
-        Object userObject = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        BookstoreUserDetails userDetails = null;
-        if (userObject instanceof BookstoreUserDetails) {
-            userDetails = (BookstoreUserDetails) userObject;
-        } else if (userObject instanceof DefaultOAuth2User) {
-            DefaultOAuth2User oAuth2User = (DefaultOAuth2User) userObject;
-            Map<String, Object> userAttr = oAuth2User.getAttributes();
-            String userEmail = userAttr.get("email").toString();
-            try {
-                userDetails = loadUserByUsername(userEmail);
-            } catch (UsernameNotFoundException usernameNotFoundException) {
-                return -1;
-            }
-        } else {
-            return -1;
-        }
-        return userDetails.getUserDto().getId();
     }
 }

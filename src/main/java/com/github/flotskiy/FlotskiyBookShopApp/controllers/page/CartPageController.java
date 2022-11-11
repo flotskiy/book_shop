@@ -12,13 +12,11 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
 import java.util.*;
-import java.util.logging.Logger;
 
 @Controller
 public class CartPageController extends HeaderController {
 
     private final UserBookService userBookService;
-    private final Logger logger = Logger.getLogger(this.getClass().getSimpleName());
 
     @Autowired
     public CartPageController(
@@ -41,10 +39,8 @@ public class CartPageController extends HeaderController {
             ) {
         if (!userBookService.isUserAuthenticated()) {
             userBookService.guestHandleCartRequest(cartContents, model, getUserRegistrationService().getCurrentUserId());
-            logger.info("Displaying CART page for GUEST");
         } else {
             userBookService.registeredUserHandleCartRequest(model);
-            logger.info("Displaying CART page for REGISTERED USER");
         }
         return "/cart";
     }
@@ -63,11 +59,9 @@ public class CartPageController extends HeaderController {
         try {
             userBookService.removeBookFromCartRequest(slug, cartContents, response, model, userId);
             result.put("result", true);
-            logger.info("Book SUCCESSFUL removing from the CART page");
         } catch (Exception exception) {
             result.put("result", false);
             result.put("error", "Failed to remove book");
-            logger.info("Book FAILED to remove from the CART page");
         }
         return result;
     }

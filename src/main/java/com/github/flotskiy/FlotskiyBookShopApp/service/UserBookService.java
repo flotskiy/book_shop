@@ -1,5 +1,6 @@
 package com.github.flotskiy.FlotskiyBookShopApp.service;
 
+import com.github.flotskiy.FlotskiyBookShopApp.exceptions.RegisteredUserChangeBookStatusException;
 import com.github.flotskiy.FlotskiyBookShopApp.model.dto.book.BookDto;
 import com.github.flotskiy.FlotskiyBookShopApp.model.dto.user.UserDto;
 import com.github.flotskiy.FlotskiyBookShopApp.model.entity.book.links.Book2UserEntity;
@@ -19,7 +20,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 @Service
@@ -30,7 +30,6 @@ public class UserBookService {
     private final Book2UserService book2UserService;
     private final UserRegistrationService userRegistrationService;
     private final CookieService cookieService;
-    private final Logger logger = Logger.getLogger(this.getClass().getSimpleName());
 
     @Autowired
     public UserBookService(
@@ -128,12 +127,10 @@ public class UserBookService {
 
     public void changeBookStatus(
             String slug, String status, HttpServletRequest request, HttpServletResponse response, Model model, Integer userId
-    ) {
+    ) throws RegisteredUserChangeBookStatusException {
         if (isUserAuthenticated()) {
-            logger.info("change book status for authenticated user");
             registeredUserChangeBookStatus(slug, status, userId);
         } else {
-            logger.info("change book status for guest");
             guestChangeBookStatus(slug, status, request, response, model);
         }
     }
@@ -159,24 +156,12 @@ public class UserBookService {
         }
     }
 
-    private Book2UserEntity registeredUserChangeBookStatus(String slug, String status, Integer userId) {
-        Book2UserEntity lastBook2UserEntityWithChangedStatus = null;
-        String[] singleBookSlugs = slug.split(",");
-        for (String singleBookSlug : singleBookSlugs) {
-            Integer bookId = bookService.getBookEntityBySlug(singleBookSlug).getId();
-            lastBook2UserEntityWithChangedStatus = book2UserService.saveBook2UserEntry(status, bookId, userId);
-        }
-        return lastBook2UserEntityWithChangedStatus;
-    }
-
     public void removeBookFromCartRequest(
             String slug, String cartContents, HttpServletResponse response, Model model, Integer userId
     ) {
         if (isUserAuthenticated()) {
-            logger.info("remove book from CART for authenticated user");
             registeredUserRemoveBook(slug, userId);
         } else {
-            logger.info("remove book from CART for guest");
             guestRemoveBookFromCartRequest(slug, cartContents, response, model);
         }
     }
@@ -200,10 +185,8 @@ public class UserBookService {
             String slug, String cartContents, HttpServletResponse response, Model model, Integer userId
     ) {
         if (isUserAuthenticated()) {
-            logger.info("remove book from POSTPONED for authenticated user");
             registeredUserRemoveBook(slug, userId);
         } else {
-            logger.info("remove book from POSTPONED for guest");
             guestRemoveBookFromKeptRequest(slug, cartContents, response, model);
         }
     }
@@ -226,5 +209,17 @@ public class UserBookService {
     public void registeredUserRemoveBook(String slug, Integer userId) {
         Integer bookId = bookService.getBookEntityBySlug(slug).getId();
         book2UserService.removeBook2UserEntry(bookId, userId);
+    }
+
+    private void registeredUserChangeBookStatus(String slug, String status, Integer userId) {
+        Book2UserEntity lastBook2UserEntityWithChangedStatus = null;
+        String[] singleBookSlugs = slug.split(",");
+        for (String singleBookSlug : singleBookSlugs) {
+            Integer bookId = bookService.getBookEntityBySlug(singleBookSlug).getId();
+            lastBook2UserEntityWithChangedStatus = book2UserService.saveBook2UserEntry(status, bookId, userId);
+        }
+        if (lastBook2UserEntityWithChangedStatus == null) {
+            throw new RegisteredUserChangeBookStatusException("Book status change FAILED");
+        }
     }
 }

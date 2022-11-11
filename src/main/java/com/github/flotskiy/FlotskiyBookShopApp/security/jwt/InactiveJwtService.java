@@ -1,5 +1,6 @@
 package com.github.flotskiy.FlotskiyBookShopApp.security.jwt;
 
+import com.github.flotskiy.FlotskiyBookShopApp.repository.InactiveJwtRepository;
 import com.google.common.hash.Hashing;
 import io.jsonwebtoken.ExpiredJwtException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -66,7 +67,7 @@ public class InactiveJwtService {
 
     @Transactional
     public void removeExpired() {
-        inactiveJwtRepository.removeInactiveJwtsByExpiryBefore(LocalDateTime.now());
+        inactiveJwtRepository.deleteInactiveJwtsByExpiryBefore(LocalDateTime.now());
     }
 
     public InactiveJwt findInactiveJwtByHash(String hash) {

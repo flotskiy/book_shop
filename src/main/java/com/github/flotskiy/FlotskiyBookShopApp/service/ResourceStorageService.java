@@ -18,7 +18,7 @@ import java.nio.file.Paths;
 import java.util.logging.Logger;
 
 @Service
-public class ResourceStorage {
+public class ResourceStorageService {
 
     @Value("${upload.path}")
     String uploadPath;
@@ -29,7 +29,7 @@ public class ResourceStorage {
     private final BookFileRepository bookFileRepository;
 
     @Autowired
-    public ResourceStorage(BookFileRepository bookFileRepository) {
+    public ResourceStorageService(BookFileRepository bookFileRepository) {
         this.bookFileRepository = bookFileRepository;
     }
 

@@ -37,7 +37,7 @@ public class BookPageController extends HeaderController {
     private final UserBookService userBookService;
     private final ReviewAndLikeService reviewAndLikeService;
     private final BooksRatingAndPopularityService booksRatingAndPopularityService;
-    private final ResourceStorage storage;
+    private final ResourceStorageService storage;
     private final Logger logger = Logger.getLogger(this.getClass().getSimpleName());
 
     @Autowired
@@ -47,7 +47,7 @@ public class BookPageController extends HeaderController {
             UserBookService userBookService,
             ReviewAndLikeService reviewAndLikeService,
             BooksRatingAndPopularityService booksRatingAndPopularityService,
-            ResourceStorage storage
+            ResourceStorageService storage
     ) {
         super(userRegistrationService, bookService);
         this.userBookService = userBookService;
@@ -78,13 +78,13 @@ public class BookPageController extends HeaderController {
     @GetMapping("/download/{hash}")
     public ResponseEntity<ByteArrayResource> bookFile(@PathVariable("hash") String hash) throws IOException {
         Path path = storage.getBookFilePath(hash);
-        Logger.getLogger(this.getClass().getSimpleName()).info("Downloading book file path is: " + path);
+        logger.info("Downloading book file path is: " + path);
 
         MediaType mediaType = storage.getBookFileMime(hash);
-        Logger.getLogger(this.getClass().getSimpleName()).info("Downloading book file mime type is: " + mediaType);
+        logger.info("Downloading book file mime type is: " + mediaType);
 
         byte[] data = storage.getBookFileByteArray(hash);
-        Logger.getLogger(this.getClass().getSimpleName()).info("Downloading book file data length: " + data.length);
+        logger.info("Downloading book file data length: " + data.length);
 
         return ResponseEntity.ok()
                 .header(HttpHeaders.CONTENT_DISPOSITION,
@@ -108,11 +108,9 @@ public class BookPageController extends HeaderController {
             Integer userId = getUserRegistrationService().getCurrentUserId();
             userBookService.changeBookStatus(slug, payload.getStatus(), request, response, model, userId);
             result.put("result", true);
-            logger.info("Book status SUCCESSFULLY changed");
-        } catch (Exception exception) {
+        } catch (Throwable throwable) {
             result.put("result", false);
             result.put("error", "An error occurred, try again later");
-            logger.info("Book status change FAILED");
         }
         return result;
     }

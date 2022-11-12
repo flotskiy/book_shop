@@ -1,5 +1,6 @@
 package com.github.flotskiy.FlotskiyBookShopApp.service;
 
+import com.github.flotskiy.FlotskiyBookShopApp.aspect.annotations.EntityCreationControllable;
 import com.github.flotskiy.FlotskiyBookShopApp.exceptions.RateBookByUserException;
 import com.github.flotskiy.FlotskiyBookShopApp.exceptions.RateBookReviewException;
 import com.github.flotskiy.FlotskiyBookShopApp.model.dto.book.page.DetailedRatingDto;
@@ -132,8 +133,8 @@ public class BooksRatingAndPopularityService {
                 .subList(firstElement, lastElement);
     }
 
-    public BookRatingEntity setRatingToBookByUser(Integer bookId, Integer userId, Integer ratingValue)
-            throws RateBookByUserException {
+    @EntityCreationControllable
+    public BookRatingEntity setRatingToBookByUser(Integer bookId, Integer userId, Integer ratingValue) {
         if (ratingValue < 1 || ratingValue > 5) {
             throw new RateBookByUserException("Rating value is unacceptable");
         }
@@ -153,7 +154,8 @@ public class BooksRatingAndPopularityService {
         }
     }
 
-    public BookReviewLikeEntity rateBookReview(Integer reviewId, Integer userId, Integer likeValue) throws RateBookReviewException {
+    @EntityCreationControllable
+    public BookReviewLikeEntity rateBookReview(Integer reviewId, Integer userId, Integer likeValue) {
         if (likeValue != 1 && likeValue != -1) {
             throw new RateBookReviewException("Like value is unacceptable");
         }

@@ -1,5 +1,6 @@
 package com.github.flotskiy.FlotskiyBookShopApp.service;
 
+import com.github.flotskiy.FlotskiyBookShopApp.aspect.annotations.EntityAccessControllable;
 import com.github.flotskiy.FlotskiyBookShopApp.exceptions.BookstoreApiWrongParameterException;
 import com.github.flotskiy.FlotskiyBookShopApp.model.dto.book.AuthorDto;
 import com.github.flotskiy.FlotskiyBookShopApp.model.dto.book.BookDto;
@@ -94,7 +95,8 @@ public class BookService {
         return convertBookEntitiesToBookDtoList(bookRepository.findBookEntitiesByAuthorEntitiesNameContaining(authorName), userId);
     }
 
-    public List<BookDto> getBooksByTitle(String title, Integer userId) throws BookstoreApiWrongParameterException {
+    @EntityAccessControllable
+    public List<BookDto> getBooksByTitle(String title, Integer userId) {
         if (title.length() <= 1) {
             throw new BookstoreApiWrongParameterException("Wrong value passed to parameter");
         }

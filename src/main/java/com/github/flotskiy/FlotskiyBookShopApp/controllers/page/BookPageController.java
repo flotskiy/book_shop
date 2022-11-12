@@ -1,8 +1,5 @@
 package com.github.flotskiy.FlotskiyBookShopApp.controllers.page;
 
-import com.github.flotskiy.FlotskiyBookShopApp.exceptions.BookReviewException;
-import com.github.flotskiy.FlotskiyBookShopApp.exceptions.RateBookByUserException;
-import com.github.flotskiy.FlotskiyBookShopApp.exceptions.RateBookReviewException;
 import com.github.flotskiy.FlotskiyBookShopApp.model.dto.book.page.BookSlugDto;
 import com.github.flotskiy.FlotskiyBookShopApp.model.dto.post.BookReviewDto;
 import com.github.flotskiy.FlotskiyBookShopApp.model.dto.post.BookStatusDto;
@@ -118,34 +115,49 @@ public class BookPageController extends HeaderController {
     @Secured("ROLE_USER")
     @PostMapping("/rateBook")
     @ResponseBody
-    public Map<String, Object> rateBook(@RequestBody RateBookDto payload) throws RateBookByUserException {
+    public Map<String, Object> rateBook(@RequestBody RateBookDto payload) {
         Map<String, Object> result = new HashMap<>();
-        Integer userId = getUserRegistrationService().getCurrentUserId();
-        booksRatingAndPopularityService
-                .setRatingToBookByUser(payload.getBookId(), userId, Integer.parseInt(payload.getValue()));
-        result.put("result", true);
+        try {
+            Integer userId = getUserRegistrationService().getCurrentUserId();
+            booksRatingAndPopularityService
+                    .setRatingToBookByUser(payload.getBookId(), userId, Integer.parseInt(payload.getValue()));
+            result.put("result", true);
+        } catch (Throwable throwable) {
+            result.put("result", false);
+            result.put("error", throwable.getMessage());
+        }
         return result;
     }
 
     @Secured("ROLE_USER")
     @PostMapping("/rateBookReview")
     @ResponseBody
-    public Map<String, Object> rateBookReview(@RequestBody RateBookReviewDto payload) throws RateBookReviewException {
+    public Map<String, Object> rateBookReview(@RequestBody RateBookReviewDto payload) {
         Map<String, Object> result = new HashMap<>();
-        Integer userId = getUserRegistrationService().getCurrentUserId();
-        booksRatingAndPopularityService.rateBookReview(payload.getReviewId(), userId, payload.getValue());
-        result.put("result", true);
+        try {
+            Integer userId = getUserRegistrationService().getCurrentUserId();
+            booksRatingAndPopularityService.rateBookReview(payload.getReviewId(), userId, payload.getValue());
+            result.put("result", true);
+        } catch (Throwable throwable) {
+            result.put("result", false);
+            result.put("error", throwable.getMessage());
+        }
         return result;
     }
 
     @Secured("ROLE_USER")
     @PostMapping("/bookReview")
     @ResponseBody
-    public Map<String, Object> bookReview(@RequestBody BookReviewDto payload) throws BookReviewException {
+    public Map<String, Object> bookReview(@RequestBody BookReviewDto payload) {
         Map<String, Object> result = new HashMap<>();
-        Integer userId = getUserRegistrationService().getCurrentUserId();
-        reviewAndLikeService.bookReview(payload.getBookId(), userId, payload.getText());
-        result.put("result", true);
+        try {
+            Integer userId = getUserRegistrationService().getCurrentUserId();
+            reviewAndLikeService.bookReview(payload.getBookId(), userId, payload.getText());
+            result.put("result", true);
+        } catch (Throwable throwable) {
+            result.put("result", false);
+            result.put("error", throwable.getMessage());
+        }
         return result;
     }
 }

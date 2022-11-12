@@ -1,5 +1,6 @@
 package com.github.flotskiy.FlotskiyBookShopApp.security;
 
+import com.github.flotskiy.FlotskiyBookShopApp.aspect.annotations.EntityAccessControllable;
 import com.github.flotskiy.FlotskiyBookShopApp.model.dto.book.BookDto;
 import com.github.flotskiy.FlotskiyBookShopApp.model.dto.user.UserBooksData;
 import com.github.flotskiy.FlotskiyBookShopApp.model.dto.user.UserDto;
@@ -49,8 +50,9 @@ public class BookstoreUserDetailsService implements UserDetailsService {
         this.book2UserService = book2UserService;
     }
 
+    @EntityAccessControllable
     @Override
-    public BookstoreUserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
+    public BookstoreUserDetails loadUserByUsername(String email) {
         UserEntity userEntity = userRepository
                 .findUserEntityByUserContactEntity_TypeAndUserContactEntity_Contact(ContactType.EMAIL, email);
         if (userEntity != null) {
@@ -61,7 +63,8 @@ public class BookstoreUserDetailsService implements UserDetailsService {
         }
     }
 
-    public UserDto getUserDtoById(Integer id) throws UsernameNotFoundException {
+    @EntityAccessControllable
+    public UserDto getUserDtoById(Integer id) {
         Optional<UserEntity> userEntityOptional = userRepository.findById(id);
         if (userEntityOptional.isPresent()) {
             return convertUserEntityToUserDto(userEntityOptional.get());

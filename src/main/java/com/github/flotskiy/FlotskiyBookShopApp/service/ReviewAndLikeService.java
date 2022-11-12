@@ -1,5 +1,6 @@
 package com.github.flotskiy.FlotskiyBookShopApp.service;
 
+import com.github.flotskiy.FlotskiyBookShopApp.aspect.annotations.EntityCreationControllable;
 import com.github.flotskiy.FlotskiyBookShopApp.exceptions.BookReviewException;
 import com.github.flotskiy.FlotskiyBookShopApp.model.dto.book.page.BookReviewDto;
 import com.github.flotskiy.FlotskiyBookShopApp.model.entity.book.BookEntity;
@@ -55,7 +56,8 @@ public class ReviewAndLikeService {
         return result;
     }
 
-    public BookReviewEntity bookReview(Integer bookId, Integer userId, String text) throws BookReviewException {
+    @EntityCreationControllable
+    public BookReviewEntity bookReview(Integer bookId, Integer userId, String text) {
         if (text.length() < 15) {
             throw new BookReviewException("Review is to short");
         }

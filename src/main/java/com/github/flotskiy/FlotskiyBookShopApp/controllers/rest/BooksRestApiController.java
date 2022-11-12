@@ -69,15 +69,21 @@ public class BooksRestApiController {
 
     @GetMapping("/by-title")
     @ApiOperation("Receiving List of Books with Specified Book's Title")
-    public ResponseEntity<ApiResponse<BookDto>> booksByTitle(@RequestParam("title") String title)
-            throws BookstoreApiWrongParameterException {
+    public ResponseEntity<ApiResponse<BookDto>> booksByTitle(@RequestParam("title") String title) {
         ApiResponse<BookDto> response = new ApiResponse<>();
         int currentUserId = userRegistrationService.getCurrentUserId();
-        List<BookDto> data = bookService.getBooksByTitle(title, currentUserId);
-        response.setDebugMessage("Successful request: /api/books/by-title");
-        response.setMessage("Data size: " + data.size() + " books");
-        response.setStatus(HttpStatus.OK);
-        response.setData(data);
+        try {
+            List<BookDto> data = bookService.getBooksByTitle(title, currentUserId);
+            response.setDebugMessage("Successful request: /api/books/by-title");
+            response.setMessage("Data size: " + data.size() + " books");
+            response.setStatus(HttpStatus.OK);
+            response.setData(data);
+        } catch (Throwable throwable) {
+            response.setDebugMessage("Request failed: /api/books/by-title");
+            response.setMessage(throwable.getMessage());
+            response.setStatus(HttpStatus.BAD_REQUEST);
+            response.setData(null);
+        }
         return ResponseEntity.ok(response);
     }
 

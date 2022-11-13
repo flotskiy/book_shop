@@ -98,4 +98,8 @@ public class UserContactEntity {
     public void setUserEntity(UserEntity userEntity) {
         this.userEntity = userEntity;
     }
+
+    public Boolean isCodeValid() {
+        return (codeTrails >= 0 && codeTrails < 5);
+    }
 }

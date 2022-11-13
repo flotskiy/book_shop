@@ -8,6 +8,7 @@ import com.github.flotskiy.FlotskiyBookShopApp.model.enums.ContactType;
 import com.github.flotskiy.FlotskiyBookShopApp.repository.UserContactRepository;
 import com.github.flotskiy.FlotskiyBookShopApp.repository.UserRepository;
 import com.github.flotskiy.FlotskiyBookShopApp.security.jwt.JWTService;
+import com.github.flotskiy.FlotskiyBookShopApp.service.CodeService;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
@@ -17,6 +18,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.core.user.DefaultOAuth2User;
@@ -37,6 +39,7 @@ public class UserRegistrationService {
     private final AuthenticationManager authenticationManager;
     private final BookstoreUserDetailsService bookstoreUserDetailsService;
     private final JWTService jwtService;
+    private final CodeService codeService;
     private final Logger logger = Logger.getLogger(this.getClass().getSimpleName());
 
     @Autowired
@@ -46,7 +49,8 @@ public class UserRegistrationService {
             PasswordEncoder passwordEncoder,
             AuthenticationManager authenticationManager,
             BookstoreUserDetailsService bookstoreUserDetailsService,
-            JWTService jwtService
+            JWTService jwtService,
+            CodeService codeService
     ) {
         this.userRepository = userRepository;
         this.userContactRepository = userContactRepository;
@@ -54,12 +58,20 @@ public class UserRegistrationService {
         this.authenticationManager = authenticationManager;
         this.bookstoreUserDetailsService = bookstoreUserDetailsService;
         this.jwtService = jwtService;
+        this.codeService = codeService;
     }
 
     public UserEntity registerNewUserWithContact(RegistrationForm registrationForm) throws InstanceAlreadyExistsException {
-        UserEntity userEntity = userRepository.findUserEntityByUserContactEntity_TypeAndUserContactEntity_Contact(
-                ContactType.EMAIL, registrationForm.getEmail()
-        );
+        UserEntity userEntity = null;
+        if (registrationForm.getEmail() != null) {
+            userEntity = userRepository.findUserEntityByUserContactEntity_TypeAndUserContactEntity_Contact(
+                    ContactType.EMAIL, registrationForm.getEmail()
+            );
+        } else if (registrationForm.getPhone() != null) {
+            userEntity = userRepository.findUserEntityByUserContactEntity_TypeAndUserContactEntity_Contact(
+                    ContactType.PHONE, registrationForm.getEmail()
+            );
+        }
         if (userEntity == null) {
             userEntity = registerNewUser(registrationForm);
             registerNewUserContact(registrationForm, userEntity);
@@ -103,12 +115,14 @@ public class UserRegistrationService {
         if (email != null && !email.isBlank()) {
             newUserContactEntity.setType(ContactType.EMAIL);
             newUserContactEntity.setContact(email);
+            newUserContactEntity.setCode(RandomStringUtils.random(6, true, true)); // TODO: use codeService here generate email code
         } else {
             newUserContactEntity.setType(ContactType.PHONE);
-            newUserContactEntity.setContact(registrationForm.getPhone());
+            String phone = registrationForm.getPhone();
+            newUserContactEntity.setContact(phone);
+            newUserContactEntity.setCode(codeService.generateSecretCodeForUserContactEntity(phone));
         }
         newUserContactEntity.setApproved((short) 0);
-        newUserContactEntity.setCode(RandomStringUtils.random(6, true, true));
         newUserContactEntity.setCodeTrails(0);
         newUserContactEntity.setCodeTime(LocalDateTime.now());
         return userContactRepository.save(newUserContactEntity);
@@ -129,6 +143,19 @@ public class UserRegistrationService {
                 new UsernamePasswordAuthenticationToken(payload.getContact(), payload.getCode())
         );
         BookstoreUserDetails userDetails = bookstoreUserDetailsService.loadUserByUsername(payload.getContact());
+        String jwtToken = jwtService.generateToken(userDetails);
+        ContactConfirmationResponse response = new ContactConfirmationResponse();
+        response.setResult(jwtToken);
+        return response;
+    }
+
+    public ContactConfirmationResponse jwtLoginByPhoneNumber(ContactConfirmPayloadDto payload)
+            throws InstanceAlreadyExistsException {
+        RegistrationForm registrationForm = new RegistrationForm();
+        registrationForm.setPhone(payload.getContact());
+        registrationForm.setPass(payload.getCode());
+        registerNewUserWithContact(registrationForm);
+        UserDetails userDetails = bookstoreUserDetailsService.loadUserByUsername(payload.getContact());
         String jwtToken = jwtService.generateToken(userDetails);
         ContactConfirmationResponse response = new ContactConfirmationResponse();
         response.setResult(jwtToken);

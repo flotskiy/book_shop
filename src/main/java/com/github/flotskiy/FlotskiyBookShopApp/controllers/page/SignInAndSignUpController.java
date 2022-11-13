@@ -5,6 +5,7 @@ import com.github.flotskiy.FlotskiyBookShopApp.security.RegistrationForm;
 import com.github.flotskiy.FlotskiyBookShopApp.security.ContactConfirmationResponse;
 import com.github.flotskiy.FlotskiyBookShopApp.security.UserRegistrationService;
 import com.github.flotskiy.FlotskiyBookShopApp.service.BookService;
+import com.github.flotskiy.FlotskiyBookShopApp.service.CodeService;
 import com.github.flotskiy.FlotskiyBookShopApp.service.UserBookService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -25,13 +26,18 @@ import java.util.logging.Logger;
 public class SignInAndSignUpController extends HeaderController {
 
     private final UserBookService userBookService;
+    private final CodeService codeService;
 
     @Autowired
     public SignInAndSignUpController(
-            UserRegistrationService userRegistrationService, BookService bookService, UserBookService userBookService
+            UserRegistrationService userRegistrationService,
+            BookService bookService,
+            UserBookService userBookService,
+            CodeService codeService
     ) {
         super(userRegistrationService, bookService);
         this.userBookService = userBookService;
+        this.codeService = codeService;
     }
 
     @GetMapping("/signin")
@@ -50,15 +56,31 @@ public class SignInAndSignUpController extends HeaderController {
     public ContactConfirmationResponse handleRequestContactConfirmation(@RequestBody ContactConfirmPayloadDto payload) {
         ContactConfirmationResponse response = new ContactConfirmationResponse();
         response.setResult("true");
-        return response;
+        if (payload.getContact().contains("@")) {
+            return response;
+        } else {
+            String codeString = codeService.generateSecretCodeForUserContactEntity(payload.getContact());
+            // TODO: save codeString
+            return response;
+        }
     }
 
     @PostMapping("/approveContact")
     @ResponseBody
     public ContactConfirmationResponse handleApproveContact(@RequestBody ContactConfirmPayloadDto payload) {
         ContactConfirmationResponse response = new ContactConfirmationResponse();
-        response.setResult("true");
-        return response;
+
+        if (codeService.verifyCode(payload.getCode())) {
+            response.setResult("true");
+            return response;
+        } else {
+            if (payload.getContact().contains("@")) {
+                response.setResult("true");
+                return response;
+            } else {
+                return new ContactConfirmationResponse();
+            }
+        }
     }
 
     @PostMapping("/reg")
@@ -81,6 +103,24 @@ public class SignInAndSignUpController extends HeaderController {
         HashMap<String, String> result = new HashMap<>();
         try {
             ContactConfirmationResponse loginResponse = getUserRegistrationService().jwtLogin(payload);
+            Cookie cookie = new Cookie("token", loginResponse.getResult());
+            httpServletResponse.addCookie(cookie);
+            result.put("result", loginResponse.getResult());
+        } catch (Exception exception) {
+            String message = getUserRegistrationService().getExceptionInfo(exception);
+            result.put("error", message);
+        }
+        return result;
+    }
+
+    @PostMapping("/login-by-phone-number")
+    @ResponseBody
+    public Map<String, String> handleLoginByPhoneNumber(
+            @RequestBody ContactConfirmPayloadDto payload, HttpServletResponse httpServletResponse
+    ) {
+        HashMap<String, String> result = new HashMap<>();
+        try {
+            ContactConfirmationResponse loginResponse = getUserRegistrationService().jwtLoginByPhoneNumber(payload);
             Cookie cookie = new Cookie("token", loginResponse.getResult());
             httpServletResponse.addCookie(cookie);
             result.put("result", loginResponse.getResult());

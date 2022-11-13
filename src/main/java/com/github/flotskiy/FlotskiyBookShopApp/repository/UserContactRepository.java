@@ -10,4 +10,6 @@ public interface UserContactRepository extends JpaRepository<UserContactEntity, 
     Integer getMaxId();
 
     UserContactEntity findUserContactEntityByUserEntityId(Integer userId);
+
+    public UserContactEntity findUserContactEntityByCode(String code);
 }

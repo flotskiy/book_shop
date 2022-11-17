@@ -32,7 +32,7 @@ public class BookstoreUserDetails implements UserDetails {
 
     @Override
     public String getUsername() {
-        return userDto.getEmail();
+        return userDto.getContact();
     }
 
     @Override

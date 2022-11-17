@@ -6,8 +6,7 @@ public class UserDto {
     private String name;
     private String password;
     private Integer balance;
-    private String email;
-    private String phone;
+    private String contact;
     private UserBooksData userBooksData;
 
     public Integer getId() {
@@ -42,20 +41,12 @@ public class UserDto {
         this.balance = balance;
     }
 
-    public String getEmail() {
-        return email;
+    public String getContact() {
+        return contact;
     }
 
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public String getPhone() {
-        return phone;
-    }
-
-    public void setPhone(String phone) {
-        this.phone = phone;
+    public void setContact(String contact) {
+        this.contact = contact;
     }
 
     public UserBooksData getUserBooksData() {

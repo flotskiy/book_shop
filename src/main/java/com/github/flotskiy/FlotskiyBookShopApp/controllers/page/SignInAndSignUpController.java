@@ -1,5 +1,8 @@
 package com.github.flotskiy.FlotskiyBookShopApp.controllers.page;
 
+import com.github.flotskiy.FlotskiyBookShopApp.exceptions.CodesNotEqualsException;
+import com.github.flotskiy.FlotskiyBookShopApp.exceptions.ExpiredCodeException;
+import com.github.flotskiy.FlotskiyBookShopApp.exceptions.UserContactEntityNotApproved;
 import com.github.flotskiy.FlotskiyBookShopApp.model.dto.post.ContactConfirmPayloadDto;
 import com.github.flotskiy.FlotskiyBookShopApp.security.RegistrationForm;
 import com.github.flotskiy.FlotskiyBookShopApp.security.ContactConfirmationResponse;
@@ -16,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.management.InstanceAlreadyExistsException;
+import javax.persistence.EntityNotFoundException;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
 import java.util.HashMap;
@@ -59,8 +63,14 @@ public class SignInAndSignUpController extends HeaderController {
         if (payload.getContact().contains("@")) {
             return response;
         } else {
-            String codeString = codeService.generateSecretCodeForUserContactEntity(payload.getContact());
-            // TODO: save codeString
+            try {
+                String codeString = codeService.generateSecretCodeForUserContactEntityPhone(payload.getContact());
+                getUserRegistrationService()
+                        .registerNewUserWithContactWhileRequestingContactConfirmation(payload.getContact(), codeString);
+            } catch (InstanceAlreadyExistsException existsException) {
+                response.setResult(null);
+                response.setError(existsException.getMessage());
+            }
             return response;
         }
     }
@@ -69,26 +79,26 @@ public class SignInAndSignUpController extends HeaderController {
     @ResponseBody
     public ContactConfirmationResponse handleApproveContact(@RequestBody ContactConfirmPayloadDto payload) {
         ContactConfirmationResponse response = new ContactConfirmationResponse();
-
-        if (codeService.verifyCode(payload.getCode())) {
-            response.setResult("true");
-            return response;
-        } else {
-            if (payload.getContact().contains("@")) {
+        try {
+            if (codeService.verifyCode(payload)) {
                 response.setResult("true");
-                return response;
             } else {
-                return new ContactConfirmationResponse();
+                response.setResult("false");
+                response.setError("Exceeded the number of attempts to enter the code");
             }
+        } catch (EntityNotFoundException | ExpiredCodeException | CodesNotEqualsException exception) {
+            response.setResult(null);
+            response.setError(exception.getMessage());
         }
+        return response;
     }
 
     @PostMapping("/reg")
     public String handleUserRegistrationForm(RegistrationForm registrationForm, Model model) {
         try {
-            getUserRegistrationService().registerNewUserWithContact(registrationForm);
+            getUserRegistrationService().registerUserPassword(registrationForm);
             model.addAttribute("regOk", true);
-        } catch (InstanceAlreadyExistsException ex) {
+        } catch (UserContactEntityNotApproved ex) {
             Logger.getLogger(this.getClass().getSimpleName()).warning(ex.getMessage());
             model.addAttribute("regOk", false);
         }
@@ -103,24 +113,6 @@ public class SignInAndSignUpController extends HeaderController {
         HashMap<String, String> result = new HashMap<>();
         try {
             ContactConfirmationResponse loginResponse = getUserRegistrationService().jwtLogin(payload);
-            Cookie cookie = new Cookie("token", loginResponse.getResult());
-            httpServletResponse.addCookie(cookie);
-            result.put("result", loginResponse.getResult());
-        } catch (Exception exception) {
-            String message = getUserRegistrationService().getExceptionInfo(exception);
-            result.put("error", message);
-        }
-        return result;
-    }
-
-    @PostMapping("/login-by-phone-number")
-    @ResponseBody
-    public Map<String, String> handleLoginByPhoneNumber(
-            @RequestBody ContactConfirmPayloadDto payload, HttpServletResponse httpServletResponse
-    ) {
-        HashMap<String, String> result = new HashMap<>();
-        try {
-            ContactConfirmationResponse loginResponse = getUserRegistrationService().jwtLoginByPhoneNumber(payload);
             Cookie cookie = new Cookie("token", loginResponse.getResult());
             httpServletResponse.addCookie(cookie);
             result.put("result", loginResponse.getResult());

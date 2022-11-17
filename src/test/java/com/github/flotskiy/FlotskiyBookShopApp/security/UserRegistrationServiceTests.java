@@ -115,7 +115,7 @@ class UserRegistrationServiceTests {
     void registerNewUserFail() {
         Mockito.doReturn(new UserEntity())
                 .when(userRepositoryMock)
-                .findUserEntityByUserContactEntity_TypeAndUserContactEntity_Contact(ContactType.EMAIL, registrationForm.getEmail());
+                .findUserEntityByUserContactEntity_Contact(registrationForm.getEmail());
         UserEntity userEntity = null;
         try {
             userEntity = userRegistrationService.registerNewUserWithContact(registrationForm);
@@ -129,7 +129,7 @@ class UserRegistrationServiceTests {
     void jwtLogin() {
         Mockito.doReturn(testUserEntity)
                 .when(userRepositoryMock)
-                .findUserEntityByUserContactEntity_TypeAndUserContactEntity_Contact(ContactType.EMAIL, registrationForm.getEmail());
+                .findUserEntityByUserContactEntity_Contact(registrationForm.getEmail());
 
         Mockito.doReturn(testUserContactEntity)
                 .when(userContactRepositoryMock)

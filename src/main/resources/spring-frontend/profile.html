@@ -1,4 +1,3 @@
-
 <!--END-->
 <!--END--><!DOCTYPE html><!--[if IE 7]>
 <html class="ie7" lang="ru">
@@ -23,11 +22,6 @@
       <main class="Middle-main">
         <h2 class="Middle-title" th:text="#{menu.profile}">Мой профиль</h2>
         <div class="Tabs Tabs_default">
-          <!--+Tabs-links([-->
-          <!--    ['#basic', 'Основные сведения'],-->
-          <!--    ['#transactions','История транзакций'],-->
-          <!--    ['#topup','Пополнить счет']-->
-          <!--], 'text', 0)-->
           <div class="Tabs-links">
             <a class="Tabs-link Tabs-link_ACTIVE" href="#basic" th:text="#{page.profile.basic}">Основные сведения</a>
             <a class="Tabs-link" href="#transactions" th:text="#{page.profile.transaction}">История транзакций</a>
@@ -45,8 +39,8 @@
                           <div class="form-input" th:text="${curUser.name}">User name</div>
                         </div>
                         <div class="form-group">
-                          <label class="form-label" for="mail">E-mail</label>
-                          <div class="form-input" th:text="${curUser.email}">User email</div>
+                          <label class="form-label" for="mail">Contact</label>
+                          <div class="form-input" th:text="${curUser.contact}">User contact</div>
                         </div>
                       </div>
                     </div>
@@ -58,21 +52,21 @@
                           <input class="form-input" id="name" name="name" type="text"
                                  value="User name" th:value="${curUser.name}"/>
                         </div>
-                        <div class="form-group" th:if="${curUser.email}">
+                        <div class="form-group" th:if="${curUser.contact.contains('@')}">
                           <label class="form-label" for="mail">E-mail
                           </label>
                           <input class="form-input" id="mail" name="mail" type="text"
-                                 value="flotskiy@book.shop" th:value="${curUser.email}" data-validate="require mail"/>
+                                 value="flotskiy@book.shop" th:value="${curUser.contact}" data-validate="require mail"/>
                           <div class="Profile-btn Profile-btn_confirm">
                             <button class="btn btn_primary" type="button" th:text="#{button.confirm}">Подтвердить
                             </button>
                           </div>
                         </div>
-                        <div class="form-group" th:if="${curUser.phone}">
+                        <div class="form-group" th:if="${not curUser.contact.contains('@')}">
                           <label class="form-label" for="phone" th:text="#{page.profile.phone}">Телефон
                           </label>
                           <input class="form-input" id="phone" name="phone" type="text"
-                                 value="+70000000000" th:value="${curUser.phone}"
+                                 value="+70000000000" th:value="${curUser.contact}"
                                  data-mask="+7 (999) 999-99-99" data-validate="require"/>
                           <div class="Profile-btn Profile-btn_confirm">
                             <button class="btn btn_primary" type="button" th:text="#{button.confirm}">Подтвердить

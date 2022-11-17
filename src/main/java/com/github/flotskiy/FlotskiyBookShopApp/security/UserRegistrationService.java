@@ -1,5 +1,6 @@
 package com.github.flotskiy.FlotskiyBookShopApp.security;
 
+import com.github.flotskiy.FlotskiyBookShopApp.exceptions.UserContactEntityNotApproved;
 import com.github.flotskiy.FlotskiyBookShopApp.model.dto.post.ContactConfirmPayloadDto;
 import com.github.flotskiy.FlotskiyBookShopApp.model.dto.user.*;
 import com.github.flotskiy.FlotskiyBookShopApp.model.entity.user.UserContactEntity;
@@ -18,14 +19,15 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.core.user.DefaultOAuth2User;
 import org.springframework.security.oauth2.jwt.JwtException;
 import org.springframework.stereotype.Service;
+import org.springframework.web.context.request.RequestContextHolder;
 
 import javax.management.InstanceAlreadyExistsException;
+import javax.persistence.EntityNotFoundException;
 import java.time.LocalDateTime;
 import java.util.Map;
 import java.util.logging.Logger;
@@ -61,16 +63,25 @@ public class UserRegistrationService {
         this.codeService = codeService;
     }
 
+    public void registerNewUserWithContactWhileRequestingContactConfirmation(String contact, String codeString)
+            throws InstanceAlreadyExistsException {
+        UserEntity userEntity = userRepository.findUserEntityByUserContactEntity_Contact(contact);
+        if (userEntity == null) {
+            userEntity = registerNewUserWhileRequestingContactConfirmation();
+            registerNewUserContactWhileRequestingContactConfirmation(contact, codeString, userEntity);
+        } else if (userContactRepository.findById(userEntity.getId()).isPresent()
+                        && userContactRepository.findById(userEntity.getId()).get().getApproved() == 0) {
+            throw new InstanceAlreadyExistsException("Register new user with contact " +
+                    "while requesting contact confirmation failed");
+        }
+    }
+
     public UserEntity registerNewUserWithContact(RegistrationForm registrationForm) throws InstanceAlreadyExistsException {
         UserEntity userEntity = null;
         if (registrationForm.getEmail() != null) {
-            userEntity = userRepository.findUserEntityByUserContactEntity_TypeAndUserContactEntity_Contact(
-                    ContactType.EMAIL, registrationForm.getEmail()
-            );
+            userEntity = userRepository.findUserEntityByUserContactEntity_Contact(registrationForm.getEmail());
         } else if (registrationForm.getPhone() != null) {
-            userEntity = userRepository.findUserEntityByUserContactEntity_TypeAndUserContactEntity_Contact(
-                    ContactType.PHONE, registrationForm.getEmail()
-            );
+            userEntity = userRepository.findUserEntityByUserContactEntity_Contact(registrationForm.getPhone());
         }
         if (userEntity == null) {
             userEntity = registerNewUser(registrationForm);
@@ -79,6 +90,22 @@ public class UserRegistrationService {
             throw new InstanceAlreadyExistsException("User with that email already exists");
         }
         return userEntity;
+    }
+
+    private UserEntity registerNewUserWhileRequestingContactConfirmation() {
+        Integer currentMaxId = userRepository.getMaxId();
+        int newUserId = 1;
+        if (currentMaxId != null) {
+            newUserId = currentMaxId + 1;
+        }
+
+        UserEntity newUserEntity = new UserEntity();
+        newUserEntity.setId(newUserId);
+        newUserEntity.setHash("");
+        newUserEntity.setBalance(0);
+        newUserEntity.setRegTime(LocalDateTime.now());
+        newUserEntity.setName("no name");
+        return userRepository.save(newUserEntity);
     }
 
     public UserEntity registerNewUser(RegistrationForm registrationForm) {
@@ -101,6 +128,53 @@ public class UserRegistrationService {
         return userRepository.save(newUserEntity);
     }
 
+    private void registerNewUserContactWhileRequestingContactConfirmation(
+            String contact, String codeString, UserEntity userEntity
+    ) {
+        Integer currentMaxId = userContactRepository.getMaxId();
+        int newUserContactId = 1;
+        if (currentMaxId != null) {
+            newUserContactId = currentMaxId + 1;
+        }
+
+        UserContactEntity newUserContactEntity = new UserContactEntity();
+        newUserContactEntity.setId(newUserContactId);
+        newUserContactEntity.setUserEntity(userEntity);
+        if (contact.contains("@")) {
+            newUserContactEntity.setType(ContactType.EMAIL);
+            newUserContactEntity.setContact(contact);
+        } else {
+            newUserContactEntity.setType(ContactType.PHONE);
+            newUserContactEntity.setContact(contact);
+        }
+        newUserContactEntity.setCode(codeString);
+        newUserContactEntity.setApproved((short) 0);
+        newUserContactEntity.setCodeTrails(0);
+        newUserContactEntity.setCodeTime(LocalDateTime.now());
+        userContactRepository.save(newUserContactEntity);
+    }
+
+    public void registerUserPassword(RegistrationForm registrationForm) {
+        String contact = null;
+        if (registrationForm.getPhone() != null) {
+            contact = registrationForm.getPhone();
+        } else if (registrationForm.getEmail() != null) {
+            contact = registrationForm.getEmail();
+        }
+        UserEntity userEntity = userRepository.findUserEntityByUserContactEntity_Contact(contact);
+        if (userEntity == null) {
+            throw new EntityNotFoundException("UserEntity not found during registering user password");
+        }
+        UserContactEntity userContactEntity = userContactRepository.findUserContactEntityByUserEntityId(userEntity.getId());
+        if (userContactEntity.getApproved() == 1) {
+            userEntity.setName(registrationForm.getName());
+            userEntity.setHash(passwordEncoder.encode(registrationForm.getPass()));
+            userRepository.save(userEntity);
+        } else {
+            throw new UserContactEntityNotApproved("You have to approve contact to save the password");
+        }
+    }
+
     public UserContactEntity registerNewUserContact(RegistrationForm registrationForm, UserEntity userEntity) {
         Integer currentMaxId = userContactRepository.getMaxId();
         int newUserContactId = 1;
@@ -112,15 +186,18 @@ public class UserRegistrationService {
         newUserContactEntity.setId(newUserContactId);
         newUserContactEntity.setUserEntity(userEntity);
         String email = registrationForm.getEmail();
+        String phone = registrationForm.getPhone();
         if (email != null && !email.isBlank()) {
             newUserContactEntity.setType(ContactType.EMAIL);
             newUserContactEntity.setContact(email);
-            newUserContactEntity.setCode(RandomStringUtils.random(6, true, true)); // TODO: use codeService here generate email code
-        } else {
+            newUserContactEntity.setCode(RandomStringUtils.random(6, true, true));
+        } else if (phone != null && !phone.isBlank()) {
             newUserContactEntity.setType(ContactType.PHONE);
-            String phone = registrationForm.getPhone();
             newUserContactEntity.setContact(phone);
-            newUserContactEntity.setCode(codeService.generateSecretCodeForUserContactEntity(phone));
+            newUserContactEntity.setCode(codeService.generateSecretCodeForUserContactEntityPhone(phone));
+        } else {
+            String sessionId = RequestContextHolder.currentRequestAttributes().getSessionId();
+            newUserContactEntity.setContact(sessionId);
         }
         newUserContactEntity.setApproved((short) 0);
         newUserContactEntity.setCodeTrails(0);
@@ -143,19 +220,6 @@ public class UserRegistrationService {
                 new UsernamePasswordAuthenticationToken(payload.getContact(), payload.getCode())
         );
         BookstoreUserDetails userDetails = bookstoreUserDetailsService.loadUserByUsername(payload.getContact());
-        String jwtToken = jwtService.generateToken(userDetails);
-        ContactConfirmationResponse response = new ContactConfirmationResponse();
-        response.setResult(jwtToken);
-        return response;
-    }
-
-    public ContactConfirmationResponse jwtLoginByPhoneNumber(ContactConfirmPayloadDto payload)
-            throws InstanceAlreadyExistsException {
-        RegistrationForm registrationForm = new RegistrationForm();
-        registrationForm.setPhone(payload.getContact());
-        registrationForm.setPass(payload.getCode());
-        registerNewUserWithContact(registrationForm);
-        UserDetails userDetails = bookstoreUserDetailsService.loadUserByUsername(payload.getContact());
         String jwtToken = jwtService.generateToken(userDetails);
         ContactConfirmationResponse response = new ContactConfirmationResponse();
         response.setResult(jwtToken);

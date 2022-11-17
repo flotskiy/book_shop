@@ -4,6 +4,7 @@ import com.github.flotskiy.FlotskiyBookShopApp.model.enums.ContactType;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 
 @Entity
 @Table(name = "user_contact")
@@ -99,7 +100,11 @@ public class UserContactEntity {
         this.userEntity = userEntity;
     }
 
-    public Boolean isCodeValid() {
-        return (codeTrails >= 0 && codeTrails < 5);
+    public Boolean isCodeAttemptNotExceeded() {
+        return (codeTrails >= 0 && codeTrails < 3);
+    }
+
+    public Boolean isCodeExpired() {
+        return LocalDateTime.now().isAfter(codeTime.plus(10, ChronoUnit.MINUTES));
     }
 }

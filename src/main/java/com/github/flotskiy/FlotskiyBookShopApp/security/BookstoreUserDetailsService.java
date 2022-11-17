@@ -8,7 +8,6 @@ import com.github.flotskiy.FlotskiyBookShopApp.model.entity.book.BookEntity;
 import com.github.flotskiy.FlotskiyBookShopApp.model.entity.book.links.Book2UserEntity;
 import com.github.flotskiy.FlotskiyBookShopApp.model.entity.user.UserContactEntity;
 import com.github.flotskiy.FlotskiyBookShopApp.model.entity.user.UserEntity;
-import com.github.flotskiy.FlotskiyBookShopApp.model.enums.ContactType;
 import com.github.flotskiy.FlotskiyBookShopApp.repository.Book2UserRepository;
 import com.github.flotskiy.FlotskiyBookShopApp.repository.UserContactRepository;
 import com.github.flotskiy.FlotskiyBookShopApp.repository.UserRepository;
@@ -52,9 +51,8 @@ public class BookstoreUserDetailsService implements UserDetailsService {
 
     @EntityAccessControllable
     @Override
-    public BookstoreUserDetails loadUserByUsername(String email) {
-        UserEntity userEntity = userRepository
-                .findUserEntityByUserContactEntity_TypeAndUserContactEntity_Contact(ContactType.EMAIL, email);
+    public BookstoreUserDetails loadUserByUsername(String contact) {
+        UserEntity userEntity = userRepository.findUserEntityByUserContactEntity_Contact(contact);
         if (userEntity != null) {
             UserDto userDto = convertUserEntityToUserDto(userEntity);
             return new BookstoreUserDetails(userDto);
@@ -102,12 +100,7 @@ public class BookstoreUserDetailsService implements UserDetailsService {
         userDto.setName(userEntity.getName());
         userDto.setPassword(userEntity.getHash());
         userDto.setBalance(userEntity.getBalance());
-        ContactType contactType = userContactEntity.getType();
-        if (contactType.name().equals("PHONE")) {
-            userDto.setPhone(userContactEntity.getContact());
-        } else if (contactType.name().equals("EMAIL")) {
-            userDto.setEmail(userContactEntity.getContact());
-        }
+        userDto.setContact(userContactEntity.getContact());
         userDto.setUserBooksData(createUserBooksData(userId));
         return userDto;
     }

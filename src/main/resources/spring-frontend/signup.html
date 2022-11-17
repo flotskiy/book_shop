@@ -27,50 +27,57 @@
               action="#" th:action="@{/reg}" method="post">
           <div class="Login-ins">
             <div class="Login-step">
-              <div class="form-group">
+              <div class="buttons">
+                <div class="action_btn">
+                  <button type="button" name="submitPhone" id="phoneButton" class="btn btn_success form-btn"
+                          th:text="#{page.signup.by.phone}">BY PHONE</button>
+                  <button type="button" name="submitMail" id="emailButton" class="btn btn_success form-btn"
+                          th:text="#{page.signup.by.email}">BY EMAIL</button>
+                </div>
+              </div>
+              <div class="form-group name" hidden>
                 <input class="form-input" id="name" name="name" type="text" th:field="*{name}"
                        placeholder="Введите Имя" th:placeholder="#{page.signup.name}" data-validate="require"/>
               </div>
-              <div class="form-group form-group_row">
-                <div class="form-group">
+              <div class="form-group form-group_row signup-phone" hidden>
+                <div class="form-group signup-phone" hidden>
                   <input class="form-input form-input_phone" id="phone" name="phone" type="text" th:field="*{phone}"
                          placeholder="Введите телефон" th:placeholder="#{page.signin.phone.placeholder}"
-                         data-mask="+7 (999) 999-99-99"/>
+                         data-mask="+7 (999) 999-99-99" data-validate="require"/>
                 </div>
-                <div class="form-group form-group_key">
+                <div class="form-group form-group_key signup-phone" hidden>
                   <input class="form-input form-input_code" id="phoneCode" name="phoneCode" type="text"
-                         placeholder="Код из СМС" th:placeholder="#{page.signup.code.sms}"
-                         data-mask="999 999"/>
+                         placeholder="Код из СМС" th:placeholder="#{page.signup.code.sms}"/>
                 </div>
-                <div class="form-group">
+                <div class="form-group signup-phone" hidden>
                   <button class="btn btn_success btn_sm form-btn" type="button" name="submitPhone"
                           disabled="disabled" id="submitPhone" th:text="#{page.signup.confirm}">Подтвердить
                   </button>
                 </div>
               </div>
-              <div class="form-group form-group_row">
-                <div class="form-group">
+              <div class="form-group form-group_row signup-mail" hidden>
+                <div class="form-group signup-mail" hidden>
                   <input class="form-input form-input_mail" id="mail" name="mail" type="text" th:field="*{email}"
                          placeholder="Введите e-mail" th:placeholder="#{page.signin.mail.placeholder}"
                          data-validate="mail require"/>
                 </div>
-                <div class="form-group form-group_key">
+                <div class="form-group form-group_key signup-mail" hidden>
                   <input class="form-input form-input_code" id="mailCode" name="mailCode"
                          type="text" placeholder="Код из письма" th:placeholder="#{page.signup.code.mail}"
                          data-mask="999 999" data-validate="require key"/>
                 </div>
-                <div class="form-group">
+                <div class="form-group signup-mail" hidden>
                   <button class="btn btn_success btn_sm form-btn" type="button" name="submitMail"
                           disabled="disabled" id="submitMail" th:text="#{page.signup.confirm}">Подтвердить
                   </button>
                 </div>
               </div>
-              <div class="form-group">
+              <div class="form-group password" hidden>
                 <input class="form-input form-input_password" id="pass" name="pass" type="text" th:field="*{pass}"
                        placeholder="Введите пароль" th:placeholder="#{page.signup.pass}"
                        data-validate="password require"/>
               </div>
-              <div class="form-group form-group_center">
+              <div class="form-group form-group_center registration" hidden>
                 <button class="btn btn_primary form-btn" type="submit" name="registration" id="registration"
                         th:text="#{menu.signup}">Зарегистрироваться
                 </button>

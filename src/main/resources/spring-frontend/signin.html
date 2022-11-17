@@ -29,8 +29,10 @@
             <div class="Login-step">
               <div class="form-group">
                 <label class="form-label Login-title" th:text="#{page.signin.info}">Введите e-mail или телефон</label>
-                <label class="form-label Login-title" th:if="${regOk}">Регистрация прошла успешно!</label>
-                <label class="form-label Login-title" th:if="${regOk} == false">Регистрация завершилась неудачей!</label>
+                <label class="form-label Login-title" th:if="${regOk}"
+                       th:text="#{page.signin.success}">Регистрация прошла успешно!</label>
+                <label class="form-label Login-title" th:if="${regOk} == false"
+                       th:text="#{page.signin.fail}">Регистрация завершилась неудачей!</label>
               </div>
               <div class="form-group">
                 <div class="row">
@@ -66,13 +68,13 @@
             </div>
             <div class="Login-step Login-step_hide" data-type="phone">
               <div class="form-group">
-                <label class="form-label Login-title" th:text="#{page.signin.login.phone}">
-                  Введите код из смс или перейдите по&nbsp;ссылке ниже для регистрации:
+                <label class="form-label Login-title" th:text="#{page.signin.login}">
+                  Enter your account password or follow the link below to register:
                 </label>
               </div>
               <div class="form-group form-group_key">
                 <input class="form-input" id="phonecode" name="phonecode" type="text"
-                       placeholder="Код" th:placeholder="#{page.signin.code}"/>
+                       placeholder="Password" th:placeholder="#{page.signin.password}"/>
               </div>
               <div class="form-group form-group_center">
                 <button class="btn btn_primary form-btn" type="button" name="toComeInPhone"
@@ -82,8 +84,8 @@
             </div>
             <div class="Login-step Login-step_hide" data-type="mail">
               <div class="form-group">
-                <label class="form-label Login-title" th:text="#{page.signin.login.mail}">
-                  Введите пароль учётной записи или перейдите по&nbsp;ссылке ниже для регистрации:
+                <label class="form-label Login-title" th:text="#{page.signin.login}">
+                  Enter your account password or follow the link below to register:
                 </label>
               </div>
               <div class="form-group form-group_key">

@@ -35,19 +35,16 @@ public class CodeService {
     }
 
     public Boolean verifyCode(ContactConfirmPayloadDto payload) {
-        if (payload.getContact().contains("@")) {
-            return true;
-        }
         UserContactEntity userContactEntity = userContactRepository.findUserContactEntityByContact(payload.getContact());
         if (userContactEntity == null) {
-            throw new EntityNotFoundException("UserContactEntity not found during verification");
+            throw new EntityNotFoundException("User Contact not found during verification");
         } else if (userContactEntity.isCodeExpired()) {
             throw new ExpiredCodeException("Code was created more than 10 minutes ago");
         } else if (!userContactEntity.getCode().equals(payload.getCode())) {
             int codeTrails = userContactEntity.getCodeTrails();
             userContactEntity.setCodeTrails(codeTrails + 1);
             userContactRepository.save(userContactEntity);
-            throw new CodesNotEqualsException("Invalid code from user");
+            throw new CodesNotEqualsException("Invalid code");
         } else if (userContactEntity.isCodeAttemptNotExceeded()) {
             userContactEntity.setApproved((short) 1);
             int codeTrails = userContactEntity.getCodeTrails();

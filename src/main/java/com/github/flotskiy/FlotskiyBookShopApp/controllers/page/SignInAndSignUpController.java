@@ -28,7 +28,8 @@ public class SignInAndSignUpController extends HeaderController {
 
     @Autowired
     public SignInAndSignUpController(
-            UserRegistrationService userRegistrationService, BookService bookService, UserBookService userBookService) {
+            UserRegistrationService userRegistrationService, BookService bookService, UserBookService userBookService
+    ) {
         super(userRegistrationService, bookService);
         this.userBookService = userBookService;
     }

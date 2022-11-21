@@ -1,5 +1,6 @@
 package com.github.flotskiy.FlotskiyBookShopApp.security;
 
+import com.github.flotskiy.FlotskiyBookShopApp.aspect.annotations.EntityAccessControllable;
 import com.github.flotskiy.FlotskiyBookShopApp.model.dto.book.BookDto;
 import com.github.flotskiy.FlotskiyBookShopApp.model.dto.user.UserBooksData;
 import com.github.flotskiy.FlotskiyBookShopApp.model.dto.user.UserDto;
@@ -49,8 +50,9 @@ public class BookstoreUserDetailsService implements UserDetailsService {
         this.book2UserService = book2UserService;
     }
 
+    @EntityAccessControllable
     @Override
-    public BookstoreUserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
+    public BookstoreUserDetails loadUserByUsername(String email) {
         UserEntity userEntity = userRepository
                 .findUserEntityByUserContactEntity_TypeAndUserContactEntity_Contact(ContactType.EMAIL, email);
         if (userEntity != null) {
@@ -61,13 +63,34 @@ public class BookstoreUserDetailsService implements UserDetailsService {
         }
     }
 
-    public UserDto getUserDtoById(Integer id) throws UsernameNotFoundException {
+    @EntityAccessControllable
+    public UserDto getUserDtoById(Integer id) {
         Optional<UserEntity> userEntityOptional = userRepository.findById(id);
         if (userEntityOptional.isPresent()) {
             return convertUserEntityToUserDto(userEntityOptional.get());
         } else {
             throw new UsernameNotFoundException("UserEntity not found");
         }
+    }
+
+    public int gerCurrentUserId() {
+        Object userObject = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        BookstoreUserDetails userDetails = null;
+        if (userObject instanceof BookstoreUserDetails) {
+            userDetails = (BookstoreUserDetails) userObject;
+        } else if (userObject instanceof DefaultOAuth2User) {
+            DefaultOAuth2User oAuth2User = (DefaultOAuth2User) userObject;
+            Map<String, Object> userAttr = oAuth2User.getAttributes();
+            String userEmail = userAttr.get("email").toString();
+            try {
+                userDetails = loadUserByUsername(userEmail);
+            } catch (UsernameNotFoundException usernameNotFoundException) {
+                return -1;
+            }
+        } else {
+            return -1;
+        }
+        return userDetails.getUserDto().getId();
     }
 
     private UserDto convertUserEntityToUserDto(UserEntity userEntity) {
@@ -120,25 +143,5 @@ public class BookstoreUserDetailsService implements UserDetailsService {
         List<Integer> bookIdList = book2UserEntities.stream().map(Book2UserEntity::getBookId).collect(Collectors.toList());
         List<BookEntity> bookEntityList = bookService.findBookEntitiesByIdIsIn(bookIdList);
         return bookService.convertBookEntitiesToBookDtoWithRatingList(bookEntityList, userId);
-    }
-
-    public int gerCurrentUserId() {
-        Object userObject = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        BookstoreUserDetails userDetails = null;
-        if (userObject instanceof BookstoreUserDetails) {
-            userDetails = (BookstoreUserDetails) userObject;
-        } else if (userObject instanceof DefaultOAuth2User) {
-            DefaultOAuth2User oAuth2User = (DefaultOAuth2User) userObject;
-            Map<String, Object> userAttr = oAuth2User.getAttributes();
-            String userEmail = userAttr.get("email").toString();
-            try {
-                userDetails = loadUserByUsername(userEmail);
-            } catch (UsernameNotFoundException usernameNotFoundException) {
-                return -1;
-            }
-        } else {
-            return -1;
-        }
-        return userDetails.getUserDto().getId();
     }
 }

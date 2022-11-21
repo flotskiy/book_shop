@@ -1,8 +1,5 @@
 package com.github.flotskiy.FlotskiyBookShopApp.controllers.page;
 
-import com.github.flotskiy.FlotskiyBookShopApp.exceptions.BookReviewException;
-import com.github.flotskiy.FlotskiyBookShopApp.exceptions.RateBookByUserException;
-import com.github.flotskiy.FlotskiyBookShopApp.exceptions.RateBookReviewException;
 import com.github.flotskiy.FlotskiyBookShopApp.model.dto.book.page.BookSlugDto;
 import com.github.flotskiy.FlotskiyBookShopApp.model.dto.post.BookReviewDto;
 import com.github.flotskiy.FlotskiyBookShopApp.model.dto.post.BookStatusDto;
@@ -37,7 +34,7 @@ public class BookPageController extends HeaderController {
     private final UserBookService userBookService;
     private final ReviewAndLikeService reviewAndLikeService;
     private final BooksRatingAndPopularityService booksRatingAndPopularityService;
-    private final ResourceStorage storage;
+    private final ResourceStorageService storage;
     private final Logger logger = Logger.getLogger(this.getClass().getSimpleName());
 
     @Autowired
@@ -47,7 +44,7 @@ public class BookPageController extends HeaderController {
             UserBookService userBookService,
             ReviewAndLikeService reviewAndLikeService,
             BooksRatingAndPopularityService booksRatingAndPopularityService,
-            ResourceStorage storage
+            ResourceStorageService storage
     ) {
         super(userRegistrationService, bookService);
         this.userBookService = userBookService;
@@ -78,13 +75,13 @@ public class BookPageController extends HeaderController {
     @GetMapping("/download/{hash}")
     public ResponseEntity<ByteArrayResource> bookFile(@PathVariable("hash") String hash) throws IOException {
         Path path = storage.getBookFilePath(hash);
-        Logger.getLogger(this.getClass().getSimpleName()).info("Downloading book file path is: " + path);
+        logger.info("Downloading book file path is: " + path);
 
         MediaType mediaType = storage.getBookFileMime(hash);
-        Logger.getLogger(this.getClass().getSimpleName()).info("Downloading book file mime type is: " + mediaType);
+        logger.info("Downloading book file mime type is: " + mediaType);
 
         byte[] data = storage.getBookFileByteArray(hash);
-        Logger.getLogger(this.getClass().getSimpleName()).info("Downloading book file data length: " + data.length);
+        logger.info("Downloading book file data length: " + data.length);
 
         return ResponseEntity.ok()
                 .header(HttpHeaders.CONTENT_DISPOSITION,
@@ -108,11 +105,9 @@ public class BookPageController extends HeaderController {
             Integer userId = getUserRegistrationService().getCurrentUserId();
             userBookService.changeBookStatus(slug, payload.getStatus(), request, response, model, userId);
             result.put("result", true);
-            logger.info("Book status SUCCESSFULLY changed");
-        } catch (Exception exception) {
+        } catch (Throwable throwable) {
             result.put("result", false);
             result.put("error", "An error occurred, try again later");
-            logger.info("Book status change FAILED");
         }
         return result;
     }
@@ -120,34 +115,49 @@ public class BookPageController extends HeaderController {
     @Secured("ROLE_USER")
     @PostMapping("/rateBook")
     @ResponseBody
-    public Map<String, Object> rateBook(@RequestBody RateBookDto payload) throws RateBookByUserException {
+    public Map<String, Object> rateBook(@RequestBody RateBookDto payload) {
         Map<String, Object> result = new HashMap<>();
-        Integer userId = getUserRegistrationService().getCurrentUserId();
-        booksRatingAndPopularityService
-                .setRatingToBookByUser(payload.getBookId(), userId, Integer.parseInt(payload.getValue()));
-        result.put("result", true);
+        try {
+            Integer userId = getUserRegistrationService().getCurrentUserId();
+            booksRatingAndPopularityService
+                    .setRatingToBookByUser(payload.getBookId(), userId, Integer.parseInt(payload.getValue()));
+            result.put("result", true);
+        } catch (Throwable throwable) {
+            result.put("result", false);
+            result.put("error", throwable.getMessage());
+        }
         return result;
     }
 
     @Secured("ROLE_USER")
     @PostMapping("/rateBookReview")
     @ResponseBody
-    public Map<String, Object> rateBookReview(@RequestBody RateBookReviewDto payload) throws RateBookReviewException {
+    public Map<String, Object> rateBookReview(@RequestBody RateBookReviewDto payload) {
         Map<String, Object> result = new HashMap<>();
-        Integer userId = getUserRegistrationService().getCurrentUserId();
-        booksRatingAndPopularityService.rateBookReview(payload.getReviewId(), userId, payload.getValue());
-        result.put("result", true);
+        try {
+            Integer userId = getUserRegistrationService().getCurrentUserId();
+            booksRatingAndPopularityService.rateBookReview(payload.getReviewId(), userId, payload.getValue());
+            result.put("result", true);
+        } catch (Throwable throwable) {
+            result.put("result", false);
+            result.put("error", throwable.getMessage());
+        }
         return result;
     }
 
     @Secured("ROLE_USER")
     @PostMapping("/bookReview")
     @ResponseBody
-    public Map<String, Object> bookReview(@RequestBody BookReviewDto payload) throws BookReviewException {
+    public Map<String, Object> bookReview(@RequestBody BookReviewDto payload) {
         Map<String, Object> result = new HashMap<>();
-        Integer userId = getUserRegistrationService().getCurrentUserId();
-        reviewAndLikeService.bookReview(payload.getBookId(), userId, payload.getText());
-        result.put("result", true);
+        try {
+            Integer userId = getUserRegistrationService().getCurrentUserId();
+            reviewAndLikeService.bookReview(payload.getBookId(), userId, payload.getText());
+            result.put("result", true);
+        } catch (Throwable throwable) {
+            result.put("result", false);
+            result.put("error", throwable.getMessage());
+        }
         return result;
     }
 }

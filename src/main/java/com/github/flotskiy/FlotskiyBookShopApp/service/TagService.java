@@ -37,8 +37,13 @@ public class TagService {
     }
 
     public Set<TagDto> convertTagEntitySetToTagDtoSet(Set<BookTagEntity> tagEntitySet) {
-        Set<TagDto> tagDtoSet = new HashSet<>();
         return tagEntitySet.stream().map(this::convertTagToTagDtoWithoutClazzValue).collect(Collectors.toSet());
+    }
+
+    public TagDto convertTagToTagDtoSorted(BookTagEntity tagEntity, List<BookTagEntity> tagEntitiesSorted) {
+        TagDto tagDto = convertTagToTagDtoWithoutClazzValue(tagEntity);
+        tagDto.setClazz(defineTagClass(tagEntity, tagEntitiesSorted));
+        return tagDto;
     }
 
     private TagDto convertTagToTagDtoWithoutClazzValue(BookTagEntity tagEntity) {
@@ -46,12 +51,6 @@ public class TagService {
         tagDto.setId(tagEntity.getId());
         tagDto.setTitle(tagEntity.getTitle());
         tagDto.setSlug(tagEntity.getSlug());
-        return tagDto;
-    }
-
-    public TagDto convertTagToTagDtoSorted(BookTagEntity tagEntity, List<BookTagEntity> tagEntitiesSorted) {
-        TagDto tagDto = convertTagToTagDtoWithoutClazzValue(tagEntity);
-        tagDto.setClazz(defineTagClass(tagEntity, tagEntitiesSorted));
         return tagDto;
     }
 

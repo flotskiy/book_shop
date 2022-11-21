@@ -174,7 +174,6 @@ public class UserRegistrationService {
     }
 
     public String getExceptionInfo(Exception exception) {
-        logger.warning(exception.getLocalizedMessage());
         if (exception instanceof JwtException) {
             return "Access denied! Try to sign in again!";
         } else if (exception instanceof BadCredentialsException) {

@@ -26,7 +26,6 @@ import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Logger;
 
 @RestController
 @RequestMapping("/api/books")
@@ -70,15 +69,21 @@ public class BooksRestApiController {
 
     @GetMapping("/by-title")
     @ApiOperation("Receiving List of Books with Specified Book's Title")
-    public ResponseEntity<ApiResponse<BookDto>> booksByTitle(@RequestParam("title") String title)
-            throws BookstoreApiWrongParameterException {
+    public ResponseEntity<ApiResponse<BookDto>> booksByTitle(@RequestParam("title") String title) {
         ApiResponse<BookDto> response = new ApiResponse<>();
         int currentUserId = userRegistrationService.getCurrentUserId();
-        List<BookDto> data = bookService.getBooksByTitle(title, currentUserId);
-        response.setDebugMessage("Successful request: /api/books/by-title");
-        response.setMessage("Data size: " + data.size() + " books");
-        response.setStatus(HttpStatus.OK);
-        response.setData(data);
+        try {
+            List<BookDto> data = bookService.getBooksByTitle(title, currentUserId);
+            response.setDebugMessage("Successful request: /api/books/by-title");
+            response.setMessage("Data size: " + data.size() + " books");
+            response.setStatus(HttpStatus.OK);
+            response.setData(data);
+        } catch (Throwable throwable) {
+            response.setDebugMessage("Request failed: /api/books/by-title");
+            response.setMessage(throwable.getMessage());
+            response.setStatus(HttpStatus.BAD_REQUEST);
+            response.setData(null);
+        }
         return ResponseEntity.ok(response);
     }
 
@@ -108,7 +113,8 @@ public class BooksRestApiController {
             "'offset' parameter is designed to set the first book of the list " +
             "and 'limit' parameter is helps to specify the number of books to show")
     public ResponseEntity<CountedBooksDto> recommendedBooks(
-            @RequestParam("offset") Integer offset, @RequestParam("limit") Integer limit) {
+            @RequestParam("offset") Integer offset, @RequestParam("limit") Integer limit
+    ) {
         int currentUserId = userRegistrationService.getCurrentUserId();
         UserDto currentUserDto = userRegistrationService.getCurrentUserDtoById(currentUserId);
         return ResponseEntity
@@ -258,7 +264,6 @@ public class BooksRestApiController {
             return ResponseEntity.ok().body(result);
         } catch (Exception ex) {
             result.put("result", false);
-            Logger.getLogger(this.getClass().getSimpleName()).warning(ex.getMessage());
             return ResponseEntity.badRequest().body(result);
         }
     }
@@ -279,7 +284,6 @@ public class BooksRestApiController {
             return ResponseEntity.ok().body(result);
         } catch (Exception ex) {
             result.put("result", false);
-            Logger.getLogger(this.getClass().getSimpleName()).warning(ex.getMessage());
             return ResponseEntity.badRequest().body(result);
         }
     }
@@ -301,7 +305,6 @@ public class BooksRestApiController {
         }  catch (Exception ex) {
             result.put("result", false);
             result.put("error", ex.getMessage());
-            Logger.getLogger(this.getClass().getSimpleName()).warning(ex.getMessage());
             return ResponseEntity.badRequest().body(result);
         }
     }

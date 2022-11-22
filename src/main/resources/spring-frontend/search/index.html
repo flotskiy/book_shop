@@ -1,4 +1,3 @@
-
 <!--END-->
 <!--END--><!DOCTYPE html><!--[if IE 7]>
 <html class="ie7" lang="ru">
@@ -31,14 +30,17 @@
           </div>
         </div>
         <div class="Section Section_close">
-          <header class="Section-header">
-            <h2 class="Section-title Middle-searchHeader" th:text="|#{page.search.result}${searchResultsSize}|">Найдено книг
-            </h2>
+          <header class="Section-header" th:if="${searchResultsSize > 0}">
+            <h2 class="Section-title Middle-searchHeader" th:text="|#{page.search.result}${searchResultsSize}|">Найдено книг</h2>
+          </header>
+          <header class="Section-header" th:if="${searchResultsSize == 0}">
+            <h2 class="Section-title Middle-searchHeader" th:text="#{page.search.nothing}">Nothing found</h2>
+            <h2 th:text="#{page.search.suggest}">See books here:</h2>
           </header>
           <div class="Cards Cards_search Cards_refresh">
             <div class="Card" th:each="book : ${searchResults}">
               <div class="Card-picture">
-                <a href="#" th:href="@{'/books/' + ${book.slug}}">
+                <a href="#" th:href="${searchResultsSize > 0} ? @{'/books/' + ${book.slug}} : ${book.slug}">
                   <img src="/assets/img/content/main/card.jpg" th:src="${book.image}" alt="card.jpg"/>
                   <div th:if="${book.discountPrice} lt ${book.price}">
                     <div class="Card-sale" th:text="|${book.discount}% скидка|">Скидка</div>
@@ -50,7 +52,8 @@
               </div>
               <div class="Card-content">
                 <strong class="Card-title">
-                  <a href="#" th:href="@{'/books/' + ${book.slug}}" th:text="${book.title}">Название книги</a>
+                  <a href="#" th:href="${searchResultsSize > 0} ? @{'/books/' + ${book.slug}} : ${book.slug}"
+                     th:text="${book.title}">Название книги</a>
                 </strong>
                 <div class="Card-description" th:text="${book.authors}">Имя автора
                 </div>
@@ -66,7 +69,7 @@
               <a class="btn btn_primary" href="#"
                  data-refreshshow="search" data-refreshoffset="0" data-refreshlimit="5"
                  th:attr="data-refreshquery=${headerInfoDto.searchQuery}" data-refreshquery="Техника"
-                 th:text="#{button.more}">Показать еще</a>
+                 th:text="#{button.more}" th:if="${searchResultsSize > 0}">Показать еще</a>
             </div>
           </div>
         </div>

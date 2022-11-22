@@ -6,6 +6,7 @@ import com.github.flotskiy.FlotskiyBookShopApp.model.dto.book.CountedBooksDto;
 import com.github.flotskiy.FlotskiyBookShopApp.model.dto.HeaderInfoDto;
 import com.github.flotskiy.FlotskiyBookShopApp.service.BookService;
 import com.github.flotskiy.FlotskiyBookShopApp.security.UserRegistrationService;
+import com.github.flotskiy.FlotskiyBookShopApp.service.GoogleSearchBookService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -17,9 +18,16 @@ import java.util.List;
 @Controller
 public class SearchPageController extends HeaderController {
 
+    private final GoogleSearchBookService googleSearchBookService;
+
     @Autowired
-    public SearchPageController(UserRegistrationService userRegistrationService, BookService bookService) {
+    public SearchPageController(
+            UserRegistrationService userRegistrationService,
+            BookService bookService,
+            GoogleSearchBookService googleSearchBookService
+    ) {
         super(userRegistrationService, bookService);
+        this.googleSearchBookService = googleSearchBookService;
     }
 
     @ModelAttribute("searchResults")
@@ -37,8 +45,13 @@ public class SearchPageController extends HeaderController {
         }
         Integer userId = getUserRegistrationService().getCurrentUserId();
         model.addAttribute("headerInfoDto", headerInfoDto);
-        model.addAttribute("searchResults",
-                getBookService().getPageOfSearchResultBooks(headerInfoDto.getSearchQuery(), 0, 5, userId).getContent());
+        List<BookDto> booksFound = getBookService()
+                .getPageOfSearchResultBooks(headerInfoDto.getSearchQuery(), 0, 5, userId).getContent();
+        if (booksFound.size() == 0) {
+            booksFound = googleSearchBookService
+                    .getGoogleBooksApiSearchResult(headerInfoDto.getSearchQuery(), 0, 20);
+        }
+        model.addAttribute("searchResults", booksFound);
         model.addAttribute("searchResultsSize",
                 getBookService().getSearchResultsSize(headerInfoDto.getSearchQuery()));
         return "/search/index";

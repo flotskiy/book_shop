@@ -96,13 +96,19 @@
                         </div>
                         <div class="form-group">
                           <div class="Profile-btn">
-                            <button class="btn btn_danger" type="button" th:text="#{button.cancel}">Отменить
-                            </button>
+<!--                            <button class="btn btn_danger" type="button" th:text="#{button.cancel}">Отменить-->
+<!--                            </button>-->
                             <button class="btn btn_primary" type="submit" th:text="#{button.save}">Сохранить
                             </button>
                           </div>
-                          <div class="Profile-success" th:text="#{page.profile.success}">Профиль успешно сохранен
-                          </div>
+                          <div class="Profile-success" th:if="${#strings.equals(changeResult, 'pass')}"
+                               th:text="#{page.profile.success.pass}">Password changed successfully</div>
+                          <div class="Profile-fail" th:if="${#strings.equals(changeResult, 'passfail')}"
+                               th:text="#{page.profile.fail.pass}">Password change failed</div>
+                          <div class="Profile-success" th:if="${#strings.equals(changeResult, 'user')}"
+                               th:text="#{page.profile.success.user}">User data changed successfully</div>
+                          <div class="Profile-fail" th:if="${#strings.equals(changeResult, 'userfail')}"
+                               th:text="#{page.profile.fail.user}">User data change failed</div>
                         </div>
                       </div>
                     </div>

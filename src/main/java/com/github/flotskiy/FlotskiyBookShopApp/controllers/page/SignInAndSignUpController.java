@@ -166,10 +166,4 @@ public class SignInAndSignUpController extends HeaderController {
         userBookService.handleArchivedRequest(model);
         return "/myarchive";
     }
-
-    @GetMapping("/profile")
-    public String handleProfile(Model model) {
-        model.addAttribute("curUser", getUserRegistrationService().gerCurrentUser());
-        return "/profile";
-    }
 }

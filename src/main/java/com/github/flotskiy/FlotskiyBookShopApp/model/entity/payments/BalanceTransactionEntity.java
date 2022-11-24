@@ -8,7 +8,7 @@ import java.time.LocalDateTime;
 public class BalanceTransactionEntity {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private int id;
 
     @Column(name = "user_id", columnDefinition = "INT NOT NULL")

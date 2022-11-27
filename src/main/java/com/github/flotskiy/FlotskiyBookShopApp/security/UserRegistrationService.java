@@ -313,7 +313,7 @@ public class UserRegistrationService {
         if (currentUserEntity == null) {
             throw new EntityNotFoundException("UserEntity not found during changing user password");
         }
-        if (updatedUser.getPassword().equals(updatedUser.getPasswordReply())) {
+        if (!updatedUser.getPassword().isBlank() && updatedUser.getPassword().equals(updatedUser.getPasswordReply())) {
             currentUserEntity.setHash(passwordEncoder.encode(updatedUser.getPassword()));
             userRepository.save(currentUserEntity);
         } else {

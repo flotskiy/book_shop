@@ -10,13 +10,11 @@ import com.github.flotskiy.FlotskiyBookShopApp.repository.BookRepository;
 import com.github.flotskiy.FlotskiyBookShopApp.repository.BookReviewLikeRepository;
 import com.github.flotskiy.FlotskiyBookShopApp.repository.BookReviewRepository;
 import com.github.flotskiy.FlotskiyBookShopApp.repository.UserRepository;
+import com.github.flotskiy.FlotskiyBookShopApp.util.CustomStringHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.time.format.DateTimeFormatterBuilder;
-import java.time.temporal.ChronoField;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -25,32 +23,33 @@ import java.util.stream.Collectors;
 @Service
 public class ReviewAndLikeService {
 
-    private final DateTimeFormatter formatter;
     private final BookReviewRepository bookReviewRepository;
     private final UserRepository userRepository;
     private final BookReviewLikeRepository bookReviewLikeRepository;
     private final BookRepository bookRepository;
+    private final CustomStringHandler customStringHandler;
 
     @Autowired
     public ReviewAndLikeService(
             BookReviewRepository bookReviewRepository,
             UserRepository userRepository,
             BookReviewLikeRepository bookReviewLikeRepository,
-            BookRepository bookRepository
+            BookRepository bookRepository,
+            CustomStringHandler customStringHandler
     ) {
         this.bookReviewRepository = bookReviewRepository;
         this.userRepository = userRepository;
         this.bookReviewLikeRepository = bookReviewLikeRepository;
         this.bookRepository = bookRepository;
-        this.formatter = getFormatter();
+        this.customStringHandler = customStringHandler;
     }
 
     public List<BookReviewDto> getBookReviewDtos(Integer bookId) {
         List<BookReviewEntity> bookReviewEntities = bookReviewRepository.findBookReviewEntitiesByBookId(bookId);
         List<BookReviewDto> result = convertBookReviewEntitiesListToBookReviewDtoList(bookReviewEntities);
         result.sort((o1, o2) -> {
-            LocalDateTime t1 = LocalDateTime.parse(o1.getTime(), formatter);
-            LocalDateTime t2 = LocalDateTime.parse(o2.getTime(), formatter);
+            LocalDateTime t1 = LocalDateTime.parse(o1.getTime(), customStringHandler.getFormatter());
+            LocalDateTime t2 = LocalDateTime.parse(o2.getTime(), customStringHandler.getFormatter());
             return t1.compareTo(t2);
         });
         return result;
@@ -88,7 +87,7 @@ public class ReviewAndLikeService {
         bookReviewDto.setId(bookReviewEntity.getId());
         String userName = userRepository.findById(bookReviewEntity.getUserId()).get().getName();
         bookReviewDto.setUserName(userName);
-        String dateString = bookReviewEntity.getTime().format(formatter);
+        String dateString = bookReviewEntity.getTime().format(customStringHandler.getFormatter());
         bookReviewDto.setTime(dateString);
         int textHideLimit = 400;
         if (bookReviewEntity.getText().length() >= textHideLimit) {
@@ -149,12 +148,5 @@ public class ReviewAndLikeService {
 
     private List<BookReviewDto> convertBookReviewEntitiesListToBookReviewDtoList(List<BookReviewEntity> bookReviewEntities) {
         return bookReviewEntities.stream().map(this::convertBookReviewEntityToBookReviewDto).collect(Collectors.toList());
-    }
-
-    private DateTimeFormatter getFormatter() {
-        return new DateTimeFormatterBuilder().appendPattern("dd.MM.yyyy[ HH:mm]")
-                .parseDefaulting(ChronoField.HOUR_OF_DAY, 0)
-                .parseDefaulting(ChronoField.MINUTE_OF_HOUR, 0)
-                .toFormatter();
     }
 }

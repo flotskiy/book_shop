@@ -2,6 +2,7 @@ package com.github.flotskiy.FlotskiyBookShopApp.service;
 
 import com.github.flotskiy.FlotskiyBookShopApp.exceptions.UserBalanceNotEnoughException;
 import com.github.flotskiy.FlotskiyBookShopApp.model.dto.book.BookDto;
+import com.github.flotskiy.FlotskiyBookShopApp.model.dto.user.BalanceTransactionDto;
 import com.github.flotskiy.FlotskiyBookShopApp.model.dto.user.UserDto;
 import com.github.flotskiy.FlotskiyBookShopApp.model.entity.book.links.Book2UserEntity;
 import com.github.flotskiy.FlotskiyBookShopApp.model.entity.payments.BalanceTransactionEntity;
@@ -9,8 +10,12 @@ import com.github.flotskiy.FlotskiyBookShopApp.model.entity.user.UserEntity;
 import com.github.flotskiy.FlotskiyBookShopApp.repository.BalanceTransactionRepository;
 import com.github.flotskiy.FlotskiyBookShopApp.repository.Book2UserRepository;
 import com.github.flotskiy.FlotskiyBookShopApp.repository.UserRepository;
+import com.github.flotskiy.FlotskiyBookShopApp.util.CustomStringHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -32,16 +37,19 @@ public class PaymentService {
     private final UserRepository userRepository;
     private final Book2UserRepository book2UserRepository;
     private final BalanceTransactionRepository balanceTransactionRepository;
+    private final CustomStringHandler customStringHandler;
 
     @Autowired
     public PaymentService(
             UserRepository userRepository,
             Book2UserRepository book2UserRepository,
-            BalanceTransactionRepository balanceTransactionRepository
+            BalanceTransactionRepository balanceTransactionRepository,
+            CustomStringHandler customStringHandler
     ) {
         this.userRepository = userRepository;
         this.book2UserRepository = book2UserRepository;
         this.balanceTransactionRepository = balanceTransactionRepository;
+        this.customStringHandler = customStringHandler;
     }
 
     public String getPayment(List<BookDto> cartBooks) throws NoSuchAlgorithmException {
@@ -81,16 +89,46 @@ public class PaymentService {
             book2UserEntity.setTime(LocalDateTime.now());
             book2UserRepository.save(book2UserEntity);
 
-            int bookPrice = bookDto.getDiscountPrice();
-            String description =
-                    "Buying a book&#32;<a href=\"/books/" + bookDto.getSlug() + "\">" + bookDto.getTitle() + "</a>";
+            String description = bookDto.getSlug() + ":" + bookDto.getTitle();
             BalanceTransactionEntity balanceTransactionEntity = new BalanceTransactionEntity();
             balanceTransactionEntity.setUserId(currentUserId);
             balanceTransactionEntity.setTime(LocalDateTime.now());
-            balanceTransactionEntity.setValue(bookPrice);
+            balanceTransactionEntity.setValue(bookDto.getDiscountPrice());
             balanceTransactionEntity.setBookId(bookId);
             balanceTransactionEntity.setDescription(description);
             balanceTransactionRepository.save(balanceTransactionEntity);
         }
+    }
+
+    public Page<BalanceTransactionDto> getBalanceTransactions(Integer userId, Integer offset, Integer limit, String sort) {
+        Pageable nextPage = PageRequest.of(offset, limit);
+        Page<BalanceTransactionEntity> balanceTransactionEntityPage;
+        if (sort.equals("desc")) {
+            balanceTransactionEntityPage =
+                    balanceTransactionRepository.getSortedBalanceTransactionsForUserOrderByTimeDesc(userId, nextPage);
+        } else {
+            balanceTransactionEntityPage =
+                    balanceTransactionRepository.getSortedBalanceTransactionsForUserOrderByTimeAsc(userId, nextPage);
+        }
+        return balanceTransactionEntityPage.map(this::convertBalanceTransactionEntityToDto);
+    }
+
+    public Integer getNumberOfTransactionsOfUser(Integer userId) {
+        return balanceTransactionRepository.countBalanceTransactionEntitiesByUserId(userId);
+    }
+
+    private BalanceTransactionDto convertBalanceTransactionEntityToDto(BalanceTransactionEntity balanceTransactionEntity) {
+        String date = balanceTransactionEntity.getTime().format(customStringHandler.getFormatter());
+        int bookId = balanceTransactionEntity.getBookId();
+        BalanceTransactionDto balanceTransactionDto = new BalanceTransactionDto();
+        balanceTransactionDto.setDate(date);
+        if (bookId == -1) {
+            balanceTransactionDto.setValue("+" + balanceTransactionEntity.getValue() + " р.");
+        } else {
+            balanceTransactionDto.setValue("-" + balanceTransactionEntity.getValue() + " р.");
+        }
+        balanceTransactionDto.setDescription(balanceTransactionEntity.getDescription());
+        balanceTransactionDto.setBookId(bookId);
+        return balanceTransactionDto;
     }
 }

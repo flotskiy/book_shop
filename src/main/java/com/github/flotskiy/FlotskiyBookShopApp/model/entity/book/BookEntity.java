@@ -77,9 +77,6 @@ public class BookEntity {
     @ManyToMany(mappedBy="booksDownloadCounters")
     private Set<UserEntity> downloadedByUsers;
 
-    @ManyToMany(mappedBy="booksTransactions")
-    private Set<UserEntity> transactionsByUsers;
-
     @ManyToMany(mappedBy="booksReviewed")
     private Set<UserEntity> reviewedByUsers;
 
@@ -202,14 +199,6 @@ public class BookEntity {
 
     public void setDownloadedByUsers(Set<UserEntity> downloadedByUsers) {
         this.downloadedByUsers = downloadedByUsers;
-    }
-
-    public Set<UserEntity> getTransactionsByUsers() {
-        return transactionsByUsers;
-    }
-
-    public void setTransactionsByUsers(Set<UserEntity> transactionsByUsers) {
-        this.transactionsByUsers = transactionsByUsers;
     }
 
     public Set<UserEntity> getReviewedByUsers() {

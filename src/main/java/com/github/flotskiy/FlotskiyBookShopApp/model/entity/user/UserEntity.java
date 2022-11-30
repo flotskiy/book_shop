@@ -2,6 +2,7 @@ package com.github.flotskiy.FlotskiyBookShopApp.model.entity.user;
 
 import com.github.flotskiy.FlotskiyBookShopApp.model.entity.book.BookEntity;
 import com.github.flotskiy.FlotskiyBookShopApp.model.entity.book.review.BookReviewLikeEntity;
+import com.github.flotskiy.FlotskiyBookShopApp.model.entity.payments.BalanceTransactionEntity;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -36,11 +37,8 @@ public class UserEntity {
             inverseJoinColumns = {@JoinColumn(name = "book_id")})
     private Set<BookEntity> booksDownloadCounters;
 
-    @ManyToMany(cascade = {CascadeType.ALL})
-    @JoinTable(name = "balance_transaction",
-            joinColumns = {@JoinColumn(name = "user_id")},
-            inverseJoinColumns = {@JoinColumn(name = "book_id")})
-    private Set<BookEntity> booksTransactions;
+    @OneToMany(mappedBy = "userId")
+    private Set<BalanceTransactionEntity> balanceTransactionEntities;
 
     @ManyToMany(cascade = {CascadeType.ALL})
     @JoinTable(name = "book_review",
@@ -113,12 +111,12 @@ public class UserEntity {
         this.booksDownloadCounters = booksDownloadCounters;
     }
 
-    public Set<BookEntity> getBooksTransactions() {
-        return booksTransactions;
+    public Set<BalanceTransactionEntity> getBalanceTransactionEntities() {
+        return balanceTransactionEntities;
     }
 
-    public void setBooksTransactions(Set<BookEntity> booksTransactions) {
-        this.booksTransactions = booksTransactions;
+    public void setBalanceTransactionEntities(Set<BalanceTransactionEntity> balanceTransactionEntities) {
+        this.balanceTransactionEntities = balanceTransactionEntities;
     }
 
     public Set<BookEntity> getBooksReviewed() {

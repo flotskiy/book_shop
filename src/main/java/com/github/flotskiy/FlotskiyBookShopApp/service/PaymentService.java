@@ -2,7 +2,8 @@ package com.github.flotskiy.FlotskiyBookShopApp.service;
 
 import com.github.flotskiy.FlotskiyBookShopApp.exceptions.UserBalanceNotEnoughException;
 import com.github.flotskiy.FlotskiyBookShopApp.model.dto.book.BookDto;
-import com.github.flotskiy.FlotskiyBookShopApp.model.dto.user.BalanceTransactionDto;
+import com.github.flotskiy.FlotskiyBookShopApp.model.dto.payments.BalanceTransactionDto;
+import com.github.flotskiy.FlotskiyBookShopApp.model.dto.payments.PaymentDto;
 import com.github.flotskiy.FlotskiyBookShopApp.model.dto.user.UserDto;
 import com.github.flotskiy.FlotskiyBookShopApp.model.entity.book.links.Book2UserEntity;
 import com.github.flotskiy.FlotskiyBookShopApp.model.entity.payments.BalanceTransactionEntity;
@@ -22,7 +23,9 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.xml.bind.DatatypeConverter;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.time.Instant;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.List;
 
 @Service
@@ -52,17 +55,16 @@ public class PaymentService {
         this.customStringHandler = customStringHandler;
     }
 
-    public String getPayment(List<BookDto> cartBooks) throws NoSuchAlgorithmException {
-        int paymentTotal = cartBooks.stream().mapToInt(BookDto::getDiscountPrice).sum();
+    public String getReplenishUrl(String sum) throws NoSuchAlgorithmException {
         MessageDigest md = MessageDigest.getInstance("MD5");
         String invId = "1";
-        md.update((merchantLogin + ":" + paymentTotal + ":" + invId + ":" + firstPass).getBytes());
+        md.update((merchantLogin + ":" + sum + ":" + invId + ":" + firstPass).getBytes());
         return "https://auth.robokassa.ru/Merchant/Index.aspx" +
                 "?MerchantLogin=" + merchantLogin +
                 "&InvId=" + invId +
                 "&Culture=ru" +
                 "&Encoding=utf-8" +
-                "&OutSum=" + paymentTotal +
+                "&OutSum=" + sum +
                 "&SignatureValue=" + DatatypeConverter.printHexBinary(md.digest()).toUpperCase() +
                 "&IsTest=1";
     }
@@ -91,7 +93,7 @@ public class PaymentService {
 
             String description = bookDto.getSlug() + ":" + bookDto.getTitle();
             BalanceTransactionEntity balanceTransactionEntity = new BalanceTransactionEntity();
-            balanceTransactionEntity.setUserId(currentUserId);
+            balanceTransactionEntity.setUserId(currentUserEntity);
             balanceTransactionEntity.setTime(LocalDateTime.now());
             balanceTransactionEntity.setValue(bookDto.getDiscountPrice());
             balanceTransactionEntity.setBookId(bookId);
@@ -113,8 +115,29 @@ public class PaymentService {
         return balanceTransactionEntityPage.map(this::convertBalanceTransactionEntityToDto);
     }
 
-    public Integer getNumberOfTransactionsOfUser(Integer userId) {
-        return balanceTransactionRepository.countBalanceTransactionEntitiesByUserId(userId);
+    public Integer getNumberOfTransactionsOfUser(UserEntity userEntity) {
+        return balanceTransactionRepository.countBalanceTransactionEntitiesByUserId(userEntity);
+    }
+
+    @Transactional
+    public void makeReplenish(PaymentDto payload) {
+        int currentUserId = Integer.parseInt(payload.getHash());
+        int sumToReplenish = Integer.parseInt(payload.getSum());
+        UserEntity currentUserEntity = userRepository.findById(currentUserId).get();
+        int newBalance = currentUserEntity.getBalance() + sumToReplenish;
+        currentUserEntity.setBalance(newBalance);
+        userRepository.save(currentUserEntity);
+
+        String description = "Account replenishment";
+        LocalDateTime creationTime =
+                LocalDateTime.ofInstant(Instant.ofEpochMilli(payload.getTime()), ZoneId.systemDefault());
+        BalanceTransactionEntity balanceTransactionEntity = new BalanceTransactionEntity();
+        balanceTransactionEntity.setUserId(currentUserEntity);
+        balanceTransactionEntity.setTime(creationTime);
+        balanceTransactionEntity.setValue(sumToReplenish);
+        balanceTransactionEntity.setBookId(-1);
+        balanceTransactionEntity.setDescription(description);
+        balanceTransactionRepository.save(balanceTransactionEntity);
     }
 
     private BalanceTransactionDto convertBalanceTransactionEntityToDto(BalanceTransactionEntity balanceTransactionEntity) {

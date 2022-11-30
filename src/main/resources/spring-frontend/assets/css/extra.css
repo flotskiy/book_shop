@@ -4342,6 +4342,11 @@ img {
   text-align: center;
 }
 
+.Topup-fail {
+  color: red;
+  text-align: center;
+}
+
 .Transactions {
   visibility: visible;
 }

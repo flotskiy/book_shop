@@ -1,5 +1,7 @@
 package com.github.flotskiy.FlotskiyBookShopApp.model.dto.user;
 
+import com.github.flotskiy.FlotskiyBookShopApp.model.dto.payments.BalanceTransactionDto;
+
 import java.util.List;
 
 public class CountedBalanceTransactionsDto {

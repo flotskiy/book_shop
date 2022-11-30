@@ -3136,7 +3136,7 @@
     justify-content: space-between
 }
 
-.RatingGroup, .Slider-load, .Topup-btn, .Topup-success, .Transactions-footer_center, .slick-dots {
+.RatingGroup, .Slider-load, .Topup-btn, .Topup-success, .Topup-fail, .Transactions-footer_center, .slick-dots {
     text-align: center
 }
 
@@ -4760,6 +4760,10 @@ img {
 
 .Topup-success {
     color: #2aa73a
+}
+
+.Topup-fail {
+    color: red;
 }
 
 .Transactions-footer {

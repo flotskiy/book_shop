@@ -1,6 +1,7 @@
 package com.github.flotskiy.FlotskiyBookShopApp.repository;
 
 import com.github.flotskiy.FlotskiyBookShopApp.model.entity.payments.BalanceTransactionEntity;
+import com.github.flotskiy.FlotskiyBookShopApp.model.entity.user.UserEntity;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -19,5 +20,5 @@ public interface BalanceTransactionRepository extends JpaRepository<BalanceTrans
             @Param("userId") Integer userId, Pageable nextPage
     );
 
-    Integer countBalanceTransactionEntitiesByUserId(Integer userId);
+    Integer countBalanceTransactionEntitiesByUserId(UserEntity userEntity);
 }

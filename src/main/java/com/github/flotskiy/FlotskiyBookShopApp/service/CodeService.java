@@ -9,10 +9,12 @@ import com.github.flotskiy.FlotskiyBookShopApp.repository.UserContactRepository;
 import com.google.gson.Gson;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.mail.SimpleMailMessage;
+import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestTemplate;
 
 import javax.persistence.EntityNotFoundException;
+import java.util.Date;
 
 @Service
 public class CodeService {
@@ -20,13 +22,16 @@ public class CodeService {
     @Value("${signup.phone.token}")
     private String token;
 
+    @Value("${appEmail.email}")
+    private String email;
+
     private final UserContactRepository userContactRepository;
-    private final RestTemplate restTemplate;
+    private final JavaMailSender javaMailSender;
 
     @Autowired
-    public CodeService(UserContactRepository userContactRepository, RestTemplate restTemplate) {
+    public CodeService(UserContactRepository userContactRepository, JavaMailSender javaMailSender) {
         this.userContactRepository = userContactRepository;
-        this.restTemplate = restTemplate;
+        this.javaMailSender = javaMailSender;
     }
 
     public String generateSecretCodeForUserContactEntityPhone(String contactPhone) {
@@ -55,7 +60,17 @@ public class CodeService {
         return false;
     }
 
-    private String generatePhoneCode(String phone) {
+    public void sendEmailConfirmationCode(String contact, String code) {
+        SimpleMailMessage message = new SimpleMailMessage();
+        message.setFrom(email);
+        message.setTo(contact);
+        message.setSubject("FlotskiyBookShop email verification!");
+        message.setText("Verification code is: " + code);
+        message.setSentDate(new Date());
+        javaMailSender.send(message);
+    }
+
+    public String generatePhoneCode(String phone) {
         String code = "-1";
         phone = phone.replace("+7", "8");
         String uri = "{\"success\": true, \"error\": \"\", \"data\": " +
@@ -63,14 +78,7 @@ public class CodeService {
 //                "https://******************/***/**/authcalls/" + token + "/get_code/" + phone;
 //                "https://*********/*****/******?phone=" + phone + "&ip=" + ip + "&api_id=" + api_id;
 
-        TeleIpPhoneCallResponse teleIpPhoneCallResponse =
-                new Gson().fromJson(uri, TeleIpPhoneCallResponse.class);
-        // TODO: REMOVE SOUT -VVV-
-        System.out.println(teleIpPhoneCallResponse.getSuccess());
-        System.out.println(teleIpPhoneCallResponse.getError());
-        teleIpPhoneCallResponse.getData().entrySet().forEach(stringStringEntry ->
-                System.out.println(stringStringEntry.getKey() + " - " + stringStringEntry.getValue()));
-
+        TeleIpPhoneCallResponse teleIpPhoneCallResponse = new Gson().fromJson(uri, TeleIpPhoneCallResponse.class);
         if (teleIpPhoneCallResponse.getSuccess() && teleIpPhoneCallResponse.getData().get("code") != null) {
             code = teleIpPhoneCallResponse.getData().get("code");
         }

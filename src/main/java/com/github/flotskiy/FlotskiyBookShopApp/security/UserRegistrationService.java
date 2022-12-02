@@ -1,9 +1,6 @@
 package com.github.flotskiy.FlotskiyBookShopApp.security;
 
-import com.github.flotskiy.FlotskiyBookShopApp.exceptions.PasswordChangeException;
-import com.github.flotskiy.FlotskiyBookShopApp.exceptions.UserChangeException;
 import com.github.flotskiy.FlotskiyBookShopApp.exceptions.UserContactEntityNotApproved;
-import com.github.flotskiy.FlotskiyBookShopApp.model.dto.post.ChangeUserDataConfirmPayload;
 import com.github.flotskiy.FlotskiyBookShopApp.model.dto.post.ContactConfirmPayloadDto;
 import com.github.flotskiy.FlotskiyBookShopApp.model.dto.user.*;
 import com.github.flotskiy.FlotskiyBookShopApp.model.entity.user.UserContactEntity;
@@ -286,50 +283,5 @@ public class UserRegistrationService {
     public boolean isAuthenticated() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         return !(authentication instanceof AnonymousAuthenticationToken);
-    }
-
-    public String changeUserData(ChangeUserDataConfirmPayload updatedUser, UserDto currentUser) {
-        String updatedContact = "";
-        if (currentUser.getContact().contains("@")) {
-            updatedContact = updatedUser.getMail();
-        } else {
-            updatedContact = updatedUser.getPhone();
-        }
-        if (updatedUser.getName().equals(currentUser.getName()) && updatedContact.equals(currentUser.getContact())) {
-            try {
-                changeUserPassword(updatedUser, currentUser);
-                return "pass";
-            } catch (PasswordChangeException passwordChangeException) {
-                return "passfail";
-            }
-        } else {
-            try {
-                changeAllUserData(updatedUser, currentUser);
-                return "user";
-            } catch (UserChangeException userChangeException) {
-                return "userfail";
-            }
-        }
-    }
-
-    private void changeUserPassword(ChangeUserDataConfirmPayload updatedUser, UserDto currentUser) {
-        UserEntity currentUserEntity = userRepository.findUserEntityByUserContactEntity_Contact(currentUser.getContact());
-        if (currentUserEntity == null) {
-            throw new EntityNotFoundException("UserEntity not found during changing user password");
-        }
-        if (!updatedUser.getPassword().isBlank() && updatedUser.getPassword().equals(updatedUser.getPasswordReply())) {
-            currentUserEntity.setHash(passwordEncoder.encode(updatedUser.getPassword()));
-            userRepository.save(currentUserEntity);
-        } else {
-            throw new PasswordChangeException("Password reply differs from password");
-        }
-    }
-
-    private void changeAllUserData(ChangeUserDataConfirmPayload updatedUser, UserDto currentUser) {
-        if (true) {
-            // TODO: change all data
-        } else {
-            throw new UserChangeException("Failed to update user information");
-        }
     }
 }

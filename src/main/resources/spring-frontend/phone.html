@@ -1,0 +1,45 @@
+<!--END-->
+<!--END--><!DOCTYPE html><!--[if IE 7]>
+<html class="ie7" lang="ru">
+<![endif]-->
+<!--[if IE 8]>
+<html class="ie8" lang="ru">
+<![endif]-->
+<!--[if IE 9]>
+<html class="ie9" lang="ru">
+<![endif]-->
+<!--[if gt IE 9]><!--> <html lang="ru" xmlns:th="http://www.thymeleaf.org"> <!--<![endif]-->
+<head th:replace="~{fragments/common_head_tag_fragment :: headTagFragment (#{title.signup})}"></head>
+<body class="Site">
+  <header th:replace="${isAuthenticated} ?
+    ~{fragments/authorized_header_fragment :: headFragmentAuth ('')} : ~{fragments/common_header_fragment :: headFragment ('')}">
+  </header>
+  <div class="Middle Middle_form">
+    <div class="Middle-top">
+      <div class="wrap">
+        <h1 class="Middle-title" th:text="#{page.signup.code.sms}">Last 4 digits</h1>
+      </div>
+    </div>
+    <div class="wrap">
+      <main class="Middle-main">
+        <form class="form" action="#" method="post">
+          <div class="form-group form-group_row">
+            <div class="form-group form-group_key">
+              <input class="form-input form-input_code_change" id="phoneCodeChange" name="phoneCodeChange" type="text"
+                     placeholder="Код из СМС" th:placeholder="#{page.signup.code.sms}"/>
+            </div>
+            <div class="form-group">
+              <button class="btn btn_success btn_sm form-btn" type="button" name="submitPhoneForChange"
+                      id="submitPhoneForChange" th:text="#{page.signup.confirm}">Подтвердить
+              </button>
+            </div>
+          </div>
+        </form>
+      </main>
+    </div>
+  </div>
+  <footer th:replace="${isAuthenticated} ?
+   ~{fragments/authorized_footer_fragment :: footFragmentAuth} : ~{fragments/common_footer_fragment :: footFragment}">
+  </footer>
+  <script src="/assets/plg/jQuery/jquery-3.5.1.min.js"></script>
+</body></html>

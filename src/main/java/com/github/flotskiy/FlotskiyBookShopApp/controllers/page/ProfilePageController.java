@@ -5,11 +5,15 @@ import com.github.flotskiy.FlotskiyBookShopApp.model.dto.post.ChangeUserDataConf
 import com.github.flotskiy.FlotskiyBookShopApp.model.dto.payments.BalanceTransactionDto;
 import com.github.flotskiy.FlotskiyBookShopApp.model.dto.user.CountedBalanceTransactionsDto;
 import com.github.flotskiy.FlotskiyBookShopApp.model.dto.user.UserDto;
+import com.github.flotskiy.FlotskiyBookShopApp.model.dto.user.VerificationTokenDto;
 import com.github.flotskiy.FlotskiyBookShopApp.model.entity.user.UserEntity;
+import com.github.flotskiy.FlotskiyBookShopApp.security.OnChangeUserDataEvent;
 import com.github.flotskiy.FlotskiyBookShopApp.security.UserRegistrationService;
 import com.github.flotskiy.FlotskiyBookShopApp.service.BookService;
 import com.github.flotskiy.FlotskiyBookShopApp.service.PaymentService;
+import com.github.flotskiy.FlotskiyBookShopApp.service.RegisteredUserChangeService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -18,47 +22,66 @@ import org.springframework.web.bind.annotation.*;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Logger;
 
 @Controller
 public class ProfilePageController extends HeaderController {
 
     private final PaymentService paymentService;
+    private final RegisteredUserChangeService registeredUserChangeService;
+    private final ApplicationEventPublisher eventPublisher;
 
     @Autowired
     public ProfilePageController(
             UserRegistrationService userRegistrationService,
             BookService bookService,
-            PaymentService paymentService
+            PaymentService paymentService,
+            RegisteredUserChangeService registeredUserChangeService,
+            ApplicationEventPublisher eventPublisher
     ) {
         super(userRegistrationService, bookService);
         this.paymentService = paymentService;
+        this.registeredUserChangeService = registeredUserChangeService;
+        this.eventPublisher = eventPublisher;
     }
 
     @GetMapping("/profile")
     public String handleProfile(Model model) {
-        Integer currentUserId = getUserRegistrationService().getCurrentUserId();
-        UserEntity currentUserEntity = getUserRegistrationService().getCurrentUserEntity(currentUserId);
-        List<BalanceTransactionDto> transactionDtoList =
-                paymentService.getBalanceTransactions(currentUserId, 0, 50, "desc").getContent();
-        int count = paymentService.getNumberOfTransactionsOfUser(currentUserEntity);
-        model.addAttribute("curUser", getUserRegistrationService().gerCurrentUser());
-        model.addAttribute("transactions", transactionDtoList);
-        model.addAttribute("transactionsCount", count);
+        handleModelForProfilePage(model);
         return "/profile";
     }
 
     @PostMapping("/profile")
     public String handleProfilePostRequest(ChangeUserDataConfirmPayload payload, Model model) {
-        UserDto currentUser = getUserRegistrationService().gerCurrentUser();
-        UserEntity currentUserEntity = getUserRegistrationService().getCurrentUserEntity(currentUser.getId());
-        String result = getUserRegistrationService().changeUserData(payload, currentUser);
-        List<BalanceTransactionDto> transactionDtoList =
-                paymentService.getBalanceTransactions(currentUser.getId(), 0, 50, "desc").getContent();
-        int count = paymentService.getNumberOfTransactionsOfUser(currentUserEntity);
+        UserDto currentUser = handleModelForProfilePage(model);
+        String result = registeredUserChangeService.changeUserData(payload, currentUser);
+        if (result.equals("phone")) {
+            registeredUserChangeService.handleDataForPhoneUser(payload, currentUser);
+            return "/phone";
+        }
+        if (result.equals("mail")) {
+            eventPublisher.publishEvent(new OnChangeUserDataEvent(currentUser, "http://localhost:8085", payload));
+        }
         model.addAttribute("changeResult", result);
-        model.addAttribute("curUser", currentUser);
-        model.addAttribute("transactions", transactionDtoList);
-        model.addAttribute("transactionsCount", count);
+        return "/profile";
+    }
+
+    @GetMapping("/confirmDataChange")
+    public String confirmEmailChangeData(@RequestParam("token") String token, Model model) {
+        handleModelForProfilePage(model);
+        VerificationTokenDto verificationTokenDto = registeredUserChangeService.getVerificationTokenDto(token);
+        if (!verificationTokenDto.isValid()) {
+            model.addAttribute("token", "expired");
+        } else {
+            try {
+                registeredUserChangeService.changeAllUserData(verificationTokenDto);
+                handleModelForProfilePage(model);
+                model.addAttribute("token", "success");
+            } catch (Throwable throwable) {
+                Logger.getLogger(this.getClass().getSimpleName()).warning(throwable.getMessage());
+                model.addAttribute("token", "error");
+            }
+        }
         return "/profile";
     }
 
@@ -103,5 +126,18 @@ public class ProfilePageController extends HeaderController {
             result.put("error", throwable.getMessage());
             return ResponseEntity.ok().body(result);
         }
+    }
+
+    private UserDto handleModelForProfilePage(Model model) {
+        int currentUserId = getUserRegistrationService().getCurrentUserId();
+        UserDto currentUser = getUserRegistrationService().getCurrentUserDtoById(currentUserId);
+        UserEntity currentUserEntity = getUserRegistrationService().getCurrentUserEntity(currentUserId);
+        List<BalanceTransactionDto> transactionDtoList =
+                paymentService.getBalanceTransactions(currentUserId, 0, 50, "desc").getContent();
+        int count = paymentService.getNumberOfTransactionsOfUser(currentUserEntity);
+        model.addAttribute("curUser", currentUser);
+        model.addAttribute("transactions", transactionDtoList);
+        model.addAttribute("transactionsCount", count);
+        return currentUser;
     }
 }

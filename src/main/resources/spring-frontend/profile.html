@@ -21,6 +21,12 @@
     <div class="wrap">
       <main class="Middle-main">
         <h2 class="Middle-title" th:text="#{menu.profile}">Мой профиль</h2>
+        <h2 class="Middle-title" th:if="${#strings.equals(token, 'expired')}"
+            th:text="#{menu.profile.token.expired}">token expired</h2>
+        <h2 class="Middle-title" th:if="${#strings.equals(token, 'success')}"
+            th:text="#{menu.profile.token.success}">user data changed</h2>
+        <h2 class="Middle-title" th:if="${#strings.equals(token, 'error')}"
+            th:text="#{menu.profile.token.error}">error occurred while saving user's data</h2>
         <div class="Tabs Tabs_default">
           <div class="Tabs-links">
             <a class="Tabs-link Tabs-link_ACTIVE" href="#basic" th:text="#{page.profile.basic}">Основные сведения</a>
@@ -105,7 +111,7 @@
                                th:text="#{page.profile.success.pass}">Password changed successfully</div>
                           <div class="Profile-fail" th:if="${#strings.equals(changeResult, 'passfail')}"
                                th:text="#{page.profile.fail.pass}">Password change failed</div>
-                          <div class="Profile-success" th:if="${#strings.equals(changeResult, 'user')}"
+                          <div class="Profile-success" th:if="${#strings.equals(changeResult, 'mail')}"
                                th:text="#{page.profile.success.user}">User data changed successfully</div>
                           <div class="Profile-fail" th:if="${#strings.equals(changeResult, 'userfail')}"
                                th:text="#{page.profile.fail.user}">User data change failed</div>

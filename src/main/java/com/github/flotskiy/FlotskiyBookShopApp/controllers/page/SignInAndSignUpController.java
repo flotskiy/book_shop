@@ -12,9 +12,6 @@ import com.github.flotskiy.FlotskiyBookShopApp.service.CodeService;
 import com.github.flotskiy.FlotskiyBookShopApp.service.UserBookService;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.mail.SimpleMailMessage;
-import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -26,7 +23,6 @@ import javax.management.InstanceAlreadyExistsException;
 import javax.persistence.EntityNotFoundException;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Logger;
@@ -34,25 +30,19 @@ import java.util.logging.Logger;
 @Controller
 public class SignInAndSignUpController extends HeaderController {
 
-    @Value("${appEmail.email}")
-    private String email;
-
     private final UserBookService userBookService;
     private final CodeService codeService;
-    private final JavaMailSender javaMailSender;
 
     @Autowired
     public SignInAndSignUpController(
             UserRegistrationService userRegistrationService,
             BookService bookService,
             UserBookService userBookService,
-            CodeService codeService,
-            JavaMailSender javaMailSender
+            CodeService codeService
     ) {
         super(userRegistrationService, bookService);
         this.userBookService = userBookService;
         this.codeService = codeService;
-        this.javaMailSender = javaMailSender;
     }
 
     @GetMapping("/signin")
@@ -88,14 +78,7 @@ public class SignInAndSignUpController extends HeaderController {
         ContactConfirmationResponse response = new ContactConfirmationResponse();
         String code = RandomStringUtils.random(6, false, true);
         code = code.substring(0, 3) + " " + code.substring(3, 6);
-
-        SimpleMailMessage message = new SimpleMailMessage();
-        message.setFrom(email);
-        message.setTo(payload.getContact());
-        message.setSubject("FlotskiyBookShop email verification!");
-        message.setText("Verification code is: " + code);
-        message.setSentDate(new Date());
-        javaMailSender.send(message);
+        codeService.sendEmailConfirmationCode(payload.getContact(), code);
         try {
             getUserRegistrationService()
                     .registerNewUserWithContactWhileRequestingContactConfirmation(payload.getContact(), code);
@@ -165,11 +148,5 @@ public class SignInAndSignUpController extends HeaderController {
     public String handleMyArchive(Model model) {
         userBookService.handleArchivedRequest(model);
         return "/myarchive";
-    }
-
-    @GetMapping("/profile")
-    public String handleProfile(Model model) {
-        model.addAttribute("curUser", getUserRegistrationService().gerCurrentUser());
-        return "/profile";
     }
 }

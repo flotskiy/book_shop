@@ -1,5 +1,7 @@
 package com.github.flotskiy.FlotskiyBookShopApp.model.entity.payments;
 
+import com.github.flotskiy.FlotskiyBookShopApp.model.entity.user.UserEntity;
+
 import javax.persistence.*;
 import java.time.LocalDateTime;
 
@@ -8,11 +10,12 @@ import java.time.LocalDateTime;
 public class BalanceTransactionEntity {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private int id;
 
-    @Column(name = "user_id", columnDefinition = "INT NOT NULL")
-    private int userId;
+    @ManyToOne
+    @JoinColumn(name = "user_id", columnDefinition = "INT NOT NULL")
+    private UserEntity userId;
 
     @Column(columnDefinition = "TIMESTAMP NOT NULL")
     private LocalDateTime time;
@@ -34,11 +37,11 @@ public class BalanceTransactionEntity {
         this.id = id;
     }
 
-    public int getUserId() {
+    public UserEntity getUserId() {
         return userId;
     }
 
-    public void setUserId(int userId) {
+    public void setUserId(UserEntity userId) {
         this.userId = userId;
     }
 

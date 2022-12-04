@@ -11,10 +11,9 @@ import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.view.RedirectView;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.security.NoSuchAlgorithmException;
 import java.util.*;
 
 @Controller
@@ -73,12 +72,25 @@ public class CartPageController extends HeaderController {
         return result;
     }
 
+//    @GetMapping("/books/pay")
+//    public RedirectView handlePay() throws NoSuchAlgorithmException {
+//        int userDtoId = getUserRegistrationService().getCurrentUserId();
+//        UserDto currentUser = getUserRegistrationService().getCurrentUserDtoById(userDtoId);
+//        List<BookDto> cartBooks = currentUser.getUserBooksData().getCart();
+//        String paymentUrl = paymentService.getPayment(cartBooks);
+//        return new RedirectView(paymentUrl);
+//    }
+
     @GetMapping("/books/pay")
-    public RedirectView handlePay() throws NoSuchAlgorithmException {
+    public String handlePayAndRedirect(HttpServletRequest request) {
         int userDtoId = getUserRegistrationService().getCurrentUserId();
         UserDto currentUser = getUserRegistrationService().getCurrentUserDtoById(userDtoId);
-        List<BookDto> cartBooks = currentUser.getUserBooksData().getCart();
-        String paymentUrl = paymentService.getPayment(cartBooks);
-        return new RedirectView(paymentUrl);
+        try {
+            paymentService.pay(currentUser);
+            return "redirect:/my";
+        } catch (RuntimeException runtimeException) {
+            request.setAttribute("pay", "fail");
+            return "forward:/books/cart";
+        }
     }
 }

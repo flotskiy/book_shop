@@ -21,6 +21,12 @@
     <div class="wrap">
       <main class="Middle-main">
         <h2 class="Middle-title" th:text="#{menu.profile}">Мой профиль</h2>
+        <h2 class="Middle-title" th:if="${#strings.equals(token, 'expired')}"
+            th:text="#{menu.profile.token.expired}">token expired</h2>
+        <h2 class="Middle-title" th:if="${#strings.equals(token, 'success')}"
+            th:text="#{menu.profile.token.success}">user data changed</h2>
+        <h2 class="Middle-title" th:if="${#strings.equals(token, 'error')}"
+            th:text="#{menu.profile.token.error}">error occurred while saving user's data</h2>
         <div class="Tabs Tabs_default">
           <div class="Tabs-links">
             <a class="Tabs-link Tabs-link_ACTIVE" href="#basic" th:text="#{page.profile.basic}">Основные сведения</a>
@@ -96,13 +102,19 @@
                         </div>
                         <div class="form-group">
                           <div class="Profile-btn">
-                            <button class="btn btn_danger" type="button" th:text="#{button.cancel}">Отменить
-                            </button>
+<!--                            <button class="btn btn_danger" type="button" th:text="#{button.cancel}">Отменить-->
+<!--                            </button>-->
                             <button class="btn btn_primary" type="submit" th:text="#{button.save}">Сохранить
                             </button>
                           </div>
-                          <div class="Profile-success" th:text="#{page.profile.success}">Профиль успешно сохранен
-                          </div>
+                          <div class="Profile-success" th:if="${#strings.equals(changeResult, 'pass')}"
+                               th:text="#{page.profile.success.pass}">Password changed successfully</div>
+                          <div class="Profile-fail" th:if="${#strings.equals(changeResult, 'passfail')}"
+                               th:text="#{page.profile.fail.pass}">Password change failed</div>
+                          <div class="Profile-success" th:if="${#strings.equals(changeResult, 'mail')}"
+                               th:text="#{page.profile.success.user}">User data changed successfully</div>
+                          <div class="Profile-fail" th:if="${#strings.equals(changeResult, 'userfail')}"
+                               th:text="#{page.profile.fail.user}">User data change failed</div>
                         </div>
                       </div>
                     </div>
@@ -122,57 +134,35 @@
                       </tr>
                     </thead>
                     <tbody>
-                      <tr>
-                        <td>15 мая 2017 10:03</td>
+                      <tr th:each="transaction : ${transactions}">
+                        <td th:text="${transaction.date}">00.00.0000 00:00</td>
                         <td>
-                          <span class="Transactions_textSuccess">
-                            <strong>+500 р.</strong>
-                          </span>
+                            <span class="Transactions_textSuccess">
+                              <strong th:text="${transaction.value}">+000 р.</strong>
+                            </span>
                         </td>
-                        <td>Пополнение счета</td>
-                      </tr>
-                      <tr>
-                        <td>5 марта 2017 13:40
+                        <td th:if="${transaction.bookId != -1}">
+                          <span th:text="#{page.profile.buy}">Buying a book </span>
+                          <a th:if="${#strings.contains(transaction.description, ':')}"
+                             th:href="${'/books/' + #strings.arraySplit(transaction.description, ':')[0]}"
+                             th:text="${#strings.arraySplit(transaction.description, ':')[1]}">Book title</a>
                         </td>
-                        <td>
-                          <span class="Transactions_textSuccess">
-                            <strong>-480 р.</strong>
-                          </span>
-                        </td>
-                        <td>Покупка книги&#32;
-                          <a href="/books/slug.html">История Беларуси</a>
-                        </td>
-                      </tr>
-                      <tr>
-                        <td>1 февраля 2017 04:10
-                        </td>
-                        <td>
-                          <span class="Transactions_textSuccess">
-                            <strong>+10 000 р.</strong>
-                          </span>
-                        </td>
-                        <td>Пополнение с помощью WebMoney</td>
-                      </tr>
-                      <tr>
-                        <td>1 января 2017 09:33</td>
-                        <td>
-                          <span class="Transactions_textSuccess">
-                            <strong>+7 896 р.</strong>
-                          </span>
-                        </td>
-                        <td>Пополнение с помощью Яндекс.Деньги</td>
+                        <td th:if="${transaction.bookId == -1}" th:text="#{page.profile.replenish.info}">Account replenishment</td>
                       </tr>
                     </tbody>
                   </table>
                 </div>
-                <div class="Transactions-footer Transactions-footer_center">
-                  <a class="btn btn_primary Transactions-get" href="#" data-transactionoffset="4"
-                     data-transactionlimit="10" data-transactionsort="asc" th:text="#{button.more}">Показать еще</a>
+                <div class="Transactions-footer Transactions-footer_center"
+                     th:if="${transactionsCount > transactions.size()}">
+                  <a class="btn btn_primary Transactions-get" id="butmore" href="#" data-transactionoffset="0"
+                     data-transactionlimit="50" data-transactionsort="desc"
+                     th:attr="data-transactioncount=${transactionsCount}" th:text="#{button.more}">Показать еще</a>
                 </div>
               </div>
             </div>
             <div class="Tabs-block" id="topup">
-              <form class="form Topup" action="#" method="post" data-sendHash="34534535">
+              <form class="form Topup" action="#" method="post"
+                    data-hash="34534535" th:attr="data-hash=${curUser.id}">
                 <div class="Topup-wrap">
                   <strong class="Topup-title" th:text="#{page.profile.replenish.amount}">Введите сумму</strong>
                   <div class="form-group form-group_row Topup-group">

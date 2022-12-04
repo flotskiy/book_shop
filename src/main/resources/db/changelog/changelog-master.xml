@@ -7,6 +7,6 @@
    http://www.liquibase.org/xml/ns/dbchangelog
    http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
 
-    <include file="db/changelog/changes/8-added-inactive_jwt-table.xml"/>
+    <include file="db/changelog/changes/10-added-verification_token-table.xml"/>
 
 </databaseChangeLog>

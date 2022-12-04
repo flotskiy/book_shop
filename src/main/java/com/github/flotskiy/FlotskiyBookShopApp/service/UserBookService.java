@@ -104,7 +104,8 @@ public class UserBookService {
     }
 
     public void handleUnreadRequest(Model model) {
-        UserDto currentUser = userRegistrationService.gerCurrentUser();
+        Integer userId = userRegistrationService.getCurrentUserId();
+        UserDto currentUser = userRegistrationService.getCurrentUserDtoById(userId);
         List<BookDto> unreadBooks = currentUser.getUserBooksData().getPaid();
         if (unreadBooks.isEmpty()) {
             model.addAttribute("isUnreadEmpty", true);

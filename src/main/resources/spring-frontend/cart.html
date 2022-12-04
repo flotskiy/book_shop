@@ -82,6 +82,9 @@
               <span class="Cart-price_old" th:text="${'₽' + #aggregates.sum(bookCart.![price])}">-1 р.</span>
             </div>
             <div class="Cart-block">
+              <div class="Profile-fail" th:if="${#strings.equals(pay, 'fail')}"
+                   th:text="#{page.cart.pay.fail}">Paying failed</div>
+              <br>
               <a class="btn btn_success btn_md" href="/order.html" th:href="@{/books/pay}"
                  th:text="#{button.buy}">Купить</a>
             </div>

@@ -63,6 +63,10 @@ public class UserRegistrationService {
         this.codeService = codeService;
     }
 
+    public UserEntity getCurrentUserEntity(Integer currentUserId) {
+        return userRepository.findById(currentUserId).get();
+    }
+
     public void registerNewUserWithContactWhileRequestingContactConfirmation(String contact, String codeString)
             throws InstanceAlreadyExistsException {
         UserEntity userEntity = userRepository.findUserEntityByUserContactEntity_Contact(contact);

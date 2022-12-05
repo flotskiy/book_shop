@@ -227,11 +227,11 @@ class BookServiceTests {
         Mockito.doReturn(Arrays.asList(bookEntity1, bookEntity5, bookEntity5))
                 .when(bookRepositoryMock).findBookEntitiesByIdIsIn(Mockito.any(List.class));
         Mockito.doReturn(new PageImpl<>(Arrays.asList(bookEntity1, bookEntity3, bookEntity4, bookEntity7)))
-                .when(bookRepositoryMock).findBookEntitiesByPubDateBetweenOrderByPubDateDesc(
-                        Mockito.any(LocalDate.class), Mockito.any(LocalDate.class), Mockito.any(Pageable.class)
+                .when(bookRepositoryMock).findBookEntitiesByPubDateBetweenAndIdNotContainingOrderByPubDateDescIdDesc(
+                        Mockito.any(LocalDate.class), Mockito.any(LocalDate.class), Mockito.any(Collection.class), Mockito.any(Pageable.class)
                 );
 
-        List<BookDto> guestRecommendedBooks = bookService.getListOfRecommendedBooks(0, 15, -1, new UserDto());
+        List<BookDto> guestRecommendedBooks = bookService.getListOfRecommendedBooks(0, 15, new UserDto());
 
         assertNotNull(guestRecommendedBooks);
         assertEquals(5, guestRecommendedBooks.size());
@@ -251,8 +251,8 @@ class BookServiceTests {
         Mockito.verify(bookRepositoryMock, Mockito.times(1))
                 .findBookEntitiesByIdIsIn(Mockito.any(List.class));
         Mockito.verify(bookRepositoryMock, Mockito.times(1))
-                .findBookEntitiesByPubDateBetweenOrderByPubDateDesc(
-                        Mockito.any(LocalDate.class), Mockito.any(LocalDate.class), Mockito.any(Pageable.class)
+                .findBookEntitiesByPubDateBetweenAndIdNotContainingOrderByPubDateDescIdDesc(
+                        Mockito.any(LocalDate.class), Mockito.any(LocalDate.class), Mockito.any(Collection.class), Mockito.any(Pageable.class)
                 );
     }
 
@@ -264,7 +264,7 @@ class BookServiceTests {
                 .when(bookRepositoryMock)
                 .findBookEntitiesByIdIsInOrderByPubDageDesc(Mockito.any(List.class), Mockito.any(Pageable.class));
 
-        List<BookDto> userRecommendedBooks = bookService.getListOfRecommendedBooks(0, 15, 1, user);
+        List<BookDto> userRecommendedBooks = bookService.getListOfRecommendedBooks(0, 15, user);
         assertNotNull(userRecommendedBooks);
         assertEquals(3, userRecommendedBooks.size());
         assertThat(userRecommendedBooks, containsInAnyOrder(

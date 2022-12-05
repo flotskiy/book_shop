@@ -9,6 +9,11 @@ public class UserDto {
     private String contact;
     private UserBooksData userBooksData;
 
+    public UserDto() {
+        this.id = -1;
+        this.userBooksData = new UserBooksData();
+    }
+
     public Integer getId() {
         return id;
     }

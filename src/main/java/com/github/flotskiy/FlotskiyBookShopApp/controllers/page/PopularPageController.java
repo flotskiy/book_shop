@@ -2,6 +2,7 @@ package com.github.flotskiy.FlotskiyBookShopApp.controllers.page;
 
 import com.github.flotskiy.FlotskiyBookShopApp.model.dto.book.BookDto;
 import com.github.flotskiy.FlotskiyBookShopApp.model.dto.book.CountedBooksDto;
+import com.github.flotskiy.FlotskiyBookShopApp.model.dto.user.UserDto;
 import com.github.flotskiy.FlotskiyBookShopApp.service.BookService;
 import com.github.flotskiy.FlotskiyBookShopApp.security.UserRegistrationService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,8 +24,8 @@ public class PopularPageController extends HeaderController {
 
     @ModelAttribute("popularBooksPage")
     public List<BookDto> recentBooks() {
-        Integer userId = getUserRegistrationService().getCurrentUserId();
-        return getBookService().getPopularBooks(0, 20, userId);
+        UserDto userDto = getUserRegistrationService().getCurrentUserDto();
+        return getBookService().getPopularBooks(0, 20, userDto);
     }
 
     @GetMapping("/popular")
@@ -36,7 +37,7 @@ public class PopularPageController extends HeaderController {
     @ResponseBody
     public CountedBooksDto getNextPopularPage(@RequestParam(value = "offset", required = false) Integer offset,
                                              @RequestParam(value = "limit", required = false) Integer limit) {
-        Integer userId = getUserRegistrationService().getCurrentUserId();
-        return new CountedBooksDto(getBookService().getPopularBooks(offset, limit, userId));
+        UserDto userDto = getUserRegistrationService().getCurrentUserDto();
+        return new CountedBooksDto(getBookService().getPopularBooks(offset, limit, userDto));
     }
 }

@@ -28,21 +28,20 @@ public class MainPageController extends HeaderController {
 
     @ModelAttribute("recommendedBooks")
     public List<BookDto> recommendedBooks() {
-        Integer userId = getUserRegistrationService().getCurrentUserId();
-        UserDto currentUserDto = getUserRegistrationService().getCurrentUserDtoById(userId);
-        return  getBookService().getListOfRecommendedBooks(0, 6, userId, currentUserDto);
+        UserDto userDto = getUserRegistrationService().getCurrentUserDto();
+        return  getBookService().getListOfRecommendedBooks(0, 6, userDto);
     }
 
     @ModelAttribute("recentBooks")
     public List<BookDto> recentBooks() {
-        Integer userId = getUserRegistrationService().getCurrentUserId();
-        return getBookService().getRecentBooks(0,6, userId);
+        UserDto userDto = getUserRegistrationService().getCurrentUserDto();
+        return getBookService().getRecentBooks(0,6, userDto);
     }
 
     @ModelAttribute("popularBooks")
     public List<BookDto> popularBooks() {
-        Integer userId = getUserRegistrationService().getCurrentUserId();
-        return getBookService().getPopularBooks(0, 6, userId);
+        UserDto userDto = getUserRegistrationService().getCurrentUserDto();
+        return getBookService().getPopularBooks(0, 6, userDto);
     }
 
     @ModelAttribute("tagsCloud")
@@ -58,22 +57,21 @@ public class MainPageController extends HeaderController {
     @GetMapping("/books/card/recommended")
     @ResponseBody
     public CountedBooksDto getRecommendedBooksPage(@RequestParam("offset") int offset, @RequestParam("limit") int limit) {
-        Integer userId = getUserRegistrationService().getCurrentUserId();
-        UserDto currentUserDto = getUserRegistrationService().getCurrentUserDtoById(userId);
-        return new CountedBooksDto(getBookService().getListOfRecommendedBooks(offset, limit, userId, currentUserDto));
+        UserDto userDto = getUserRegistrationService().getCurrentUserDto();
+        return new CountedBooksDto(getBookService().getListOfRecommendedBooks(offset, limit, userDto));
     }
 
     @GetMapping("/books/card/recent")
     @ResponseBody
     public CountedBooksDto getRecentBooksPage(@RequestParam("offset") int offset, @RequestParam("limit") int limit) {
-        Integer userId = getUserRegistrationService().getCurrentUserId();
-        return new CountedBooksDto(getBookService().getRecentBooks(offset, limit, userId));
+        UserDto userDto = getUserRegistrationService().getCurrentUserDto();
+        return new CountedBooksDto(getBookService().getRecentBooks(offset, limit, userDto));
     }
 
     @GetMapping("/books/card/popular")
     @ResponseBody
     public CountedBooksDto getPopularBooksPage(@RequestParam("offset") int offset, @RequestParam("limit") int limit) {
-        Integer userId = getUserRegistrationService().getCurrentUserId();
-        return new CountedBooksDto(getBookService().getPopularBooks(offset, limit, userId));
+        UserDto userDto = getUserRegistrationService().getCurrentUserDto();
+        return new CountedBooksDto(getBookService().getPopularBooks(offset, limit, userDto));
     }
 }

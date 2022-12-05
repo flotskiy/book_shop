@@ -7,10 +7,10 @@
                 <a href="#" th:href="@{'/books/' + ${book.slug}}">
                     <img src="/assets/img/content/main/card.jpg" th:src="${book.image}" alt="card.jpg"/>
                     <div th:if="${book.discountPrice} lt ${book.price}">
-                        <div class="Card-sale" th:text="|${book.discount}% скидка|">Скидка</div>
+                        <div class="Card-sale" th:text="|${book.discount}% скидка|">Discount</div>
                     </div>
                     <div class="Card-ribbon">
-                        <span class="Card-ribbonText" th:if="${book.isBestseller}">Бестселлер</span>
+                        <span class="Card-ribbonText" th:if="${book.isBestseller}">Bestseller</span>
                     </div>
                     <a class="Card-status" title="Куплена" th:if="${#strings.equals(book.status, 'PAID')}">
                         <img src="/assets/img/icons/check.svg" alt="check.svg"/>
@@ -28,14 +28,19 @@
             </div>
             <div class="Card-content">
                 <strong class="Card-title">
-                    <a href="#" th:href="@{'/books/' + ${book.slug}}" th:text="${book.title}">Книга</a>
+                    <a href="#" th:href="@{'/books/' + ${book.slug}}" th:text="${book.title}">Title</a>
                 </strong>
-                <div class="Card-description" th:text="${book.authors}">Автор</div>
+                <div class="Card-description" th:if="${not #strings.contains(book.authors, ',')}"
+                     th:text="${book.authors}">Author</div>
+                <div class="Card-description" th:if="${#strings.contains(book.authors, ',')}">
+                    <span th:text="${#strings.setSplit(book.authors, ',')[0]}">Author</span>
+                    <span th:text="#{books.pool.others}"> and others</span>
+                </div>
                 <div class="Card-cost">
                     <span th:if="${book.discountPrice} lt ${book.price}">
-                        <span class="Card-priceOld" th:text="${'₽' + book.price}">Старая цена</span>
+                        <span class="Card-priceOld" th:text="${'₽' + book.price}">Price old</span>
                     </span>
-                    <span class="Card-price" th:text="${'₽' + book.discountPrice}">Новая цена</span>
+                    <span class="Card-price" th:text="${'₽' + book.discountPrice}">Price actual</span>
                 </div>
             </div>
         </div>
@@ -44,7 +49,7 @@
                th:attr="data-refreshshow=${pageName},data-refreshid=${objId}"
                data-refreshoffset="0" data-refreshlimit="20"
                data-refreshid="1"
-               th:text="#{button.more}">Показать еще</a>
+               th:text="#{button.more}">More</a>
         </div>
     </div>
 </body>

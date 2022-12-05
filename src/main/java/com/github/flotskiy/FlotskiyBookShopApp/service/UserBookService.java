@@ -63,8 +63,7 @@ public class UserBookService {
     }
 
     public void registeredUserHandleCartRequest(Model model) {
-        int userDtoId = userRegistrationService.getCurrentUserId();
-        UserDto currentUser = userRegistrationService.getCurrentUserDtoById(userDtoId);
+        UserDto currentUser = userRegistrationService.getCurrentUserDto();
         List<BookDto> cartBooks = currentUser.getUserBooksData().getCart();
         if (cartBooks.isEmpty()) {
             model.addAttribute("isCartEmpty", true);
@@ -89,8 +88,7 @@ public class UserBookService {
     }
 
     public void registeredUserHandlePostponedRequest(Model model) {
-        int userDtoId = userRegistrationService.getCurrentUserId();
-        UserDto currentUser = userRegistrationService.getCurrentUserDtoById(userDtoId);
+        UserDto currentUser = userRegistrationService.getCurrentUserDto();
         List<BookDto> postponedBooks = currentUser.getUserBooksData().getKept();
         if (postponedBooks.isEmpty()) {
             model.addAttribute("isKeptEmpty", true);
@@ -104,8 +102,7 @@ public class UserBookService {
     }
 
     public void handleUnreadRequest(Model model) {
-        Integer userId = userRegistrationService.getCurrentUserId();
-        UserDto currentUser = userRegistrationService.getCurrentUserDtoById(userId);
+        UserDto currentUser = userRegistrationService.getCurrentUserDto();
         List<BookDto> unreadBooks = currentUser.getUserBooksData().getPaid();
         if (unreadBooks.isEmpty()) {
             model.addAttribute("isUnreadEmpty", true);

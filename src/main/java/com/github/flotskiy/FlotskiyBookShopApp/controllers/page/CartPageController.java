@@ -72,19 +72,9 @@ public class CartPageController extends HeaderController {
         return result;
     }
 
-//    @GetMapping("/books/pay")
-//    public RedirectView handlePay() throws NoSuchAlgorithmException {
-//        int userDtoId = getUserRegistrationService().getCurrentUserId();
-//        UserDto currentUser = getUserRegistrationService().getCurrentUserDtoById(userDtoId);
-//        List<BookDto> cartBooks = currentUser.getUserBooksData().getCart();
-//        String paymentUrl = paymentService.getPayment(cartBooks);
-//        return new RedirectView(paymentUrl);
-//    }
-
     @GetMapping("/books/pay")
     public String handlePayAndRedirect(HttpServletRequest request) {
-        int userDtoId = getUserRegistrationService().getCurrentUserId();
-        UserDto currentUser = getUserRegistrationService().getCurrentUserDtoById(userDtoId);
+        UserDto currentUser = getUserRegistrationService().getCurrentUserDto();
         try {
             paymentService.pay(currentUser);
             return "redirect:/my";

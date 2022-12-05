@@ -4,6 +4,7 @@ import com.github.flotskiy.FlotskiyBookShopApp.exceptions.RateBookByUserExceptio
 import com.github.flotskiy.FlotskiyBookShopApp.exceptions.RateBookReviewException;
 import com.github.flotskiy.FlotskiyBookShopApp.model.dto.book.PopularityDto;
 import com.github.flotskiy.FlotskiyBookShopApp.model.dto.book.page.DetailedRatingDto;
+import com.github.flotskiy.FlotskiyBookShopApp.model.dto.user.UserDto;
 import com.github.flotskiy.FlotskiyBookShopApp.model.entity.book.BookEntity;
 import com.github.flotskiy.FlotskiyBookShopApp.model.entity.book.links.Book2UserEntity;
 import com.github.flotskiy.FlotskiyBookShopApp.model.entity.book.review.BookRatingEntity;
@@ -219,7 +220,7 @@ class BooksRatingAndPopularityServiceTests {
 
     @Test
     void getAllPopularBooks() {
-        List<PopularityDto> popularityDtoList = booksRatingAndPopularityService.getAllPopularBooks();
+        List<PopularityDto> popularityDtoList = booksRatingAndPopularityService.getAllPopularBooks(Mockito.any(UserDto.class));
         assertNotNull(popularityDtoList);
         assertEquals(2, popularityDtoList.get(0).getBookId());
         assertEquals((short) 3, popularityDtoList.get(0).getPopularity());

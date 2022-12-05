@@ -129,15 +129,15 @@ public class ProfilePageController extends HeaderController {
     }
 
     private UserDto handleModelForProfilePage(Model model) {
-        int currentUserId = getUserRegistrationService().getCurrentUserId();
-        UserDto currentUser = getUserRegistrationService().getCurrentUserDtoById(currentUserId);
+        UserDto userDto = getUserRegistrationService().getCurrentUserDto();
+        int currentUserId = userDto.getId();
         UserEntity currentUserEntity = getUserRegistrationService().getCurrentUserEntity(currentUserId);
         List<BalanceTransactionDto> transactionDtoList =
                 paymentService.getBalanceTransactions(currentUserId, 0, 50, "desc").getContent();
         int count = paymentService.getNumberOfTransactionsOfUser(currentUserEntity);
-        model.addAttribute("curUser", currentUser);
+        model.addAttribute("curUser", userDto);
         model.addAttribute("transactions", transactionDtoList);
         model.addAttribute("transactionsCount", count);
-        return currentUser;
+        return userDto;
     }
 }

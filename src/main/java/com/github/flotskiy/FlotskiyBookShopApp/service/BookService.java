@@ -71,10 +71,11 @@ public class BookService {
         return convertBookEntitiesToBookDtoList(bookRepository.findAll(), userId);
     }
 
-    public List<BookDto> getListOfRecommendedBooks(Integer offset, Integer limit, Integer userId, UserDto userDto) {
+    public List<BookDto> getListOfRecommendedBooks(Integer offset, Integer limit, UserDto userDto) {
+        int userId = userDto.getId();
         if (userId == -1) {
             List<BookDto> resultForGuestWithoutCartAndPostponed =
-                    getRecommendedBooksForGuestWithoutCartAndPostponed(userId);
+                    getRecommendedBooksForGuestWithoutCartAndPostponed(userDto);
             if (offset >= resultForGuestWithoutCartAndPostponed.size() - 1) {
                 return Collections.EMPTY_LIST;
             }
@@ -133,26 +134,29 @@ public class BookService {
         return bookRepository.countBookEntitiesByTitleContaining(searchWord);
     }
 
-    public Page<BookDto> getPageOfRecentBooks(LocalDate from, LocalDate to, int offset, int limit, int userId) {
+    public Page<BookDto> getPageOfRecentBooks(LocalDate from, LocalDate to, int offset, int limit, UserDto userDto) {
+        to = to.plusDays(1);
+        List<Integer> allBooksIdOfUser = getaAllUserBooksId(userDto);
         Pageable nextPage = PageRequest.of(offset, limit);
-        Page<BookEntity> bookEntities =
-                bookRepository.findBookEntitiesByPubDateBetweenOrderByPubDateDesc(from, to, nextPage);
-        return bookEntities.map(bookEntity -> convertBookEntityToBookDtoWithRatingValue(bookEntity, userId));
+        Page<BookEntity> bookEntitiesClean =
+                bookRepository.findBookEntitiesByPubDateBetweenAndIdNotContainingOrderByPubDateDescIdDesc(
+                        from, to, allBooksIdOfUser, nextPage);
+        return bookEntitiesClean.map(bookEntity -> convertBookEntityToBookDtoWithRatingValue(bookEntity, userDto.getId()));
     }
 
-    public List<BookDto> getRecentBooks(int offset, int limit, int userId) {
+    public List<BookDto> getRecentBooks(int offset, int limit, UserDto userDto) {
         LocalDate to = LocalDate.now();
         LocalDate from = to.minusMonths(1);
-        return getPageOfRecentBooks(from, to, offset, limit, userId).getContent();
+        return getPageOfRecentBooks(from, to, offset, limit, userDto).getContent();
     }
 
-    public List<BookDto> getPopularBooks(int offset, int limit, int userId) {
-        List<PopularityDto> popularityDtoList = booksRatingAndPopularityService.getAllPopularBooks();
+    public List<BookDto> getPopularBooks(int offset, int limit, UserDto userDto) {
+        List<PopularityDto> popularityDtoList = booksRatingAndPopularityService.getAllPopularBooks(userDto);
         List<Integer> bookIds = booksRatingAndPopularityService.getPopularBookIds(popularityDtoList, offset, limit);
         List<BookEntity> bookEntities = bookRepository.findBookEntitiesByIdIsIn(bookIds);
         List<BookDto> result = new ArrayList<>();
         for (BookEntity book : bookEntities) {
-            result.add(convertBookEntityToBookDtoWithPopularityValue(book, popularityDtoList, userId));
+            result.add(convertBookEntityToBookDtoWithPopularityValue(book, popularityDtoList, userDto.getId()));
         }
         result.sort(Comparator.comparing(BookDto::getRating).reversed());
         return result;
@@ -305,13 +309,13 @@ public class BookService {
         return bookFileDto;
     }
 
-    private List<BookDto> getRecommendedBooksForGuestWithoutCartAndPostponed(Integer userId) {
+    private List<BookDto> getRecommendedBooksForGuestWithoutCartAndPostponed(UserDto userDto) {
         List<Integer> first30bookIdsListWithMaxRating =
                 booksRatingAndPopularityService.getFirst30bookIdsWithMaxUsersRatingMoreOrEquals4();
         List<BookDto> first30booksListWithMaxRating = convertBookEntitiesToBookDtoWithRatingList(
-                bookRepository.findBookEntitiesByIdIsIn(first30bookIdsListWithMaxRating), userId
+                bookRepository.findBookEntitiesByIdIsIn(first30bookIdsListWithMaxRating), userDto.getId()
         );
-        List<BookDto> first30BooksForTheLast30days = getRecentBooks(0, 30, userId);
+        List<BookDto> first30BooksForTheLast30days = getRecentBooks(0, 30, userDto);
         List<BookDto> result = Stream
                 .concat(first30booksListWithMaxRating.stream(), first30BooksForTheLast30days.stream())
                 .distinct()
@@ -321,8 +325,7 @@ public class BookService {
     }
 
     private List<Integer> getRecommendedBookIdsForUser(UserDto userDto) {
-        List<Integer> allUserBooksId = userDto.getUserBooksData().getAllBooks()
-                .stream().map(BookDto::getId).collect(Collectors.toList());
+        List<Integer> allUserBooksId = getaAllUserBooksId(userDto);
 
         List<Integer> allTagsId = bookTag2BookRepository.getTagIdsForBooksIdsInList(allUserBooksId);
         List<Integer> allGenresId = book2GenreRepository.getGenreIdsForBooksIdsInList(allUserBooksId);
@@ -337,5 +340,10 @@ public class BookService {
         List<Integer> allBookIdsList = Lists.newArrayList(Sets.newHashSet(allBookIdsIterable));
         allBookIdsList.removeAll(allUserBooksId);
         return allBookIdsList;
+    }
+
+    private List<Integer> getaAllUserBooksId(UserDto userDto) {
+        return userDto.getUserBooksData().getAllBooks()
+                .stream().map(BookDto::getId).collect(Collectors.toList());
     }
 }

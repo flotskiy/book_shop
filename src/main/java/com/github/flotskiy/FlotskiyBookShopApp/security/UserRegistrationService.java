@@ -261,7 +261,8 @@ public class UserRegistrationService {
         return bookstoreUserDetailsService.gerCurrentUserId();
     }
 
-    public UserDto getCurrentUserDtoById(Integer userId) {
+    public UserDto getCurrentUserDto() {
+        int userId = bookstoreUserDetailsService.gerCurrentUserId();
         if (userId < 1) {
             return new UserDto();
         }

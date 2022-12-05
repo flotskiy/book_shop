@@ -54,8 +54,7 @@ public class HeaderController {
                 headerInfoDto.setKeptBooksCount(cookieBooks.size());
             }
         } else {
-            int userDtoId = userRegistrationService.getCurrentUserId();
-            UserDto userDto = userRegistrationService.getCurrentUserDtoById(userDtoId);
+            UserDto userDto = userRegistrationService.getCurrentUserDto();
             headerInfoDto.setMyBooksCount(userDto.getUserBooksData().getPaid().size());
             headerInfoDto.setCartBooksCount(userDto.getUserBooksData().getCart().size());
             headerInfoDto.setKeptBooksCount(userDto.getUserBooksData().getKept().size());

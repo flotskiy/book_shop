@@ -31,7 +31,12 @@ public interface BookRepository extends JpaRepository<BookEntity, Integer> {
 
     Integer countBookEntitiesByTitleContaining(String bookTitle);
 
-    Page<BookEntity> findBookEntitiesByPubDateBetweenOrderByPubDateDesc(LocalDate from, LocalDate to, Pageable nextPage);
+    @Query(value =
+            "SELECT * FROM book b WHERE b.pub_date BETWEEN :from AND :to AND b.id NOT IN :idList ORDER BY b.pub_date DESC, b.id DESC",
+            nativeQuery = true)
+    Page<BookEntity> findBookEntitiesByPubDateBetweenAndIdNotContainingOrderByPubDateDescIdDesc(
+            @Param("from") LocalDate from, @Param("to") LocalDate to, @Param("idList") Collection<Integer> idList, Pageable nextPage
+    );
 
     @Query(value = "SELECT * FROM book b WHERE b.id IN :idList", nativeQuery = true)
     List<BookEntity> findBookEntitiesByIdIsIn(@Param("idList") Collection<Integer> idList);

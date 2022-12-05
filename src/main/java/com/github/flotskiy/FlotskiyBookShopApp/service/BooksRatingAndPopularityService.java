@@ -3,8 +3,10 @@ package com.github.flotskiy.FlotskiyBookShopApp.service;
 import com.github.flotskiy.FlotskiyBookShopApp.aspect.annotations.EntityCreationControllable;
 import com.github.flotskiy.FlotskiyBookShopApp.exceptions.RateBookByUserException;
 import com.github.flotskiy.FlotskiyBookShopApp.exceptions.RateBookReviewException;
+import com.github.flotskiy.FlotskiyBookShopApp.model.dto.book.BookDto;
 import com.github.flotskiy.FlotskiyBookShopApp.model.dto.book.page.DetailedRatingDto;
 import com.github.flotskiy.FlotskiyBookShopApp.model.dto.book.PopularityDto;
+import com.github.flotskiy.FlotskiyBookShopApp.model.dto.user.UserDto;
 import com.github.flotskiy.FlotskiyBookShopApp.model.entity.book.BookEntity;
 import com.github.flotskiy.FlotskiyBookShopApp.model.entity.book.links.Book2UserEntity;
 import com.github.flotskiy.FlotskiyBookShopApp.model.entity.book.review.BookRatingEntity;
@@ -91,7 +93,7 @@ public class BooksRatingAndPopularityService {
         return detailedRatingDto;
     }
 
-    public List<PopularityDto> getAllPopularBooks() {
+    public List<PopularityDto> getAllPopularBooks(UserDto userDto) {
         List<PopularityDto> result = new ArrayList<>();
         List<Book2UserEntity> book2UserEntitiesList = book2UserRepository.findAll();
         Map<Integer, List<Book2UserEntity>> mapGroupedByBookIds =
@@ -116,8 +118,12 @@ public class BooksRatingAndPopularityService {
             short popularity = (short) Math.ceil(tempPopularity);
             result.add(new PopularityDto(entry.getKey(), popularity));
         }
-        result.sort(Comparator.comparing(PopularityDto::getPopularity).reversed());
-        return result;
+        List<Integer> allUserBooksId =
+                userDto.getUserBooksData().getAllBooks().stream().map(BookDto::getId).collect(Collectors.toList());
+        List<PopularityDto> filteredAndSortedResult = result.stream()
+                .filter(popularityDto -> !allUserBooksId.contains(popularityDto.getBookId()))
+                .sorted(Comparator.comparing(PopularityDto::getPopularity).reversed()).collect(Collectors.toList());
+        return filteredAndSortedResult;
     }
 
     public List<Integer> getPopularBookIds(List<PopularityDto> popularityDtoList, Integer offset, Integer limit) {

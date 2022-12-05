@@ -115,10 +115,9 @@ public class BooksRestApiController {
     public ResponseEntity<CountedBooksDto> recommendedBooks(
             @RequestParam("offset") Integer offset, @RequestParam("limit") Integer limit
     ) {
-        int currentUserId = userRegistrationService.getCurrentUserId();
-        UserDto currentUserDto = userRegistrationService.getCurrentUserDtoById(currentUserId);
+        UserDto userDto = userRegistrationService.getCurrentUserDto();
         return ResponseEntity
-                .ok(new CountedBooksDto(bookService.getListOfRecommendedBooks(offset, limit, currentUserId, currentUserDto)));
+                .ok(new CountedBooksDto(bookService.getListOfRecommendedBooks(offset, limit, userDto)));
     }
 
     @GetMapping("/recent")
@@ -135,11 +134,11 @@ public class BooksRestApiController {
         from = bookService.checkFrom(from);
         to = bookService.checkTo(to);
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");
-        int currentUserId = userRegistrationService.getCurrentUserId();
+        UserDto userDto = userRegistrationService.getCurrentUserDto();
         return ResponseEntity.ok(
                 new CountedBooksDto(bookService.getPageOfRecentBooks(
-                        LocalDate.parse(from, formatter), LocalDate.parse(to, formatter), offset, limit, currentUserId
-                ).getContent()));
+                        LocalDate.parse(from, formatter), LocalDate.parse(to, formatter), offset, limit, userDto)
+                        .getContent()));
     }
 
     @GetMapping("/popular")
@@ -148,8 +147,8 @@ public class BooksRestApiController {
             "and 'limit' parameter is helps to specify the number of books to show")
     public ResponseEntity<CountedBooksDto> popularBooks(@RequestParam(value = "offset") Integer offset,
                                                       @RequestParam(value = "limit") Integer limit) {
-        int currentUserId = userRegistrationService.getCurrentUserId();
-        return ResponseEntity.ok(new CountedBooksDto(bookService.getPopularBooks(offset, limit, currentUserId)));
+        UserDto userDto = userRegistrationService.getCurrentUserDto();
+        return ResponseEntity.ok(new CountedBooksDto(bookService.getPopularBooks(offset, limit, userDto)));
     }
 
     @GetMapping("/tags")

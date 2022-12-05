@@ -2,6 +2,7 @@ package com.github.flotskiy.FlotskiyBookShopApp.controllers.page;
 
 import com.github.flotskiy.FlotskiyBookShopApp.model.dto.book.BookDto;
 import com.github.flotskiy.FlotskiyBookShopApp.model.dto.book.CountedBooksDto;
+import com.github.flotskiy.FlotskiyBookShopApp.model.dto.user.UserDto;
 import com.github.flotskiy.FlotskiyBookShopApp.service.BookService;
 import com.github.flotskiy.FlotskiyBookShopApp.security.UserRegistrationService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,8 +25,8 @@ public class RecentPageController extends HeaderController {
 
     @ModelAttribute("recentBooksPage")
     public List<BookDto> recentBooks() {
-        Integer userId = getUserRegistrationService().getCurrentUserId();
-        return getBookService().getRecentBooks(0, 20, userId);
+        UserDto userDto = getUserRegistrationService().getCurrentUserDto();
+        return getBookService().getRecentBooks(0, 20, userDto);
     }
 
     @GetMapping("/recent")
@@ -41,10 +42,11 @@ public class RecentPageController extends HeaderController {
                                              @RequestParam(value = "limit", required = false) Integer limit) {
         from = getBookService().checkFrom(from);
         to = getBookService().checkTo(to);
-        Integer userId = getUserRegistrationService().getCurrentUserId();
+        UserDto userDto = getUserRegistrationService().getCurrentUserDto();
         return new CountedBooksDto(getBookService()
-                .getPageOfRecentBooks(LocalDate.parse(from, formatter), LocalDate.parse(to, formatter), offset, limit, userId)
-                .getContent()
-        );
+                .getPageOfRecentBooks(
+                        LocalDate.parse(from, formatter), LocalDate.parse(to, formatter), offset, limit, userDto
+                )
+                .getContent());
     }
 }

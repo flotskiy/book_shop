@@ -8,13 +8,22 @@ import com.github.flotskiy.FlotskiyBookShopApp.service.BookService;
 import com.github.flotskiy.FlotskiyBookShopApp.service.TagService;
 import com.github.flotskiy.FlotskiyBookShopApp.security.UserRegistrationService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.PropertySource;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @Controller
+@PropertySource("application-variables.properties")
 public class MainPageController extends HeaderController {
+
+    @Value("${initial.offset}")
+    private int offset;
+
+    @Value("${slider.card.limit}")
+    private int cardLimit;
 
     private final TagService tagService;
 
@@ -29,19 +38,19 @@ public class MainPageController extends HeaderController {
     @ModelAttribute("recommendedBooks")
     public List<BookDto> recommendedBooks() {
         UserDto userDto = getUserRegistrationService().getCurrentUserDto();
-        return  getBookService().getListOfRecommendedBooks(0, 6, userDto);
+        return  getBookService().getListOfRecommendedBooks(offset, cardLimit, userDto);
     }
 
     @ModelAttribute("recentBooks")
     public List<BookDto> recentBooks() {
         UserDto userDto = getUserRegistrationService().getCurrentUserDto();
-        return getBookService().getRecentBooks(0,6, userDto);
+        return getBookService().getRecentBooks(offset, cardLimit, userDto);
     }
 
     @ModelAttribute("popularBooks")
     public List<BookDto> popularBooks() {
         UserDto userDto = getUserRegistrationService().getCurrentUserDto();
-        return getBookService().getPopularBooks(0, 6, userDto);
+        return getBookService().getPopularBooks(offset, cardLimit, userDto);
     }
 
     @ModelAttribute("tagsCloud")

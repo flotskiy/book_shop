@@ -6,6 +6,8 @@ import com.github.flotskiy.FlotskiyBookShopApp.model.dto.user.UserDto;
 import com.github.flotskiy.FlotskiyBookShopApp.service.BookService;
 import com.github.flotskiy.FlotskiyBookShopApp.security.UserRegistrationService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.PropertySource;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
@@ -14,7 +16,15 @@ import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 @Controller
+@PropertySource("application-variables.properties")
 public class RecentPageController extends HeaderController {
+
+    @Value("${initial.offset}")
+    private int offset;
+
+    @Value("${page.limit}")
+    private int limit;
+
 
     private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");
 
@@ -26,15 +36,15 @@ public class RecentPageController extends HeaderController {
     @ModelAttribute("recentBooksPage")
     public List<BookDto> recentBooks() {
         UserDto userDto = getUserRegistrationService().getCurrentUserDto();
-        return getBookService().getRecentBooks(0, 20, userDto);
+        return getBookService().getRecentBooks(offset, limit, userDto);
     }
 
-    @GetMapping("/recent")
+    @GetMapping("/books/recent")
     public String recentPage() {
         return "/books/recent";
     }
 
-    @GetMapping("/books/recent")
+    @GetMapping("/books/recent/more")
     @ResponseBody
     public CountedBooksDto getNextRecentPage(@RequestParam(value = "from", required = false) String from,
                                              @RequestParam(value = "to", required = false) String to,

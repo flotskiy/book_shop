@@ -35,7 +35,7 @@
               <form id="imgForm" method="POST" enctype="multipart/form-data"
                     action="#" th:action="${'/books/' + slugBook.slug + '/img/save'}">
                 <div class="ProductCard-photo" id="uploadButton">
-                  <img src="/assets/img/content/main/card.jpg" th:src="*{image}" alt="card.jpg"/>
+                  <img src="/assets/img/content/main/card.jpg" th:src="*{image}" alt="book cover"/>
                   <div th:if="${slugBook.discountPrice} lt ${slugBook.price}">
                     <div class="Card-sale" th:text="|${slugBook.discount}% скидка|">Скидка</div>
                   </div>

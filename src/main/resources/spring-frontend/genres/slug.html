@@ -1,4 +1,3 @@
-
 <!--END-->
 <!--END--><!DOCTYPE html><!--[if IE 7]>
 <html class="ie7" lang="ru">
@@ -19,25 +18,24 @@
     <div class="wrap">
       <main class="Middle-main">
         <ul class="breadcrumbs">
-          <li class="breadcrumbs-item"><a href="/" th:href="@{/}" th:text="#{menu.main}">Главная</a>
+          <li class="breadcrumbs-item"><a href="/" th:href="@{/}" th:text="#{menu.books}">Books</a>
           </li>
-          <li class="breadcrumbs-item"><a href="/genres" th:href="@{/genres}" th:text="#{menu.genres}">Жанры</a>
+          <li class="breadcrumbs-item"><a href="/genres" th:href="@{/genres}" th:text="#{menu.genres}">Genres</a>
           </li>
           <li class="breadcrumbs-item" th:if="${rootGenreObject}">
-            <a href="/genres" th:href="${rootGenreObject.slug}" th:text="${rootGenreObject.name}">Корневой жанр</a>
+            <a href="/genres" th:href="${rootGenreObject.slug}" th:text="${rootGenreObject.name}">Root genre</a>
           </li>
           <li class="breadcrumbs-item" th:if="${parentGenreObject}">
-            <a href="/genres" th:href="${parentGenreObject.slug}" th:text="${parentGenreObject.name}">Родительский жанр</a>
+            <a href="/genres" th:href="${parentGenreObject.slug}" th:text="${parentGenreObject.name}">Parent genre</a>
           </li>
-          <li class="breadcrumbs-item breadcrumbs-item_current"><span th:text="${genreObject.name}">Жанр</span>
+          <li class="breadcrumbs-item breadcrumbs-item_current"><span th:text="${genreObject.name}">Genre</span>
           </li>
         </ul>
         <header class="Middle-header">
-          <h1 class="Middle-title" th:text="${genreObject.name}">Жанр
-          </h1>
+          <h1 class="Middle-title" th:text="${genreObject.name}">Genre</h1>
         </header>
         <div class="Section">
-          <div th:replace="~{fragments/books_pool_fragment :: cardFragment (${genreBookList}, 'genre', ${genreObject.id})}">
+          <div th:replace="~{fragments/books_pool_fragment :: cardFragment (${genreBookList}, 'genre', ${genreObject})}">
           </div>
         </div>
       </main>

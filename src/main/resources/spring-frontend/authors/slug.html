@@ -19,15 +19,14 @@
     <div class="wrap">
       <main class="Middle-main" th:object="${author}">
         <ul class="breadcrumbs">
-          <li class="breadcrumbs-item"><a href="/" th:href="@{/}" th:text="#{menu.main}">Главная</a>
+          <li class="breadcrumbs-item"><a href="/" th:href="@{/}" th:text="#{menu.main}">Main</a>
           </li>
-          <li class="breadcrumbs-item"><a href="/authors" th:href="@{/authors}" th:text="#{menu.authors}">Авторы</a>
+          <li class="breadcrumbs-item"><a href="/authors" th:href="@{/authors}" th:text="#{menu.authors}">Authors</a>
           </li>
-          <li class="breadcrumbs-item breadcrumbs-item_current" th:text="*{name}"><span>Имя автора</span>
+          <li class="breadcrumbs-item breadcrumbs-item_current" th:text="*{name}"><span>Author name</span>
           </li>
         </ul>
-        <h1 class="Middle-title" th:text="*{name}">Имя автора
-        </h1>
+        <h1 class="Middle-title" th:text="*{name}">Author name</h1>
         <article class="Article">
           <div class="sdf">
           </div>
@@ -36,16 +35,13 @@
               <div class="pict pict_left"><img src="/assets/img/content/main/card.jpg" th:src="*{photo}" alt="author's photo"/>
               </div>
               <div>
-                <h2 th:text="#{page.authors.slug.biography}">Биография
-                </h2>
-                <p th:text="*{descriptionShort}">краткое описание
-                </p>
+                <h2 th:text="#{page.authors.slug.biography}">Biography</h2>
+                <p th:text="*{descriptionShort}">Short description</p>
               </div>
             </div>
             <div th:if="${not #strings.isEmpty(author.descriptionRemains)}">
               <div class="Spoiler-hide">
-                <p th:text="*{descriptionRemains}">дополненное описание
-                </p>
+                <p th:text="*{descriptionRemains}">Extended description</p>
               </div>
               <div class="Spoiler-footer">
                 <button class="Spoiler-trigger btn btn_primary btn_nr" type="button"
@@ -60,7 +56,7 @@
           <div th:replace="~{fragments/slider_card :: sliderFragment ('', #{page.authors.slug.books}, ${authorBooks})}"></div>
           <footer class="Section-footer">
             <a class="Author-books" href="/books/authors" th:href="|/books/authors/*{slug}|"
-               th:text="|#{page.authors.slug.books.all} (*{booksCount})|">Все книги автора
+               th:text="|#{page.authors.slug.books.all} (*{booksCount})|">All author's books
               <span class="Author-amount">(-1)</span>
             </a>
           </footer>

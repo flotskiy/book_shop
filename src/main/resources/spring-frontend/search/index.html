@@ -41,35 +41,41 @@
             <div class="Card" th:each="book : ${searchResults}">
               <div class="Card-picture">
                 <a href="#" th:href="${searchResultsSize > 0} ? @{'/books/' + ${book.slug}} : ${book.slug}">
-                  <img src="/assets/img/content/main/card.jpg" th:src="${book.image}" alt="card.jpg"/>
+                  <img src="/assets/img/content/main/card.jpg" th:src="${book.image}" alt="card image"/>
                   <div th:if="${book.discountPrice} lt ${book.price}">
-                    <div class="Card-sale" th:text="|${book.discount}% скидка|">Скидка</div>
+                    <div class="Card-sale" th:text="|${book.discount}% #{card.discount}|">Discount</div>
                   </div>
                   <div th:if="${book.isBestseller}">
-                    <div class="Card-ribbon"><span class="Card-ribbonText">Бестселлер</span></div>
+                    <div class="Card-ribbon"><span class="Card-ribbonText">Bestseller</span></div>
                   </div>
                 </a>
               </div>
               <div class="Card-content">
                 <strong class="Card-title">
                   <a href="#" th:href="${searchResultsSize > 0} ? @{'/books/' + ${book.slug}} : ${book.slug}"
-                     th:text="${book.title}">Название книги</a>
+                     th:text="${book.title}">Title</a>
                 </strong>
-                <div class="Card-description" th:text="${book.authors}">Имя автора
+                <div class="Card-description" th:if="${not #strings.contains(book.authors, ',')}"
+                     th:text="${book.authors}">Author</div>
+                <div class="Card-description" th:if="${#strings.contains(book.authors, ',')}">
+                  <span th:text="${#strings.setSplit(book.authors, ',')[0]}">Author</span>
+                  <span th:text="#{books.pool.others}"> and others</span>
                 </div>
                 <div class="Card-cost">
                   <span th:if="${book.discountPrice} lt ${book.price}">
-                    <span class="Card-priceOld" th:text="${'₽' + book.price}">Старая цена</span>
+                    <span class="Card-priceOld" th:text="${'₽' + book.price}">Price old</span>
                   </span>
-                  <span class="Card-price" th:text="${'₽' + book.discountPrice}">Цена</span>
+                  <span class="Card-price" th:text="${'₽' + book.discountPrice}">Actual price</span>
                 </div>
               </div>
             </div>
             <div class="Cards-footer Cards-footer_center">
               <a class="btn btn_primary" href="#"
-                 data-refreshshow="search" data-refreshoffset="0" data-refreshlimit="5"
-                 th:attr="data-refreshquery=${headerInfoDto.searchQuery}" data-refreshquery="Техника"
-                 th:text="#{button.more}" th:if="${searchResultsSize > 0}">Показать еще</a>
+                 data-refreshshow="search" data-refreshoffset="0" data-refreshlimit="5" data-refreshquery="Техника"
+                 th:attr="data-refreshquery=${headerInfoDto.searchQuery},
+                 data-refreshoffset=${@environment.getProperty('initial.offset')},
+                 data-refreshlimit=${@environment.getProperty('search.refresh.limit')}"
+                 th:text="#{button.more}" th:if="${searchResultsSize > 0}">More</a>
             </div>
           </div>
         </div>

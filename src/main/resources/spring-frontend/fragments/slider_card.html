@@ -3,46 +3,51 @@
 <body>
   <div th:fragment="sliderFragment (dataload, cardName, booksList)">
     <div class="Section-header">
-      <h2 class="Section-title" th:text="${cardName}">Имя карточки
-      </h2>
+      <h2 class="Section-title" th:text="${cardName}">Card name</h2>
     </div>
     <div class="Slider Slider_carousel">
-      <div class="Slider-box Cards" th:data-load="${dataload}" data-loadoffset="0" data-loadlimit="6">
+      <div class="Slider-box Cards" th:data-load="${dataload}" data-loadoffset="0" data-loadlimit="10"
+           th:attr="data-loadoffset=${@environment.getProperty('initial.offset')},
+           data-loadlimit=${@environment.getProperty('slider.card.limit')}">
         <div class="Slider-item" th:each="book : ${booksList}">
           <div class="Slider-content">
             <div class="Card">
               <a class="Card-picture" href="/books/slug.html" th:href="@{'/books/' + ${book.slug}}">
                 <img src="#" th:src="${book.image}" alt="card.jpg"/>
                 <div th:if="${book.discountPrice} lt ${book.price}">
-                  <div class="Card-sale" th:text="|${book.discount}% скидка|">Скидка</div>
+                  <div class="Card-sale" th:text="|${book.discount}% #{card.discount}|">Discount</div>
                 </div>
                 <div class="Card-ribbon">
-                  <span class="Card-ribbonText" th:if="${book.isBestseller}">Бестселлер</span>
+                  <span class="Card-ribbonText" th:if="${book.isBestseller}">Bestseller</span>
                 </div>
-                <a class="Card-status" title="Куплена" th:if="${#strings.equals(book.status, 'PAID')}">
-                  <img src="/assets/img/icons/check.svg" alt="check.svg"/>
+                <a class="Card-status" title="Paid" th:if="${#strings.equals(book.status, 'PAID')}">
+                  <img src="/assets/img/icons/check.svg" alt="check icon"/>
                 </a>
-                <a class="Card-status" title="В корзине" th:if="${#strings.equals(book.status, 'CART')}">
-                  <img src="/assets/img/icons/shopping-basket.svg" alt="shopping-basket.svg"/>
+                <a class="Card-status" title="Cart" th:if="${#strings.equals(book.status, 'CART')}">
+                  <img src="/assets/img/icons/shopping-basket.svg" alt="shopping-basket icon"/>
                 </a>
-                <a class="Card-status" title="Отложена" th:if="${#strings.equals(book.status, 'KEPT')}">
-                  <img src="/assets/img/icons/heart.svg" alt="heart.svg"/>
+                <a class="Card-status" title="Kept" th:if="${#strings.equals(book.status, 'KEPT')}">
+                  <img src="/assets/img/icons/heart.svg" alt="heart icon"/>
                 </a>
-                <a class="Card-status" title="Заархивирована" th:if="${#strings.equals(book.status, 'ARCHIVED')}">
-                  <img src="/assets/img/icons/archive.svg" alt="archive.svg"/>
+                <a class="Card-status" title="Archived" th:if="${#strings.equals(book.status, 'ARCHIVED')}">
+                  <img src="/assets/img/icons/archive.svg" alt="archive icon"/>
                 </a>
               </a>
               <div class="Card-content">
                 <strong class="Card-title">
-                  <a href="/books/slug" th:href="@{'/books/' + ${book.slug}}" th:text="${book.title}">Книга</a>
+                  <a href="/books/slug" th:href="@{'/books/' + ${book.slug}}" th:text="${book.title}">Title</a>
                 </strong>
-                <div class="Card-description" th:text="${book.authors}">Автор
+                <div class="Card-description" th:if="${not #strings.contains(book.authors, ',')}"
+                     th:text="${book.authors}">Author</div>
+                <div class="Card-description" th:if="${#strings.contains(book.authors, ',')}">
+                  <span th:text="${#strings.setSplit(book.authors, ',')[0]}">Author</span>
+                  <span th:text="#{books.pool.others}"> and others</span>
                 </div>
                 <div class="Card-cost">
                   <span th:if="${book.discountPrice} lt ${book.price}">
-                    <span class="Card-priceOld" th:text="${'₽' + book.price}">Старая цена</span>
+                    <span class="Card-priceOld" th:text="${'₽' + book.price}">Price old</span>
                   </span>
-                  <span class="Card-price" th:text="${'₽' + book.discountPrice}">Новая цена</span>
+                  <span class="Card-price" th:text="${'₽' + book.discountPrice}">Actual price</span>
                 </div>
               </div>
             </div>

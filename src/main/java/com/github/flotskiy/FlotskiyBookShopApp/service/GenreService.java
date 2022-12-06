@@ -17,10 +17,17 @@ public class GenreService {
     private final GenreRepository genreRepository;
     private final Book2GenreRepository book2GenreRepository;
 
+    private List<GenreDto> genreDtoList;
+
     @Autowired
     public GenreService(GenreRepository genreRepository, Book2GenreRepository book2GenreRepository) {
         this.genreRepository = genreRepository;
         this.book2GenreRepository = book2GenreRepository;
+        this.genreDtoList = getAllGenresTree();
+    }
+
+    public List<GenreDto> getGenreDtoList() {
+        return genreDtoList;
     }
 
     public List<GenreDto> getAllGenresTree() {
@@ -55,32 +62,65 @@ public class GenreService {
             GenreDto genreDto = allGenreDtoMap.get(key);
             genreDto.setChildren(entry.getValue());
         }
-
+        setTwiceInheritedFieldForEachRootGenre(genresDtoListFinal);
+        genreDtoList = genresDtoListFinal;
         return genresDtoListFinal;
     }
 
-    public GenreEntity findGenreIdBySlug(String slug) {
-        return genreRepository.findGenreEntityBySlug(slug);
+    public GenreDto findGenre(String slug, List<GenreDto> list) {
+        GenreDto result = null;
+        for (GenreDto genre : list) {
+            if (genre.getSlug().equals(slug)) {
+                return genre;
+            }
+            if (genre.getChildren().size() > 0) {
+                result = findGenre(slug, genre.getChildren());
+            }
+            if (result != null) {
+                break;
+            }
+        }
+        return result;
     }
 
-    public GenreEntity getParentEntity(GenreEntity genreEntity) {
-        if (genreEntity == null) {
+    public GenreDto findParentGenre(GenreDto genreDto) {
+        if (genreDto == null) {
             return null;
         }
-        Integer parentId = genreEntity.getParentId();
-        if (parentId == null) {
-            return null;
+        Integer parentId = genreDto.getParentId();
+        if (parentId != null) {
+            GenreEntity genreEntity = genreRepository.findById(parentId).get();
+            return convertGenreEntityToShortGenreDto(genreEntity);
         }
-        return genreRepository.findById(parentId).get();
+        return null;
     }
 
     private GenreDto convertGenreEntityToGenreDto(GenreEntity genreEntity, Map<Integer, Long> countedBooksByGenre) {
+        GenreDto genreDto = convertGenreEntityToShortGenreDto(genreEntity);
+        genreDto.setBooksCount(countedBooksByGenre.get(genreDto.getId()).intValue());
+        return genreDto;
+    }
+
+    private GenreDto convertGenreEntityToShortGenreDto(GenreEntity genreEntity) {
         GenreDto genreDto = new GenreDto();
         int genreId = genreEntity.getId();
         genreDto.setId(genreId);
+        genreDto.setParentId(genreEntity.getParentId());
         genreDto.setName(genreEntity.getName());
         genreDto.setSlug(genreEntity.getSlug());
-        genreDto.setBooksCount(countedBooksByGenre.get(genreId).intValue());
         return genreDto;
+    }
+
+    private void setTwiceInheritedFieldForEachRootGenre(List<GenreDto> genreDtoList) {
+        for (GenreDto rootGenreDto : genreDtoList) {
+            if (rootGenreDto.getChildren().size() > 0) {
+                for (GenreDto level2GenreDto : rootGenreDto.getChildren()) {
+                    if (level2GenreDto.getChildren().size() > 0) {
+                        rootGenreDto.setTwiceInherited(true);
+                        break;
+                    }
+                }
+            }
+        }
     }
 }

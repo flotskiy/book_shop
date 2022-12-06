@@ -137,6 +137,9 @@ public class BookService {
     public Page<BookDto> getPageOfRecentBooks(LocalDate from, LocalDate to, int offset, int limit, UserDto userDto) {
         to = to.plusDays(1);
         List<Integer> allBooksIdOfUser = getaAllUserBooksId(userDto);
+        if (allBooksIdOfUser.isEmpty()) {
+            allBooksIdOfUser.add(0);
+        }
         Pageable nextPage = PageRequest.of(offset, limit);
         Page<BookEntity> bookEntitiesClean =
                 bookRepository.findBookEntitiesByPubDateBetweenAndIdNotContainingOrderByPubDateDescIdDesc(
@@ -261,8 +264,11 @@ public class BookService {
         bookDto.setPubDate(bookEntity.getPubDate());
 
         Set<AuthorEntity> authorEntities = bookEntity.getAuthorEntities();
+        Set<AuthorEntity> sortedAuthorEntities = authorEntities.stream()
+                .sorted(Comparator.comparing(AuthorEntity::getName))
+                .collect(Collectors.toCollection(LinkedHashSet::new));
         StringBuilder authorName = new StringBuilder();
-        for (AuthorEntity author : authorEntities) {
+        for (AuthorEntity author : sortedAuthorEntities) {
             authorName.append(author.getName()).append(", ");
         }
         if (authorName.length() > 0) {

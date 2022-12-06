@@ -1,4 +1,3 @@
-
 <!--END-->
 <!--END--><!DOCTYPE html><!--[if IE 7]>
 <html class="ie7" lang="ru">
@@ -18,47 +17,54 @@
   <div class="Middle">
     <div class="wrap">
       <main class="Middle-main">
-        <h1 class="Middle-title" th:text="#{menu.genres}">Жанры
-        </h1>
+        <h1 class="Middle-title" th:text="#{menu.genres}">Жанры</h1>
         <div class="Section">
           <div class="Tags Tags_genres">
-            <div class="Tags Tags_embed" th:each="rootGenre : ${genresLinks}">
-              <div class="Tags-title">
-                <div class="Tag">
-                  <a href="/" th:href="|/genres/${rootGenre.slug}|"
-                     th:text="${rootGenre.name} + ' ('+ ${rootGenre.booksCount} + ')'">root level genre
-                    <span class="undefined-amount">(-1)</span>
-                  </a>
-                </div>
-              </div>
-              <dib>
-                <div class="Tag" th:each="subGenre : ${rootGenre.children}">
-                  <div th:if="${subGenre.children.isEmpty()}">
-                    <a href="/" th:href="|/genres/${subGenre.slug}|"
-                       th:text="${subGenre.name} + ' ('+ ${subGenre.booksCount} + ')'">2nd level genre
+            <div th:each="rootGenre : ${genresLinks}">
+              <div class="Tags" th:classappend="${rootGenre.getTwiceInherited()} ? 'Tags_embed'">
+                <div class="Tags-title">
+                  <div class="Tag">
+                    <a href="/" th:href="|/genres/${rootGenre.slug}|"
+                       th:text="${rootGenre.name} + ' ('+ ${rootGenre.booksCount} + ')'">root level genre
                       <span class="undefined-amount">(-1)</span>
                     </a>
                   </div>
-                  <div th:if="${not subGenre.children.isEmpty()}">
-                    <div class="Tags">
+                </div>
+                <div th:if="${not rootGenre.getTwiceInherited()}">
+                  <div class="Tag" th:each="genre2ndLevel : ${rootGenre.children}">
+                    <a href="/" th:href="|/genres/${genre2ndLevel.slug}|"
+                       th:text="${genre2ndLevel.name} + ' ('+ ${genre2ndLevel.booksCount} + ')'">2nd level genre
+                      <span class="undefined-amount">(-1)</span>
+                    </a>
+                  </div>
+                </div>
+                <div th:if="${rootGenre.getTwiceInherited()}">
+                  <div th:each="genre2ndLevel : ${rootGenre.children}">
+                    <div class="Tag" th:if="${genre2ndLevel.children.isEmpty()}">
+                      <a href="/" th:href="|/genres/${genre2ndLevel.slug}|"
+                         th:text="${genre2ndLevel.name} + ' ('+ ${genre2ndLevel.booksCount} + ')'">2nd level genre
+                        <span class="undefined-amount">(-1)</span>
+                      </a>
+                    </div>
+                    <div class="Tags" th:if="${not genre2ndLevel.children.isEmpty()}">
                       <div class="Tags-title">
                         <div class="Tag">
-                          <a href="/" th:href="|/genres/${subGenre.slug}|"
-                              th:text="${subGenre.name} + ' ('+ ${subGenre.booksCount} + ')'">3rd level genre title
+                          <a href="/" th:href="|/genres/${genre2ndLevel.slug}|"
+                             th:text="${genre2ndLevel.name} + ' ('+ ${genre2ndLevel.booksCount} + ')'">2nd level genre
                             <span class="undefined-amount">(-1)</span>
                           </a>
                         </div>
                       </div>
-                      <div class="Tag" th:each="leafGenre : ${subGenre.children}">
-                        <a href="/" th:href="|/genres/${leafGenre.slug}|"
-                           th:text="${leafGenre.name} + ' ('+ ${leafGenre.booksCount} + ')'">3rd level genre
+                      <div class="Tag" th:each="genre3rdLevel : ${genre2ndLevel.children}">
+                        <a href="/" th:href="|/genres/${genre3rdLevel.slug}|"
+                           th:text="${genre3rdLevel.name} + ' ('+ ${genre3rdLevel.booksCount} + ')'">3rd level genre
                           <span class="undefined-amount">(-1)</span>
                         </a>
                       </div>
                     </div>
                   </div>
                 </div>
-              </dib>
+              </div>
             </div>
           </div>
         </div>

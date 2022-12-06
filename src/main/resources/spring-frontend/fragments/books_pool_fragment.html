@@ -1,28 +1,28 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <body>
-    <div class="Cards Cards_refresh" th:fragment="cardFragment (booksList, pageName, objId)">
+    <div class="Cards Cards_refresh" th:fragment="cardFragment (booksList, pageName, obj)">
         <div class="Card" th:each="book : ${booksList}">
             <div class="Card-picture">
                 <a href="#" th:href="@{'/books/' + ${book.slug}}">
-                    <img src="/assets/img/content/main/card.jpg" th:src="${book.image}" alt="card.jpg"/>
+                    <img src="/assets/img/content/main/card.jpg" th:src="${book.image}" alt="card image"/>
                     <div th:if="${book.discountPrice} lt ${book.price}">
-                        <div class="Card-sale" th:text="|${book.discount}% скидка|">Discount</div>
+                        <div class="Card-sale" th:text="|${book.discount}% #{card.discount}|">Discount</div>
                     </div>
                     <div class="Card-ribbon">
                         <span class="Card-ribbonText" th:if="${book.isBestseller}">Bestseller</span>
                     </div>
-                    <a class="Card-status" title="Куплена" th:if="${#strings.equals(book.status, 'PAID')}">
-                        <img src="/assets/img/icons/check.svg" alt="check.svg"/>
+                    <a class="Card-status" title="Paid" th:if="${#strings.equals(book.status, 'PAID')}">
+                        <img src="/assets/img/icons/check.svg" alt="check icon"/>
                     </a>
-                    <a class="Card-status" title="В корзине" th:if="${#strings.equals(book.status, 'CART')}">
-                        <img src="/assets/img/icons/shopping-basket.svg" alt="shopping-basket.svg"/>
+                    <a class="Card-status" title="Cart" th:if="${#strings.equals(book.status, 'CART')}">
+                        <img src="/assets/img/icons/shopping-basket.svg" alt="shopping-basket icon"/>
                     </a>
-                    <a class="Card-status" title="Отложена" th:if="${#strings.equals(book.status, 'KEPT')}">
-                        <img src="/assets/img/icons/heart.svg" alt="heart.svg"/>
+                    <a class="Card-status" title="Kept" th:if="${#strings.equals(book.status, 'KEPT')}">
+                        <img src="/assets/img/icons/heart.svg" alt="heart icon"/>
                     </a>
-                    <a class="Card-status" title="Заархивирована" th:if="${#strings.equals(book.status, 'ARCHIVED')}">
-                        <img src="/assets/img/icons/archive.svg" alt="archive.svg"/>
+                    <a class="Card-status" title="Archived" th:if="${#strings.equals(book.status, 'ARCHIVED')}">
+                        <img src="/assets/img/icons/archive.svg" alt="archive icon"/>
                     </a>
                 </a>
             </div>
@@ -44,12 +44,23 @@
                 </div>
             </div>
         </div>
-        <div class="Cards-footer Cards-footer_center" th:if="${not #strings.equals(pageName, 'none')}">
-            <a class="btn btn_primary" href="#" data-refreshshow="recent"
-               th:attr="data-refreshshow=${pageName},data-refreshid=${objId}"
-               data-refreshoffset="0" data-refreshlimit="20"
-               data-refreshid="1"
-               th:text="#{button.more}">More</a>
+        <div class="Cards-footer Cards-footer_center" id="butmore" th:if="${not #strings.equals(pageName, 'none')}">
+            <div th:if="${#strings.equals(pageName, 'genre')} ? ${obj.booksCount > booksList.size}">
+                <a class="btn btn_primary" href="#" data-refreshshow="recent"
+                   data-refreshoffset="0" data-refreshlimit="2" data-refreshid="1"
+                   th:attr="data-refreshshow=${pageName},data-refreshid=${obj.id},
+                   data-refreshoffset=${@environment.getProperty('initial.offset')},
+                   data-refreshlimit=${@environment.getProperty('page.limit')}"
+                   th:text="#{button.more}">More</a>
+            </div>
+            <div th:if="${not #strings.equals(pageName, 'genre')}">
+                <a class="btn btn_primary" href="#" data-refreshshow="recent"
+                   data-refreshoffset="0" data-refreshlimit="2" data-refreshid="1"
+                   th:attr="data-refreshshow=${pageName},
+                   data-refreshoffset=${@environment.getProperty('initial.offset')},
+                   data-refreshlimit=${@environment.getProperty('page.limit')}"
+                   th:text="#{button.more}">More</a>
+            </div>
         </div>
     </div>
 </body>

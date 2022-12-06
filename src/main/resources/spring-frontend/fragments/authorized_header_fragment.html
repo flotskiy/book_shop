@@ -102,10 +102,10 @@
                         <a class="menu-link" href="/genres" th:href="@{/genres}" th:text="#{menu.genres}">Жанры</a>
                     </li>
                     <li th:class="${#strings.equals(activeMenuItem, 'recent')} ? 'menu-item menu-item_ACTIVE' : 'menu-item'" class="menu-item">
-                        <a class="menu-link" href="/recent" th:href="@{/recent}" th:text="#{menu.recent}">Новинки</a>
+                        <a class="menu-link" href="/books/recent" th:href="@{/books/recent}" th:text="#{menu.recent}">Новинки</a>
                     </li>
                     <li th:class="${#strings.equals(activeMenuItem, 'popular')} ? 'menu-item menu-item_ACTIVE' : 'menu-item'" class="menu-item">
-                        <a class="menu-link" href="/popular" th:href="@{/popular}" th:text="#{menu.popular}">Популярное</a>
+                        <a class="menu-link" href="/books/popular" th:href="@{/books/popular}" th:text="#{menu.popular}">Популярное</a>
                     </li>
                     <li th:class="${#strings.equals(activeMenuItem, 'authors')} ? 'menu-item menu-item_ACTIVE' : 'menu-item'" class="menu-item">
                         <a class="menu-link" href="/authors" th:href="@{/authors}" th:text="#{menu.authors}">Авторы</a>

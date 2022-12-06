@@ -19,15 +19,14 @@
     <div class="wrap">
       <main class="Middle-main" th:object="${authorObj}">
         <ul class="breadcrumbs">
-          <li class="breadcrumbs-item"><a href="/" th:href="@{/}" th:text="#{menu.main}">Главная</a>
+          <li class="breadcrumbs-item"><a href="/" th:href="@{/}" th:text="#{menu.main}">Main</a>
           </li>
-          <li class="breadcrumbs-item"><a href="/authors" th:href="@{/authors}" th:text="#{menu.authors}">Авторы</a>
+          <li class="breadcrumbs-item"><a href="/authors" th:href="@{/authors}" th:text="#{menu.authors}">Authors</a>
           </li>
-          <li class="breadcrumbs-item breadcrumbs-item_current" th:text="*{name}"><span>Имя автора</span>
+          <li class="breadcrumbs-item breadcrumbs-item_current" th:text="*{name}"><span>Author name</span>
           </li>
         </ul>
-        <h1 class="Middle-title" th:text="*{name}">Имя автора
-        </h1>
+        <h1 class="Middle-title" th:text="*{name}">Author name</h1>
         <div class="Section">
           <div th:replace="~{fragments/books_pool_fragment :: cardFragment (${authorBooksAll}, 'author', ${authorObj.id})}"></div>
         </div>

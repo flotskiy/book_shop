@@ -3,11 +3,12 @@ package com.github.flotskiy.FlotskiyBookShopApp.controllers.page;
 import com.github.flotskiy.FlotskiyBookShopApp.model.dto.book.BookDto;
 import com.github.flotskiy.FlotskiyBookShopApp.model.dto.book.CountedBooksDto;
 import com.github.flotskiy.FlotskiyBookShopApp.model.dto.book.GenreDto;
-import com.github.flotskiy.FlotskiyBookShopApp.model.entity.genre.GenreEntity;
 import com.github.flotskiy.FlotskiyBookShopApp.service.BookService;
 import com.github.flotskiy.FlotskiyBookShopApp.service.GenreService;
 import com.github.flotskiy.FlotskiyBookShopApp.security.UserRegistrationService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.PropertySource;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -15,7 +16,14 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @Controller
+@PropertySource("application-variables.properties")
 public class GenresPageController extends HeaderController {
+
+    @Value("${initial.offset}")
+    private int offset;
+
+    @Value("${page.limit}")
+    private int limit;
 
     private final GenreService genreService;
 
@@ -39,16 +47,17 @@ public class GenresPageController extends HeaderController {
 
     @GetMapping("/genres/{genreSlug}")
     public String genresPage(@PathVariable("genreSlug") String genreSlug, Model model) {
-        GenreEntity genreEntity = genreService.findGenreIdBySlug(genreSlug);
+        GenreDto genreDto = genreService.findGenre(genreSlug, genreService.getGenreDtoList());
         Integer userId = getUserRegistrationService().getCurrentUserId();
         List<BookDto> bookDtos =
-                getBookService().getPageOfBooksByGenreId(genreEntity.getId(), 0, 20, userId).getContent();
-        GenreEntity parentEntity = genreService.getParentEntity(genreEntity);
-        GenreEntity rootEntity = genreService.getParentEntity(parentEntity);
+                getBookService().getPageOfBooksByGenreId(genreDto.getId(), offset, limit, userId).getContent();
+        GenreDto parentDto = genreService.findParentGenre(genreDto);
+        GenreDto rootDto = genreService.findParentGenre(parentDto);
         model.addAttribute("genreBookList", bookDtos);
-        model.addAttribute("genreObject", genreEntity);
-        model.addAttribute("parentGenreObject", parentEntity);
-        model.addAttribute("rootGenreObject", rootEntity);
+        model.addAttribute("genreObject", genreDto);
+        model.addAttribute("parentGenreObject", parentDto);
+        model.addAttribute("rootGenreObject", rootDto);
+        model.addAttribute("limitValue", limit);
         return "/genres/slug";
     }
 

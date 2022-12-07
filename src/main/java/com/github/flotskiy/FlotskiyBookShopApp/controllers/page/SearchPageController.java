@@ -8,6 +8,8 @@ import com.github.flotskiy.FlotskiyBookShopApp.service.BookService;
 import com.github.flotskiy.FlotskiyBookShopApp.security.UserRegistrationService;
 import com.github.flotskiy.FlotskiyBookShopApp.service.GoogleSearchBookService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.PropertySource;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -16,7 +18,17 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Controller
+@PropertySource("application-variables.properties")
 public class SearchPageController extends HeaderController {
+
+    @Value("${initial.offset}")
+    private int offset;
+
+    @Value("${search.refresh.limit}")
+    private int searchLimit;
+
+    @Value("${page.limit}")
+    private int limit;
 
     private final GoogleSearchBookService googleSearchBookService;
 
@@ -46,10 +58,10 @@ public class SearchPageController extends HeaderController {
         Integer userId = getUserRegistrationService().getCurrentUserId();
         model.addAttribute("headerInfoDto", headerInfoDto);
         List<BookDto> booksFound = getBookService()
-                .getPageOfSearchResultBooks(headerInfoDto.getSearchQuery(), 0, 5, userId).getContent();
+                .getPageOfSearchResultBooks(headerInfoDto.getSearchQuery(), offset, searchLimit, userId).getContent();
         if (booksFound.size() == 0) {
             booksFound = googleSearchBookService
-                    .getGoogleBooksApiSearchResult(headerInfoDto.getSearchQuery(), 0, 20);
+                    .getGoogleBooksApiSearchResult(headerInfoDto.getSearchQuery(), offset, limit);
         }
         model.addAttribute("searchResults", booksFound);
         model.addAttribute("searchResultsSize",

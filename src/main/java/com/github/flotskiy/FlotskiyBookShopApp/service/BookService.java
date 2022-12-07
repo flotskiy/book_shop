@@ -67,25 +67,25 @@ public class BookService {
         this.book2AuthorRepository = book2AuthorRepository;
     }
 
-    public List<BookDto> getAllBooksData(Integer userId) {
-        return convertBookEntitiesToBookDtoList(bookRepository.findAll(), userId);
-    }
-
     public List<BookDto> getListOfRecommendedBooks(Integer offset, Integer limit, UserDto userDto) {
         int userId = userDto.getId();
-        if (userId == -1) {
-            List<BookDto> resultForGuestWithoutCartAndPostponed =
-                    getRecommendedBooksForGuestWithoutCartAndPostponed(userDto);
-            if (offset >= resultForGuestWithoutCartAndPostponed.size() - 1) {
+        List<Integer> bookIdsList = Collections.EMPTY_LIST;
+        if (userId != -1) {
+            bookIdsList = getRecommendedBookIdsForUser(userDto);
+        }
+        if (userId == -1 || bookIdsList.isEmpty()) {
+            int subListLeftLimit = offset * limit;
+            List<BookDto> resultWhenNoBooksWasAddedBefore = getRecommendedBooksIfNoBooksAddedBefore(userDto);
+            if (subListLeftLimit >= resultWhenNoBooksWasAddedBefore.size() - 1) {
                 return Collections.EMPTY_LIST;
             }
-            if (limit > resultForGuestWithoutCartAndPostponed.size()) {
-                limit = resultForGuestWithoutCartAndPostponed.size();
+            if (subListLeftLimit + limit > resultWhenNoBooksWasAddedBefore.size()) {
+                limit = resultWhenNoBooksWasAddedBefore.size();
+                return resultWhenNoBooksWasAddedBefore.subList(subListLeftLimit, limit);
             }
-            return resultForGuestWithoutCartAndPostponed.subList(offset, limit);
+            return resultWhenNoBooksWasAddedBefore.subList(subListLeftLimit, subListLeftLimit + limit);
         } else {
             Pageable nextPage = PageRequest.of(offset, limit);
-            List<Integer> bookIdsList = getRecommendedBookIdsForUser(userDto);
             List<BookEntity> recommendedBookEntities =
                     bookRepository.findBookEntitiesByIdIsInOrderByPubDageDesc(bookIdsList, nextPage).getContent();
             return convertBookEntitiesToBookDtoWithRatingList(recommendedBookEntities, userId);
@@ -110,10 +110,6 @@ public class BookService {
 
     public List<BookDto> getBooksWithPriceBetween(int min, int max, Integer userId) {
         return convertBookEntitiesToBookDtoList(bookRepository.findBookEntitiesByPriceBetween(min, max), userId);
-    }
-
-    public List<BookDto> getBooksWithPrice(int price, Integer userId) {
-        return convertBookEntitiesToBookDtoList(bookRepository.findBookEntitiesByPriceIs(price), userId);
     }
 
     public List<BookDto> getBooksWithMaxDiscount(Integer userId) {
@@ -315,19 +311,20 @@ public class BookService {
         return bookFileDto;
     }
 
-    private List<BookDto> getRecommendedBooksForGuestWithoutCartAndPostponed(UserDto userDto) {
+    private List<BookDto> getRecommendedBooksIfNoBooksAddedBefore(UserDto userDto) {
         List<Integer> first30bookIdsListWithMaxRating =
                 booksRatingAndPopularityService.getFirst30bookIdsWithMaxUsersRatingMoreOrEquals4();
         List<BookDto> first30booksListWithMaxRating = convertBookEntitiesToBookDtoWithRatingList(
                 bookRepository.findBookEntitiesByIdIsIn(first30bookIdsListWithMaxRating), userDto.getId()
         );
         List<BookDto> first30BooksForTheLast30days = getRecentBooks(0, 30, userDto);
-        List<BookDto> result = Stream
-                .concat(first30booksListWithMaxRating.stream(), first30BooksForTheLast30days.stream())
+        return Stream.concat(first30booksListWithMaxRating.stream(), first30BooksForTheLast30days.stream())
                 .distinct()
+                .sorted((o1, o2) ->
+                        o1.getPubDate().isEqual(o2.getPubDate()) ? 0 :
+                                o1.getPubDate().isAfter(o2.getPubDate()) ? 1 : -1
+                )
                 .collect(Collectors.toList());
-        Collections.shuffle(result);
-        return result;
     }
 
     private List<Integer> getRecommendedBookIdsForUser(UserDto userDto) {

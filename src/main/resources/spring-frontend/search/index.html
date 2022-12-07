@@ -45,8 +45,8 @@
                   <div th:if="${book.discountPrice} lt ${book.price}">
                     <div class="Card-sale" th:text="|${book.discount}% #{card.discount}|">Discount</div>
                   </div>
-                  <div th:if="${book.isBestseller}">
-                    <div class="Card-ribbon"><span class="Card-ribbonText">Bestseller</span></div>
+                  <div class="Card-ribbon" th:if="${book.isBestseller}">
+                    <span class="Card-ribbonText" th:text="#{card.bestseller}">Bestseller</span>
                   </div>
                 </a>
               </div>

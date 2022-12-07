@@ -19,8 +19,6 @@ public interface BookRepository extends JpaRepository<BookEntity, Integer> {
 
     List<BookEntity> findBookEntitiesByPriceBetween(Integer min, Integer max);
 
-    List<BookEntity> findBookEntitiesByPriceIs(Integer price);
-
     @Query("from BookEntity where isBestseller = 1")
     List<BookEntity> getBestsellers();
 

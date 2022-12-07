@@ -39,7 +39,7 @@ public class UserDataChangeListener implements ApplicationListener<OnChangeUserD
         UserDto userDto = event.getUserDto();
         String contact = userDto.getContact();
         String token = UUID.randomUUID().toString();
-        registeredUserChangeService.createVerificationToken(userDto, token, event.getPayload());
+        registeredUserChangeService.createVerificationToken(event.getPayload(), userDto, token);
 
         String messageText = "Follow this link to complete changing data: ";
         String link = event.getUrl() + "/confirmDataChange?token=" + token;

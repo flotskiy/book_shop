@@ -12,6 +12,8 @@ import com.github.flotskiy.FlotskiyBookShopApp.repository.UserRepository;
 import com.github.flotskiy.FlotskiyBookShopApp.repository.VerificationTokenRepository;
 import com.github.flotskiy.FlotskiyBookShopApp.security.BookstoreUserDetailsService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.PropertySource;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,7 +23,14 @@ import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 
 @Service
+@PropertySource("application-variables.properties")
 public class RegisteredUserChangeService {
+
+    @Value("${expiration.flashcall}")
+    private int flashCallExpireMinutes;
+
+    @Value("${expiration.email}")
+    private int emailTokenExpireMinutes;
 
     private final UserRepository userRepository;
     private final UserContactRepository userContactRepository;
@@ -118,33 +127,36 @@ public class RegisteredUserChangeService {
                 (!updatedUser.getName().equals(userEntity.getName()) || !newContact.equals(oldContact)));
     }
 
-    public void createVerificationToken(UserDto userDto, String token, ChangeUserDataConfirmPayload payload) {
-        int tokenLifeLongInMinutes = 15;
+    public void createVerificationToken(ChangeUserDataConfirmPayload payload, UserDto userDto, String token) {
+        int tokenLifeLongInMinutes = emailTokenExpireMinutes;
         UserEntity userEntity = userRepository.findById(userDto.getId()).get();
-
-        VerificationTokenEntity verificationTokenEntity = new VerificationTokenEntity();
+        VerificationTokenEntity verificationTokenEntity =
+                createVerificationTokenEntity(payload, userEntity, tokenLifeLongInMinutes);
         verificationTokenEntity.setToken(token);
-        verificationTokenEntity.setUser(userEntity);
-        verificationTokenEntity.setExpiryTime(LocalDateTime.now().plus(tokenLifeLongInMinutes, ChronoUnit.MINUTES));
-        verificationTokenEntity.setName(payload.getName());
         verificationTokenEntity.setContact(payload.getMail());
-        verificationTokenEntity.setHash(passwordEncoder.encode(payload.getPassword()));
         verificationTokenRepository.save(verificationTokenEntity);
     }
 
     public void handleDataForPhoneUser(ChangeUserDataConfirmPayload payload, UserDto userDto) {
-        int codeLifeLongInMinutes = 5;
+        int codeLifeLongInMinutes = flashCallExpireMinutes;
         String phoneCode = codeService.generatePhoneCode(userDto.getContact());
         UserEntity userEntity = userRepository.findById(userDto.getId()).get();
-
-        VerificationTokenEntity verificationTokenEntity = new VerificationTokenEntity();
+        VerificationTokenEntity verificationTokenEntity =
+                createVerificationTokenEntity(payload, userEntity, codeLifeLongInMinutes);
         verificationTokenEntity.setToken(phoneCode);
-        verificationTokenEntity.setUser(userEntity);
-        verificationTokenEntity.setExpiryTime(LocalDateTime.now().plus(codeLifeLongInMinutes, ChronoUnit.MINUTES));
-        verificationTokenEntity.setName(payload.getName());
         verificationTokenEntity.setContact(payload.getPhone());
-        verificationTokenEntity.setHash(passwordEncoder.encode(payload.getPassword()));
         verificationTokenRepository.save(verificationTokenEntity);
+    }
+
+    private VerificationTokenEntity createVerificationTokenEntity(
+            ChangeUserDataConfirmPayload payload, UserEntity userEntity, int lifeLong
+    ) {
+        VerificationTokenEntity verificationTokenEntity = new VerificationTokenEntity();
+        verificationTokenEntity.setUser(userEntity);
+        verificationTokenEntity.setExpiryTime(LocalDateTime.now().plus(lifeLong, ChronoUnit.MINUTES));
+        verificationTokenEntity.setName(payload.getName());
+        verificationTokenEntity.setHash(passwordEncoder.encode(payload.getPassword()));
+        return verificationTokenEntity;
     }
 
     public VerificationTokenDto getVerificationTokenDto(String token) {

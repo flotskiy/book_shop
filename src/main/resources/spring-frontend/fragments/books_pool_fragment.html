@@ -9,8 +9,8 @@
                     <div th:if="${book.discountPrice} lt ${book.price}">
                         <div class="Card-sale" th:text="|${book.discount}% #{card.discount}|">Discount</div>
                     </div>
-                    <div class="Card-ribbon">
-                        <span class="Card-ribbonText" th:if="${book.isBestseller}">Bestseller</span>
+                    <div class="Card-ribbon" th:if="${book.isBestseller}">
+                        <span class="Card-ribbonText" th:text="#{card.bestseller}">Bestseller</span>
                     </div>
                     <a class="Card-status" title="Paid" th:if="${#strings.equals(book.status, 'PAID')}">
                         <img src="/assets/img/icons/check.svg" alt="check icon"/>

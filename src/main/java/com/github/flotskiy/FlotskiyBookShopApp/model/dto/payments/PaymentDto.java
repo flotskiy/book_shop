@@ -2,16 +2,16 @@ package com.github.flotskiy.FlotskiyBookShopApp.model.dto.payments;
 
 public class PaymentDto {
 
-    private String hash;
+    private String id;
     private String sum;
     private Long time;
 
-    public String getHash() {
-        return hash;
+    public String getId() {
+        return id;
     }
 
-    public void setHash(String hash) {
-        this.hash = hash;
+    public void setId(String id) {
+        this.id = id;
     }
 
     public String getSum() {

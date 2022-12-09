@@ -2,17 +2,17 @@ package com.github.flotskiy.FlotskiyBookShopApp.model.dto.payments;
 
 public class BalanceTransactionDto {
 
-    private String date;
+    private String time;
     private String value;
     private String description;
     private Integer bookId;
 
-    public String getDate() {
-        return date;
+    public String getTime() {
+        return time;
     }
 
-    public void setDate(String date) {
-        this.date = date;
+    public void setTime(String time) {
+        this.time = time;
     }
 
     public String getValue() {

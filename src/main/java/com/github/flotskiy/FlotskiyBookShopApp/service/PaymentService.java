@@ -105,7 +105,7 @@ public class PaymentService {
     public Page<BalanceTransactionDto> getBalanceTransactions(Integer userId, Integer offset, Integer limit, String sort) {
         Pageable nextPage = PageRequest.of(offset, limit);
         Page<BalanceTransactionEntity> balanceTransactionEntityPage;
-        if (sort.equals("desc")) {
+        if (sort != null && sort.equals("desc")) {
             balanceTransactionEntityPage =
                     balanceTransactionRepository.getSortedBalanceTransactionsForUserOrderByTimeDesc(userId, nextPage);
         } else {
@@ -121,7 +121,7 @@ public class PaymentService {
 
     @Transactional
     public void makeReplenish(PaymentDto payload) {
-        int currentUserId = Integer.parseInt(payload.getHash());
+        int currentUserId = Integer.parseInt(payload.getId());
         int sumToReplenish = Integer.parseInt(payload.getSum());
         UserEntity currentUserEntity = userRepository.findById(currentUserId).get();
         int newBalance = currentUserEntity.getBalance() + sumToReplenish;
@@ -141,10 +141,10 @@ public class PaymentService {
     }
 
     private BalanceTransactionDto convertBalanceTransactionEntityToDto(BalanceTransactionEntity balanceTransactionEntity) {
-        String date = balanceTransactionEntity.getTime().format(customStringHandler.getFormatter());
+        String time = balanceTransactionEntity.getTime().format(customStringHandler.getFormatter());
         int bookId = balanceTransactionEntity.getBookId();
         BalanceTransactionDto balanceTransactionDto = new BalanceTransactionDto();
-        balanceTransactionDto.setDate(date);
+        balanceTransactionDto.setTime(time);
         if (bookId == -1) {
             balanceTransactionDto.setValue("+" + balanceTransactionEntity.getValue() + " р.");
         } else {

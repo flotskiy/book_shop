@@ -107,7 +107,7 @@ public class ProfilePageController extends HeaderController {
             Map<String, Object> result = new HashMap<>();
             result.put("result", false);
             result.put("error", exception.getMessage());
-            return ResponseEntity.status(400).body(result);
+            return ResponseEntity.badRequest().body(result);
         }
     }
 

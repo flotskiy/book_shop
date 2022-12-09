@@ -135,7 +135,7 @@
                     </thead>
                     <tbody>
                       <tr th:each="transaction : ${transactions}">
-                        <td th:text="${transaction.date}">00.00.0000 00:00</td>
+                        <td th:text="${transaction.time}">00.00.0000 00:00</td>
                         <td>
                             <span class="Transactions_textSuccess">
                               <strong th:text="${transaction.value}">+000 р.</strong>
@@ -162,7 +162,7 @@
             </div>
             <div class="Tabs-block" id="topup">
               <form class="form Topup" action="#" method="post"
-                    data-hash="34534535" th:attr="data-hash=${curUser.id}">
+                    data-hash="34534535" th:attr="data-id=${curUser.id}">
                 <div class="Topup-wrap">
                   <strong class="Topup-title" th:text="#{page.profile.replenish.amount}">Введите сумму</strong>
                   <div class="form-group form-group_row Topup-group">

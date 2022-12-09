@@ -27,6 +27,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -218,7 +219,7 @@ public class BookService {
 
     public String checkTo(String to) {
         if (to == null || to.isEmpty()) {
-            to = LocalDate.now().format(DateTimeFormatter.ofPattern("dd.MM.yyyy"));
+            to = LocalDate.now().plus(1, ChronoUnit.DAYS).format(DateTimeFormatter.ofPattern("dd.MM.yyyy"));
         }
         return to;
     }
@@ -260,11 +261,11 @@ public class BookService {
         bookDto.setPubDate(bookEntity.getPubDate());
 
         Set<AuthorEntity> authorEntities = bookEntity.getAuthorEntities();
-        Set<AuthorEntity> sortedAuthorEntities = authorEntities.stream()
-                .sorted(Comparator.comparing(AuthorEntity::getName))
-                .collect(Collectors.toCollection(LinkedHashSet::new));
+        List<AuthorEntity> sortedBySortIndexAuthorEntities =
+                authorService.sortAuthorEntitiesBySortIndex(authorEntities, bookId);
+
         StringBuilder authorName = new StringBuilder();
-        for (AuthorEntity author : sortedAuthorEntities) {
+        for (AuthorEntity author : sortedBySortIndexAuthorEntities) {
             authorName.append(author.getName()).append(", ");
         }
         if (authorName.length() > 0) {

@@ -105,11 +105,8 @@ public class BookstoreUserDetailsService implements UserDetailsService {
         return userDto;
     }
 
-    private UserBooksData createUserBooksData(Integer userId) {
+    public UserBooksData createUserBooksData(Integer userId) {
         UserBooksData userBooksData = new UserBooksData();
-        if (book2UserService.getBookToUserTypeMap() == null) {
-            book2UserService.fillInBookToUserTypeMap();
-        }
         Map<String, Integer> bookToUserTypeMap = book2UserService.getBookToUserTypeMap();
         for (String key : bookToUserTypeMap.keySet()) {
             switch (key) {

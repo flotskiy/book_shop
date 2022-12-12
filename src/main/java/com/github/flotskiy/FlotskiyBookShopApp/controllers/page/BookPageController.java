@@ -1,5 +1,6 @@
 package com.github.flotskiy.FlotskiyBookShopApp.controllers.page;
 
+import com.github.flotskiy.FlotskiyBookShopApp.exceptions.ChangeBookStatusRedirectionException;
 import com.github.flotskiy.FlotskiyBookShopApp.model.dto.book.page.BookSlugDto;
 import com.github.flotskiy.FlotskiyBookShopApp.model.dto.post.BookReviewDto;
 import com.github.flotskiy.FlotskiyBookShopApp.model.dto.post.BookStatusDto;
@@ -19,12 +20,9 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.nio.file.Path;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 import java.util.logging.Logger;
 
 @Controller
@@ -57,6 +55,7 @@ public class BookPageController extends HeaderController {
     public String bookPage(@PathVariable("slug") String slug, Model model) {
         BookSlugDto bookSlugDto = getBookService().getBookSlugBySlug(slug, getUserRegistrationService().getCurrentUserId());
         model.addAttribute("slugBook", bookSlugDto);
+        model.addAttribute("idList", List.of(bookSlugDto.getId()));
         model.addAttribute("detailedRating",
                 booksRatingAndPopularityService.getDetailedRatingDto(bookSlugDto.getId()));
         return "/books/slug";
@@ -91,19 +90,14 @@ public class BookPageController extends HeaderController {
                 .body(new ByteArrayResource(data));
     }
 
-    @PostMapping("/changeBookStatus/{slug}")
+    @PostMapping("/changeBookStatus/")
     @ResponseBody
-    public Map<String, Object> handleChangeBookStatus(
-            @PathVariable(value = "slug") String slug,
-            @RequestBody BookStatusDto payload,
-            HttpServletRequest request,
-            HttpServletResponse response,
-            Model model
-    ) {
+    public Map<String, Object> handleChangeBookStatus(@RequestBody BookStatusDto payload) {
         Map<String, Object> result = new HashMap<>();
         try {
-            Integer userId = getUserRegistrationService().getCurrentUserId();
-            userBookService.changeBookStatus(slug, payload.getStatus(), request, response, model, userId);
+            userBookService.changeBookStatus(payload.getBooksIds(), payload.getStatus());
+            result.put("result", true);
+        } catch (ChangeBookStatusRedirectionException changeBookStatusRedirectionException) {
             result.put("result", true);
         } catch (Throwable throwable) {
             result.put("result", false);

@@ -1,4 +1,3 @@
-
 <!--END-->
 <!--END--><!DOCTYPE html><!--[if IE 7]>
 <html class="ie7" lang="ru">
@@ -16,8 +15,6 @@
   <header th:replace="${isAuthenticated} ?
   ~{fragments/authorized_header_fragment :: headFragmentAuth ('')} : ~{fragments/common_header_fragment :: headFragment ('')}">
   </header>
-<!--  <header th:if="${not isAuthenticated}" th:replace="~{fragments/common_header_fragment :: headFragment ('')}"></header>-->
-<!--  <header th:if="${isAuthenticated}" th:replace="~{fragments/authorized_header_fragment :: headFragmentAuth ('')}"></header>-->
   <div class="Middle">
     <div class="wrap">
       <main class="Middle-main" th:object="${slugBook}">
@@ -257,64 +254,93 @@
                   </span>
                 </div>
                 <div class="ProductCard-tags">
-                  <span class="ProductCard-titleProp" th:text="#{page.book.tags}">Тэги:</span>
+                  <span class="ProductCard-titleProp" th:text="#{page.book.tags}">Tags:</span>
                   <span th:each="tag : *{tags}">
                     <a href="/tags/" th:href="'/tags/' + ${tag.slug}"
-                       th:text="'#' + ${tag.title} + '&#32;'">Название тега</a>
+                       th:text="'#' + ${tag.title} + '&#32;'">Tag title</a>
                   </span>
                 </div>
                 <div class="ProductCard-cost">
-                  <span class="ProductCard-titleProp"  th:text="#{page.book.price}">Цена:</span>
+                  <span class="ProductCard-titleProp"  th:text="#{page.book.price}">Price:</span>
                   <span th:if="${slugBook.discountPrice} lt ${slugBook.price}">
-                    <span class="ProductCard-priceOld" th:text="*{'₽' + price}">₽300</span>
+                    <span class="ProductCard-priceOld" th:text="*{'₽' + price}">Price old</span>
                   </span>
-                  <span class="ProductCard-price" th:text="*{'₽' + discountPrice}">₽180</span>
+                  <span class="ProductCard-price" th:text="*{'₽' + discountPrice}">Price discount</span>
                 </div>
-                <!--+div.-info
-                //+div.-cost
-                //    +div.-price $55.00
-                //    +div.-priceOld $115.00
-                //+div.-compare
-                //    +btn._default
-                //        +img('change.svg','icons/card').-icon
-                -->
               </div>
               <div class="ProductCard-text">
-                <p th:text="*{description}">Описание книги</p>
+                <p th:text="*{description}">Book description</p>
               </div>
               <div class="ProductCard-cart">
-                <!--+div.-cartElement.-cartElement_amount-->
-                <!--    +Amount._product-->
-                <div class="ProductCard-cartElement">
+                <div class="ProductCard-cartElement"
+                     th:if="${#strings.equals(slugBook.status, 'false') or #strings.equals(slugBook.status, 'CART')}">
                   <button class="btn btn_primary btn_outline" data-sendstatus="KEPT"
-                          data-bookid="[1111]" th:attr="data-bookid = ${slugBook.slug}"
+                          data-bookid="[1111]" data-alttext="Postponed"
                           data-btntype="check" data-btnradio="buyblock" data-check="false"
-                          data-alttext="Отложена">
+                          th:attr="data-bookid = ${idList}, data-alttext = #{button.postponed}">
                     <span class="btn-icon">
                       <img src="/assets/img/icons/heart.svg" alt="heart.svg"/>
                     </span>
-                    <span class="btn-content" th:text="#{button.keep}">Отложить</span>
+                    <span class="btn-content" th:text="#{button.keep}">Keep</span>
                   </button>
                 </div>
-                <div class="ProductCard-cartElement">
-                  <button class="btn btn_primary btn_outline" data-sendstatus="CART"
-                          data-bookid="[1111]" th:attr="data-bookid = ${slugBook.slug}"
-                          data-btntype="check" data-btnradio="buyblock" data-check="false"
-                          data-alttext="В корзине">
+                <div class="ProductCard-cartElement" th:if="${#strings.equals(slugBook.status, 'CART')}">
+                  <button class="btn btn_primary btn_outline" data-sendstatus="/books/cart">
                     <span class="btn-icon">
                       <img src="/assets/img/icons/shopping-basket.svg" alt="shopping-basket.svg"/>
                     </span>
-                    <span class="btn-content" th:text="#{button.buy}">Купить</span>
+                    <span class="btn-content" th:text="#{button.cart}">In the basket</span>
+                  </button>
+                </div>
+                <div class="ProductCard-cartElement" th:if="${#strings.equals(slugBook.status, 'KEPT')}">
+                  <button class="btn btn_primary btn_outline" data-sendstatus="UNLINK"
+                          data-bookid="[1111]" data-alttext="Keep"
+                          data-btntype="check" data-btnradio="buyblock" data-check="false"
+                          th:attr="data-bookid = ${idList}, data-alttext = #{button.keep}">
+                    <span class="btn-icon">
+                      <img src="/assets/img/icons/heart.svg" alt="heart.svg"/>
+                    </span>
+                    <span class="btn-content" th:text="#{button.postponed}">Postponed</span>
+                  </button>
+                </div>
+                <div class="ProductCard-cartElement"
+                     th:if="${#strings.equals(slugBook.status, 'false') or #strings.equals(slugBook.status, 'KEPT')}">
+                  <button class="btn btn_primary btn_outline" data-sendstatus="CART"
+                          data-bookid="[1111]" data-alttext="In the basket"
+                          data-btntype="check" data-btnradio="buyblock" data-check="false"
+                          th:attr="data-bookid = ${idList}, data-alttext = #{button.cart}">
+                    <span class="btn-icon">
+                      <img src="/assets/img/icons/shopping-basket.svg" alt="shopping-basket.svg"/>
+                    </span>
+                    <span class="btn-content" th:text="#{button.buy}">Buy</span>
                   </button>
                 </div>
               </div>
               <div class="ProductCard-cart">
-                <!--+div.-cartElement.-cartElement_amount-->
-                <!--    +Amount._product-->
-                <div class="ProductCard-cartElement"><a class="btn btn_primary btn_outline" href="#"><span class="btn-icon"><img src="/assets/img/icons/download.svg" alt="download.svg"/></span><span class="btn-content" th:text="#{button.download}">Скачать</span></a>
+                <div class="ProductCard-cartElement" th:if="${#strings.equals(slugBook.status, 'PAID')}">
+                  <a class="btn btn_primary btn_outline" href="#">
+                    <span class="btn-icon">
+                      <img src="/assets/img/icons/download.svg" alt="download.svg"/>
+                    </span>
+                    <span class="btn-content" th:text="#{button.download}">Download</span>
+                  </a>
                 </div>
-                <div class="ProductCard-cartElement">
-                  <button class="btn btn_primary btn_outline" data-sendstatus="ARCHIVED" data-bookid="[1111]" data-btntype="check" data-btnradio="buyblock" data-check="false" data-alttext="Вернуть из архива"><span class="btn-icon"><img src="/assets/img/icons/archive.svg" alt="archive.svg"/></span><span class="btn-content" th:text="#{button.archive}">В архив</span>
+                <div class="ProductCard-cartElement" th:if="${#strings.equals(slugBook.status, 'PAID')}">
+                  <button class="btn btn_primary btn_outline" data-sendstatus="ARCHIVED" data-bookid="[1111]"
+                          data-btntype="check" data-btnradio="buyblock" data-check="false" data-alttext="Return from archive"
+                          th:attr="data-bookid = ${idList}, data-alttext = #{button.archive.return}">
+                    <span class="btn-icon">
+                      <img src="/assets/img/icons/archive.svg" alt="archive.svg"/>
+                    </span><span class="btn-content" th:text="#{button.archive}">Archive</span>
+                  </button>
+                </div>
+                <div class="ProductCard-cartElement" th:if="${#strings.equals(slugBook.status, 'ARCHIVED')}">
+                  <button class="btn btn_primary btn_outline" data-sendstatus="PAID" data-bookid="[1111]"
+                          data-btntype="check" data-btnradio="buyblock" data-check="false" data-alttext="Archive"
+                          th:attr="data-bookid = ${idList}, data-alttext = #{button.archive}">
+                    <span class="btn-icon">
+                      <img src="/assets/img/icons/archive.svg" alt="archive.svg"/>
+                    </span><span class="btn-content" th:text="#{button.archive.return}">Return from archive</span>
                   </button>
                 </div>
               </div>
@@ -326,11 +352,6 @@
                 <span id="myPopup__close" class="close">X</span>
               </div>
               <div id="myOverlay"></div>
-              <!--+div.-cart-->
-              <!--    //+div.-cartElement.-cartElement_amount-->
-              <!--    //    +Amount._product-->
-              <!--    +div.-cartElement-->
-              <!--        +btn('button')(data-sendstatus='UNLINK' data-bookid="[1111]")._muted Вернуть из архива-->
             </div>
           </div>
           <div class="Product-comments">

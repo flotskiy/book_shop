@@ -10,12 +10,9 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.util.WebUtils;
+import org.springframework.web.context.request.RequestContextHolder;
 
-import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
-import java.util.ArrayList;
-import java.util.Arrays;
 
 @Controller
 public class HeaderController {
@@ -40,18 +37,11 @@ public class HeaderController {
 
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication instanceof AnonymousAuthenticationToken) {
-            Cookie cartContents = WebUtils.getCookie(request, "cartContents");
-            if (cartContents != null && !cartContents.getValue().equals("")) {
-                String cartCookieString = cartContents.getValue();
-                ArrayList<String> cookieBooks = new ArrayList<>(Arrays.asList(cartCookieString.split("/")));
-                headerInfoDto.setCartBooksCount(cookieBooks.size());
-            }
-
-            Cookie keptContents = WebUtils.getCookie(request, "keptContents");
-            if (keptContents != null && !keptContents.getValue().equals("")) {
-                String keptCookieString = keptContents.getValue();
-                ArrayList<String> cookieBooks = new ArrayList<>(Arrays.asList(keptCookieString.split("/")));
-                headerInfoDto.setKeptBooksCount(cookieBooks.size());
+            String guestSession = RequestContextHolder.currentRequestAttributes().getSessionId();
+            if (userRegistrationService.isGuestKnown(guestSession)) {
+                UserDto userDto = userRegistrationService.getCurrentGuestUserDto(guestSession);
+                headerInfoDto.setCartBooksCount(userDto.getUserBooksData().getCart().size());
+                headerInfoDto.setKeptBooksCount(userDto.getUserBooksData().getKept().size());
             }
         } else {
             UserDto userDto = userRegistrationService.getCurrentUserDto();

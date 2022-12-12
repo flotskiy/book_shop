@@ -17,46 +17,46 @@
   <div class="Middle">
     <div class="wrap">
       <main class="Middle-main">
-        <h1 class="Middle-title" th:text="#{menu.cart}">Корзина</h1>
-        <h3 th:if="${isCartEmpty}" th:text="#{page.cart.isempty}">Корзина пуста :(</h3>
+        <h1 class="Middle-title" th:text="#{menu.cart}">Cart</h1>
+        <h3 th:if="${isCartEmpty}" th:text="#{page.cart.isempty}">Cart is empty :(</h3>
         <form class="form Cart" action="#" method="post">
-          <div class="Cart-product" th:each="book : ${bookCart}">
+          <div class="Cart-product" th:each="bookPair : ${bookCart}">
             <div class="Cart-block Cart-block_row">
               <div class="Cart-block Cart-block_pict">
-                <a class="Cart-pict" href="#" th:href="@{'/books/' + ${book.slug}}">
-                  <img class="Cart-img" src="/assets/img/content/main/card.jpg" th:src="${book.image}" alt="card.jpg"/>
+                <a class="Cart-pict" href="#" th:href="@{'/books/' + ${bookPair.key.slug}}">
+                  <img class="Cart-img" src="/assets/img/content/main/card.jpg" th:src="${bookPair.key.image}" alt="card.jpg"/>
                 </a>
               </div>
               <div class="Cart-block Cart-block_row">
                 <div class="Cart-block Cart-block_info">
-                  <div class="Cart-author" th:text="${book.authors}">Имя автора</div>
+                  <div class="Cart-author" th:text="${bookPair.key.authors}">Author</div>
                   <div class="Cart-title">
-                    <a href="#" th:href="@{'/books/' + ${book.slug}}" th:text="${book.title}">Название книги</a>
+                    <a href="#" th:href="@{'/books/' + ${bookPair.key.slug}}" th:text="${bookPair.key.title}">Title</a>
                   </div>
                   <div class="Cart-rating">
                     <span class="Rating">
-                      <span th:replace="~{fragments/book_rating_fragment :: rating (${book.rating})}"></span>
+                      <span th:replace="~{fragments/book_rating_fragment :: rating (${bookPair.key.rating})}"></span>
                     </span>
                   </div>
                   <div class="Cart-buttons">
                     <div class="Cart-btn">
                       <button class="btn btn_primary btn_outline" data-sendstatus="KEPT"
-                              data-bookid="[1111]" th:attr="data-bookid = ${book.slug}"
+                              data-bookid="[1111]" data-alttext="Postponed"
                               data-btntype="check" data-btnradio="buyblock" data-check="false"
-                              data-alttext="Отложена">
+                              th:attr="data-bookid = ${bookPair.value}, data-alttext = #{button.postponed}">
                         <span class="btn-icon">
                           <img src="/assets/img/icons/heart.svg" alt="heart.svg"/>
                         </span>
-                        <span class="btn-content" th:text="#{button.keep}">Отложить</span>
+                        <span class="btn-content" th:text="#{button.keep}">Keep</span>
                       </button>
                     </div>
                     <div class="Cart-btn">
                       <button class="btn btn_danger btn_outline" data-sendstatus="UNLINK"
-                              data-bookid="" th:attr="data-bookid = ${'cart/remove/' + book.slug}">
+                              data-bookid="[1111]" th:attr="data-bookid = ${bookPair.value}">
                         <span class="btn-icon">
                           <img src="/assets/img/icons/trash.svg" alt="trash.svg"/>
                         </span>
-                        <span class="btn-content" th:text="#{button.del}">Удалить</span>
+                        <span class="btn-content" th:text="#{button.del}">Delete</span>
                       </button>
                     </div>
                   </div>
@@ -65,11 +65,11 @@
                   <div class="Cart-priceTitle" th:text="#{page.book.price}">Цена:
                   </div>
                   <div class="Cart-price Cart-price_old"
-                       th:if="${book.discountPrice} lt ${book.price}" th:text="${'₽' + book.price}">-1
+                       th:if="${bookPair.key.discountPrice} lt ${bookPair.key.price}" th:text="${'₽' + bookPair.key.price}">-1
                   </div>
-                  <div class="Cart-price" th:text="${'₽' + book.discountPrice}">-1</div>
+                  <div class="Cart-price" th:text="${'₽' + bookPair.key.discountPrice}">-1</div>
                   <div class="Cart-sale"
-                       th:if="${book.discountPrice} lt ${book.price}" th:text="${'-' + book.discount + '%'}">-1%
+                       th:if="${bookPair.key.discountPrice} lt ${bookPair.key.price}" th:text="${'-' + bookPair.key.discount + '%'}">-1%
                   </div>
                 </div>
               </div>
@@ -78,8 +78,8 @@
           <div class="Cart-total" th:if="${not isCartEmpty}">
             <div class="Cart-block Cart-block_total">
               <strong class="Cart-title" th:text="#{page.cart.total}">Итого:</strong>
-              <span class="Cart-price" th:text="${'₽' + #aggregates.sum(bookCart.![discountPrice])}">-1 р.</span>
-              <span class="Cart-price_old" th:text="${'₽' + #aggregates.sum(bookCart.![price])}">-1 р.</span>
+              <span class="Cart-price" th:text="${'₽' + #aggregates.sum(bookCart.![key.discountPrice])}">-1 р.</span>
+              <span class="Cart-price_old" th:text="${'₽' + #aggregates.sum(bookCart.![key.price])}">-1 р.</span>
             </div>
             <div class="Cart-block">
               <div class="Profile-fail" th:if="${#strings.equals(pay, 'fail')}"

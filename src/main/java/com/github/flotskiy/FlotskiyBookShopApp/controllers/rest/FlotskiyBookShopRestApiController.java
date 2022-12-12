@@ -20,17 +20,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api")
@@ -448,25 +444,24 @@ public class FlotskiyBookShopRestApiController {
         }
     }
 
-
-
-
-    @RequestMapping("/changeBookStatus/{slug}")
-    @ApiOperation("Changes status for one or several books in Database for current " +
-            "'slug' parameter represents the definite book/books to change status. " +
-            "'status' parameter is designed to receive from user the new value of book status to set." +
-            "Returns 'true' in case of success and 'false' in case of failure.")
+    @RequestMapping("/changeBookStatus")
+    @ApiOperation("Changes status for one or several books in Database for current (registered or not) user. " +
+            "'status' parameter is responsible for the new value of book status to set. " +
+            "'array' parameter represents the definite book/books id to change status.")
     public ResponseEntity<Map<String, Object>> changeBookStatus(
-            @PathVariable(value = "slug") String slug,
-            @RequestParam("status") String status,
-            HttpServletRequest request,
-            HttpServletResponse response,
-            Model model
+            @RequestParam("status") String status, @RequestParam(value = "array") String array
     ) {
-        userBookService.guestChangeBookStatus(slug, status, request, response, model);
-        HashMap<String, Object> result = new HashMap<>();
-        result.put("result", true); // TODO: 'false' result in case of some problems
-        return ResponseEntity.ok().body(result);
+        Map<String, Object> result = new HashMap<>();
+        try {
+            List<Integer> idList = Arrays.stream(array.split(",")).map(Integer::parseInt).collect(Collectors.toList());
+            userBookService.changeBookStatus(idList, status);
+            result.put("result", true);
+            return ResponseEntity.ok().body(result);
+        } catch (Throwable throwable) {
+            result.put("result", false);
+            result.put("error", throwable.getMessage());
+            return ResponseEntity.badRequest().body(result);
+        }
     }
 
     @ExceptionHandler(MissingServletRequestParameterException.class)

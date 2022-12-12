@@ -80,6 +80,16 @@ public class UserRegistrationService {
         }
     }
 
+    public int handleGuestSession(String guestSession) {
+        UserEntity guest = userRepository.findUserEntityByUserContactEntity_Contact(guestSession);
+        if (guest == null) {
+            guest = registerGuestUser();
+            registerGuestUserContact(guest, guestSession);
+        }
+        return guest.getId();
+    }
+
+    // TODO: METHOD IS USING IN TEST ONLY - DEL OR REFACTOR
     public UserEntity registerNewUserWithContact(RegistrationForm registrationForm) throws InstanceAlreadyExistsException {
         UserEntity userEntity = null;
         if (registrationForm.getEmail() != null) {
@@ -97,21 +107,32 @@ public class UserRegistrationService {
     }
 
     private UserEntity registerNewUserWhileRequestingContactConfirmation() {
+        UserEntity userEntity = registerNewUserEntity();
+        userEntity.setName("default");
+        return userRepository.save(userEntity);
+    }
+
+    private UserEntity registerGuestUser() {
+        UserEntity userEntity = registerNewUserEntity();
+        userEntity.setName("guest-default");
+        return userRepository.save(userEntity);
+    }
+
+    private UserEntity registerNewUserEntity() {
         Integer currentMaxId = userRepository.getMaxId();
         int newUserId = 1;
         if (currentMaxId != null) {
             newUserId = currentMaxId + 1;
         }
-
         UserEntity newUserEntity = new UserEntity();
         newUserEntity.setId(newUserId);
         newUserEntity.setHash("");
         newUserEntity.setBalance(0);
         newUserEntity.setRegTime(LocalDateTime.now());
-        newUserEntity.setName("no name");
-        return userRepository.save(newUserEntity);
+        return newUserEntity;
     }
 
+    // TODO: used for google registration, check workflow
     public UserEntity registerNewUser(RegistrationForm registrationForm) {
         Integer currentMaxId = userRepository.getMaxId();
         int newUserId = 1;
@@ -135,15 +156,7 @@ public class UserRegistrationService {
     private void registerNewUserContactWhileRequestingContactConfirmation(
             String contact, String codeString, UserEntity userEntity
     ) {
-        Integer currentMaxId = userContactRepository.getMaxId();
-        int newUserContactId = 1;
-        if (currentMaxId != null) {
-            newUserContactId = currentMaxId + 1;
-        }
-
-        UserContactEntity newUserContactEntity = new UserContactEntity();
-        newUserContactEntity.setId(newUserContactId);
-        newUserContactEntity.setUserEntity(userEntity);
+        UserContactEntity newUserContactEntity = getNewUserContactEntity(userEntity);
         if (contact.contains("@")) {
             newUserContactEntity.setType(ContactType.EMAIL);
             newUserContactEntity.setContact(contact);
@@ -152,10 +165,29 @@ public class UserRegistrationService {
             newUserContactEntity.setContact(contact);
         }
         newUserContactEntity.setCode(codeString);
-        newUserContactEntity.setApproved((short) 0);
         newUserContactEntity.setCodeTrails(0);
         newUserContactEntity.setCodeTime(LocalDateTime.now());
         userContactRepository.save(newUserContactEntity);
+    }
+
+    private void registerGuestUserContact(UserEntity guestEntity, String guestSession) {
+        UserContactEntity guestUserContactEntity = getNewUserContactEntity(guestEntity);
+        guestUserContactEntity.setType(ContactType.GUEST);
+        guestUserContactEntity.setContact(guestSession);
+        userContactRepository.save(guestUserContactEntity);
+    }
+
+    private UserContactEntity getNewUserContactEntity(UserEntity userEntity) {
+        Integer currentMaxId = userContactRepository.getMaxId();
+        int newUserContactId = 1;
+        if (currentMaxId != null) {
+            newUserContactId = currentMaxId + 1;
+        }
+        UserContactEntity userContactEntity = new UserContactEntity();
+        userContactEntity.setId(newUserContactId);
+        userContactEntity.setUserEntity(userEntity);
+        userContactEntity.setApproved((short) 0);
+        return userContactEntity;
     }
 
     public void registerUserPassword(RegistrationForm registrationForm) {
@@ -179,16 +211,9 @@ public class UserRegistrationService {
         }
     }
 
+    // TODO: check this method usage
     public UserContactEntity registerNewUserContact(RegistrationForm registrationForm, UserEntity userEntity) {
-        Integer currentMaxId = userContactRepository.getMaxId();
-        int newUserContactId = 1;
-        if (currentMaxId != null) {
-            newUserContactId = currentMaxId + 1;
-        }
-
-        UserContactEntity newUserContactEntity = new UserContactEntity();
-        newUserContactEntity.setId(newUserContactId);
-        newUserContactEntity.setUserEntity(userEntity);
+        UserContactEntity newUserContactEntity = getNewUserContactEntity(userEntity);
         String email = registrationForm.getEmail();
         String phone = registrationForm.getPhone();
         if (email != null && !email.isBlank()) {
@@ -199,11 +224,7 @@ public class UserRegistrationService {
             newUserContactEntity.setType(ContactType.PHONE);
             newUserContactEntity.setContact(phone);
             newUserContactEntity.setCode(codeService.generateSecretCodeForUserContactEntityPhone(phone));
-        } else {
-            String sessionId = RequestContextHolder.currentRequestAttributes().getSessionId();
-            newUserContactEntity.setContact(sessionId);
         }
-        newUserContactEntity.setApproved((short) 0);
         newUserContactEntity.setCodeTrails(0);
         newUserContactEntity.setCodeTime(LocalDateTime.now());
         return userContactRepository.save(newUserContactEntity);
@@ -258,6 +279,10 @@ public class UserRegistrationService {
     }
 
     public Integer getCurrentUserId() {
+        String guestSession = RequestContextHolder.currentRequestAttributes().getSessionId();
+        if (isGuestKnown(guestSession)) {
+            return userRepository.findUserEntityByUserContactEntity_Contact(guestSession).getId();
+        }
         return bookstoreUserDetailsService.gerCurrentUserId();
     }
 
@@ -267,6 +292,25 @@ public class UserRegistrationService {
             return new UserDto();
         }
         return bookstoreUserDetailsService.getUserDtoById(userId);
+    }
+
+    public boolean isGuestKnown(String session) {
+        UserEntity guestUserEntity = userRepository.findUserEntityByUserContactEntity_Contact(session);
+        return guestUserEntity != null;
+    }
+
+    public UserDto getCurrentGuestUserDto(String session) {
+        UserEntity userEntity = userRepository.findUserEntityByUserContactEntity_Contact(session);
+        int userId = userEntity.getId();
+
+        UserDto userDto = new UserDto();
+        userDto.setId(userId);
+        userDto.setUserBooksData(bookstoreUserDetailsService.createUserBooksData(userId));
+        return userDto;
+    }
+
+    public Integer getGuestUserId(String session) {
+        return userRepository.findUserEntityByUserContactEntity_Contact(session).getId();
     }
 
     public String getExceptionInfo(Exception exception) {

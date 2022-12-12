@@ -1,49 +1,54 @@
 package com.github.flotskiy.FlotskiyBookShopApp.service;
 
+import com.github.flotskiy.FlotskiyBookShopApp.exceptions.ChangeBookStatusException;
+import com.github.flotskiy.FlotskiyBookShopApp.exceptions.ChangeBookStatusRedirectionException;
 import com.github.flotskiy.FlotskiyBookShopApp.exceptions.RegisteredUserChangeBookStatusException;
 import com.github.flotskiy.FlotskiyBookShopApp.model.dto.book.BookDto;
 import com.github.flotskiy.FlotskiyBookShopApp.model.dto.user.UserDto;
 import com.github.flotskiy.FlotskiyBookShopApp.model.entity.book.links.Book2UserEntity;
 import com.github.flotskiy.FlotskiyBookShopApp.security.UserRegistrationService;
-import com.github.flotskiy.FlotskiyBookShopApp.util.CustomStringHandler;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.PropertySource;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
+import org.springframework.web.context.request.RequestContextHolder;
 
-import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
+@PropertySource("application-variables.properties")
 public class UserBookService {
 
-    private final CustomStringHandler customStringHandler;
-    private final BookService bookService;
+    @Value("${book.status.delete}")
+    private String unlink;
+
+    @Value("${book.status.kept}")
+    private String kept;
+
+    @Value("${book.status.cart}")
+    private String cart;
+
+    @Value("${book.status.paid}")
+    private String paid;
+
+    @Value("${book.status.archived}")
+    private String archived;
+
     private final Book2UserService book2UserService;
     private final UserRegistrationService userRegistrationService;
-    private final CookieService cookieService;
 
     @Autowired
-    public UserBookService(
-            CustomStringHandler customStringHandler,
-            BookService bookService,
-            Book2UserService book2UserService,
-            UserRegistrationService userRegistrationService,
-            CookieService cookieService
-    ) {
-        this.customStringHandler = customStringHandler;
-        this.bookService = bookService;
+    public UserBookService(Book2UserService book2UserService, UserRegistrationService userRegistrationService) {
         this.book2UserService = book2UserService;
         this.userRegistrationService = userRegistrationService;
-        this.cookieService = cookieService;
     }
 
     public boolean isUserAuthenticated() {
@@ -51,53 +56,55 @@ public class UserBookService {
         return !(authentication instanceof AnonymousAuthenticationToken);
     }
 
-    public void guestHandleCartRequest(String cartContents, Model model, Integer userId) {
-        if (cartContents == null || cartContents.equals("")) {
-            model.addAttribute("isCartEmpty", true);
+    public void guestHandleCartRequest(Model model) {
+        String guestSession = RequestContextHolder.currentRequestAttributes().getSessionId();
+        if (userRegistrationService.isGuestKnown(guestSession)) {
+            UserDto currentUser = userRegistrationService.getCurrentGuestUserDto(guestSession);
+            handleUserDtoOnCartPage(currentUser, model);
         } else {
-            model.addAttribute("isCartEmpty", false);
-            String[] cookiesSlugs = customStringHandler.getCookieSlugs(cartContents);
-            List<BookDto> booksFromCookiesSlugs = bookService.getBooksBySlugIn(List.of(cookiesSlugs), userId);
-            model.addAttribute("bookCart", booksFromCookiesSlugs);
+            model.addAttribute("isCartEmpty", true);
         }
     }
 
     public void registeredUserHandleCartRequest(Model model) {
         UserDto currentUser = userRegistrationService.getCurrentUserDto();
-        List<BookDto> cartBooks = currentUser.getUserBooksData().getCart();
+        handleUserDtoOnCartPage(currentUser, model);
+    }
+
+    private void handleUserDtoOnCartPage(UserDto userDto, Model model) {
+        List<BookDto> cartBooks = userDto.getUserBooksData().getCart();
         if (cartBooks.isEmpty()) {
             model.addAttribute("isCartEmpty", true);
         } else {
             model.addAttribute("isCartEmpty", false);
-            model.addAttribute("bookCart", cartBooks);
+            model.addAttribute("bookCart", convertListOfBooksToMap(cartBooks));
         }
     }
 
-    public void guestHandlePostponedRequest(String keptContents, Model model, Integer userId) {
-        if (keptContents == null || keptContents.equals("")) {
-            model.addAttribute("isKeptEmpty", true);
+    public void guestHandlePostponedRequest(Model model) {
+        String guestSession = RequestContextHolder.currentRequestAttributes().getSessionId();
+        if (userRegistrationService.isGuestKnown(guestSession)) {
+            UserDto currentUser = userRegistrationService.getCurrentGuestUserDto(guestSession);
+            handleUserDtoOnPostponedPage(currentUser, model);
         } else {
-            model.addAttribute("isKeptEmpty", false);
-            String[] cookiesSlugs = customStringHandler.getCookieSlugs(keptContents);
-            List<String> slugsList = List.of(cookiesSlugs);
-            String slugsString = String.join(",", slugsList);
-            List<BookDto> booksFromCookiesSlugs = bookService.getBooksBySlugIn(slugsList, userId);
-            model.addAttribute("booksKept", booksFromCookiesSlugs);
-            model.addAttribute("booksKeptSlugs", slugsString);
+            model.addAttribute("isKeptEmpty", true);
         }
     }
 
     public void registeredUserHandlePostponedRequest(Model model) {
         UserDto currentUser = userRegistrationService.getCurrentUserDto();
-        List<BookDto> postponedBooks = currentUser.getUserBooksData().getKept();
+        handleUserDtoOnPostponedPage(currentUser, model);
+    }
+
+    private void handleUserDtoOnPostponedPage(UserDto userDto, Model model) {
+        List<BookDto> postponedBooks = userDto.getUserBooksData().getKept();
         if (postponedBooks.isEmpty()) {
             model.addAttribute("isKeptEmpty", true);
         } else {
-            List<String> slugsList = postponedBooks.stream().map(BookDto::getSlug).collect(Collectors.toList());
-            String slugsString = String.join(",", slugsList);
-            model.addAttribute("booksKeptSlugs", slugsString);
+            List<Integer> postponedBooksIdList = postponedBooks.stream().map(BookDto::getId).collect(Collectors.toList());
+            model.addAttribute("booksKeptIds", postponedBooksIdList);
             model.addAttribute("isKeptEmpty", false);
-            model.addAttribute("booksKept", postponedBooks);
+            model.addAttribute("booksKept", convertListOfBooksToMap(postponedBooks));
         }
     }
 
@@ -113,7 +120,7 @@ public class UserBookService {
     }
 
     public void handleArchivedRequest(Model model) {
-        UserDto currentUser = userRegistrationService.gerCurrentUser();
+        UserDto currentUser = userRegistrationService.getCurrentUserDto();
         List<BookDto> archivedBooks = currentUser.getUserBooksData().getArchived();
         if (archivedBooks.isEmpty()) {
             model.addAttribute("isArchivedEmpty", true);
@@ -123,101 +130,65 @@ public class UserBookService {
         }
     }
 
-    public void changeBookStatus(
-            String slug, String status, HttpServletRequest request, HttpServletResponse response, Model model, Integer userId
-    ) throws RegisteredUserChangeBookStatusException {
+    @Transactional
+    public void changeBookStatus(List<Integer> bookIdList, String status)
+            throws RegisteredUserChangeBookStatusException {
+        int userId = userRegistrationService.getCurrentUserId();
         if (isUserAuthenticated()) {
-            registeredUserChangeBookStatus(slug, status, userId);
+            registeredUserChangeBookStatus(bookIdList, status, userId);
         } else {
-            guestChangeBookStatus(slug, status, request, response, model);
+            guestChangeBookStatus(bookIdList, status);
         }
     }
 
-    public void guestChangeBookStatus(
-            String slug, String status, HttpServletRequest request, HttpServletResponse response, Model model
-    ) {
-        String newCookie = slug.replaceAll(",", "/");
-        String cartContents = "";
-        String keptContents = "";
-        Cookie[] cookiesFromRequest = request.getCookies();
-
-        if (cookiesFromRequest != null) {
-            Map<String, String> cookiesMap = Arrays.stream(cookiesFromRequest)
-                    .collect(Collectors.toMap(Cookie::getName, Cookie::getValue));
-            cartContents = cookiesMap.get("cartContents");
-            keptContents = cookiesMap.get("keptContents");
+    public void registeredUserChangeBookStatus(List<Integer> bookIdList, String newStatus, Integer userId) {
+        Book2UserEntity book2UserEntity = null;
+        if (newStatus.equals("/books/cart")) {
+            throw new ChangeBookStatusRedirectionException("Book status change cancelled, redirected to: " + newStatus);
         }
-        if (status.equals("CART")) {
-            cookieService.handleCartCookie(cartContents, newCookie, response, model);
-        } else if (status.equals("KEPT")) {
-            cookieService.handleKeptCookie(keptContents, newCookie, response, model);
-        }
-    }
-
-    public void removeBookFromCartRequest(
-            String slug, String cartContents, HttpServletResponse response, Model model, Integer userId
-    ) {
-        if (isUserAuthenticated()) {
-            registeredUserRemoveBook(slug, userId);
-        } else {
-            guestRemoveBookFromCartRequest(slug, cartContents, response, model);
-        }
-    }
-
-    public void guestRemoveBookFromCartRequest(
-            String slug, String cartContents, HttpServletResponse response, Model model
-    ) {
-        if (cartContents != null && !cartContents.equals("")) {
-            ArrayList<String> cookieBooks = new ArrayList<>(Arrays.asList(cartContents.split("/")));
-            cookieBooks.remove(slug);
-            Cookie cookie = new Cookie("cartContents", String.join("/", cookieBooks));
-            cookie.setPath("/");
-            response.addCookie(cookie);
-            model.addAttribute("isCartEmpty", false);
-        } else {
-            model.addAttribute("isCartEmpty", true);
+        for (Integer bookId : bookIdList) {
+            book2UserEntity = book2UserService.findBook2UserEntityByBookIdAndUserId(bookId, userId);
+            if (book2UserEntity == null && newStatus.equals(unlink)) {
+                throw new ChangeBookStatusException("Nothing to unlink");
+            }
+            if (book2UserEntity != null) {
+                Integer currentStatusId = book2UserEntity.getTypeId();
+                String currentStatusString = book2UserService.findBookStatusStringById(currentStatusId);
+                if (newStatus.equals(unlink)) {
+                    if (currentStatusString.equals(paid) || currentStatusString.equals(archived)) {
+                        throw new RegisteredUserChangeBookStatusException("Impossible to delete a purchased or archived book");
+                    }
+                    book2UserService.removeBook2UserEntry(bookId, userId);
+                    continue;
+                }
+                if ((currentStatusString.equals(paid) || currentStatusString.equals(archived)) &&
+                    (newStatus.equals(kept) || newStatus.equals(cart))) {
+                    throw new RegisteredUserChangeBookStatusException("Impossible to keep or cart book with paid or archived status");
+                }
+                Integer newStatusId = book2UserService.getBookToUserTypeMap().get(newStatus);
+                if (newStatusId.equals(book2UserEntity.getTypeId())) {
+                    throw new ChangeBookStatusException("Setting a similar status for a book");
+                }
+            }
+            book2UserEntity = book2UserService.saveBook2UserEntry(newStatus, bookId, userId);
+            if (book2UserEntity == null) {
+                throw new RegisteredUserChangeBookStatusException("New book status set FAILED: book not linked to user");
+            }
         }
     }
 
-    public void removeBookFromKeptRequest(
-            String slug, String cartContents, HttpServletResponse response, Model model, Integer userId
-    ) {
-        if (isUserAuthenticated()) {
-            registeredUserRemoveBook(slug, userId);
-        } else {
-            guestRemoveBookFromKeptRequest(slug, cartContents, response, model);
-        }
+    public void guestChangeBookStatus(List<Integer> bookIdList, String status) {
+        String guestSession = RequestContextHolder.currentRequestAttributes().getSessionId();
+        int guestUserId = userRegistrationService.handleGuestSession(guestSession);
+        registeredUserChangeBookStatus(bookIdList, status, guestUserId);
+
     }
 
-    public void guestRemoveBookFromKeptRequest(
-            String slug, String keptContents, HttpServletResponse response, Model model
-    ) {
-        if (keptContents != null && !keptContents.equals("")) {
-            ArrayList<String> cookieBooks = new ArrayList<>(Arrays.asList(keptContents.split("/")));
-            cookieBooks.remove(slug);
-            Cookie cookie = new Cookie("keptContents", String.join("/", cookieBooks));
-            cookie.setPath("/");
-            response.addCookie(cookie);
-            model.addAttribute("isKeptEmpty", false);
-        } else {
-            model.addAttribute("isKeptEmpty", true);
+    private Map<BookDto, List<Integer>> convertListOfBooksToMap(List<BookDto> bookDtoList) {
+        Map<BookDto, List<Integer>> cartBooksMap = new HashMap<>();
+        for (BookDto bookDto : bookDtoList) {
+            cartBooksMap.put(bookDto, List.of(bookDto.getId()));
         }
-    }
-
-    public void registeredUserRemoveBook(String slug, Integer userId) {
-        Integer bookId = bookService.getBookEntityBySlug(slug).getId();
-        book2UserService.removeBook2UserEntry(bookId, userId);
-    }
-
-    private void registeredUserChangeBookStatus(String slug, String status, Integer userId) {
-        Book2UserEntity lastBook2UserEntityWithChangedStatus = null;
-        String[] singleBookSlugs = slug.split(",");
-        for (String singleBookSlug : singleBookSlugs) {
-            Integer bookId = bookService.getBookEntityBySlug(singleBookSlug).getId();
-            lastBook2UserEntityWithChangedStatus = book2UserService.saveBook2UserEntry(status, bookId, userId);
-        }
-        if (lastBook2UserEntityWithChangedStatus == null) {
-            throw new RegisteredUserChangeBookStatusException("Book status change FAILED");
-        }
+        return cartBooksMap;
     }
 }

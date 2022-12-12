@@ -16,14 +16,10 @@ import java.util.stream.Collectors;
 public class Book2UserService {
 
     private Map<String, Integer> bookToUserTypeMap;
-
     private final Book2UserRepository book2UserRepository;
     private final Book2UserTypeRepository book2UserTypeRepository;
 
-    public Book2UserService(
-            Book2UserRepository book2UserRepository,
-            Book2UserTypeRepository book2UserTypeRepository
-    ) {
+    public Book2UserService(Book2UserRepository book2UserRepository, Book2UserTypeRepository book2UserTypeRepository) {
         this.book2UserRepository = book2UserRepository;
         this.book2UserTypeRepository = book2UserTypeRepository;
     }
@@ -44,12 +40,20 @@ public class Book2UserService {
             return "false";
         }
         Integer statusId = book2UserEntity.getTypeId();
+        return findBookStatusStringById(statusId);
+    }
+
+    public String findBookStatusStringById(Integer statusId) {
         for (Map.Entry<String, Integer> entry : getBookToUserTypeMap().entrySet()) {
             if (entry.getValue().equals(statusId)) {
                 return entry.getKey();
             }
         }
         return "false";
+    }
+
+    public Book2UserEntity findBook2UserEntityByBookIdAndUserId(Integer bookId, Integer userId) {
+        return book2UserRepository.findBook2UserEntityByBookIdAndUserId(bookId, userId);
     }
 
     public void fillInBookToUserTypeMap() {
@@ -72,7 +76,7 @@ public class Book2UserService {
             book2UserEntity.setBookId(bookId);
             book2UserEntity.setUserId(userId);
         }
-        int typeId = bookToUserTypeMap.get(status);
+        int typeId = getBookToUserTypeMap().get(status);
         book2UserEntity.setTypeId(typeId);
         book2UserEntity.setTime(LocalDateTime.now());
         return book2UserRepository.save(book2UserEntity);
@@ -80,5 +84,9 @@ public class Book2UserService {
 
     public void removeBook2UserEntry(Integer bookId, Integer userId) {
         book2UserRepository.deleteBook2UserEntityByBookIdAndUserId(bookId, userId);
+    }
+
+    public void removeBook2UserEntry(Book2UserEntity book2UserEntity) {
+        book2UserRepository.delete(book2UserEntity);
     }
 }

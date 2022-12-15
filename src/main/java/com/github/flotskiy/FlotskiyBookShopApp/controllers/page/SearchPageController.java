@@ -7,6 +7,7 @@ import com.github.flotskiy.FlotskiyBookShopApp.model.dto.HeaderInfoDto;
 import com.github.flotskiy.FlotskiyBookShopApp.service.BookService;
 import com.github.flotskiy.FlotskiyBookShopApp.security.UserRegistrationService;
 import com.github.flotskiy.FlotskiyBookShopApp.service.GoogleSearchBookService;
+import com.github.flotskiy.FlotskiyBookShopApp.util.CustomStringHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
@@ -24,22 +25,21 @@ public class SearchPageController extends HeaderController {
     @Value("${initial.offset}")
     private int offset;
 
-    @Value("${search.refresh.limit}")
-    private int searchLimit;
-
     @Value("${page.limit}")
     private int limit;
 
     private final GoogleSearchBookService googleSearchBookService;
+    private final CustomStringHandler customStringHandler;
 
     @Autowired
     public SearchPageController(
             UserRegistrationService userRegistrationService,
             BookService bookService,
-            GoogleSearchBookService googleSearchBookService
-    ) {
+            GoogleSearchBookService googleSearchBookService,
+            CustomStringHandler customStringHandler) {
         super(userRegistrationService, bookService);
         this.googleSearchBookService = googleSearchBookService;
+        this.customStringHandler = customStringHandler;
     }
 
     @ModelAttribute("searchResults")
@@ -49,23 +49,28 @@ public class SearchPageController extends HeaderController {
 
     @GetMapping(value = {"/search", "/search/{searchWord}"})
     public String getSearchResults(
-            @PathVariable(value = "searchWord", required = false) HeaderInfoDto headerInfoDto,
-            Model model
+            @PathVariable(value = "searchWord", required = false) String searchWord, Model model
     ) throws EmptySearchQueryException {
-        if (headerInfoDto == null) {
+        if (searchWord == null && model.getAttribute("searchError") == null) {
             throw new EmptySearchQueryException("Search with null query parameter is Impossible");
         }
-        Integer userId = getUserRegistrationService().getCurrentUserId();
-        model.addAttribute("headerInfoDto", headerInfoDto);
-        List<BookDto> booksFound = getBookService()
-                .getPageOfSearchResultBooks(headerInfoDto.getSearchQuery(), offset, searchLimit, userId).getContent();
-        if (booksFound.size() == 0) {
-            booksFound = googleSearchBookService
-                    .getGoogleBooksApiSearchResult(headerInfoDto.getSearchQuery(), offset, limit);
+        if (model.getAttribute("searchError") == null) {
+            HeaderInfoDto headerInfoDto = headerInfoDto();
+            headerInfoDto.setSearchQuery(searchWord);
+            Integer userId = getUserRegistrationService().getCurrentUserIdIncludingGuest();
+            List<BookDto> booksFound = getBookService()
+                    .getPageOfSearchResultBooks(searchWord, offset, limit, userId).getContent();
+            if (booksFound.size() == 0) {
+                booksFound = googleSearchBookService
+                        .getGoogleBooksApiSearchResult(searchWord, offset, limit);
+            }
+            int searchResultSize = getBookService().getSearchResultsSize(searchWord);
+            model.addAttribute("headerInfoDto", headerInfoDto);
+            model.addAttribute("searchResults", booksFound);
+            model.addAttribute("searchResultsSize", searchResultSize);
+            model.addAttribute("searchResultMessage",
+                    customStringHandler.getSearchBookCountMessage(searchResultSize));
         }
-        model.addAttribute("searchResults", booksFound);
-        model.addAttribute("searchResultsSize",
-                getBookService().getSearchResultsSize(headerInfoDto.getSearchQuery()));
         return "/search/index";
     }
 
@@ -74,11 +79,11 @@ public class SearchPageController extends HeaderController {
     public CountedBooksDto getNextSearchPage(
             @RequestParam("offset") int offset,
             @RequestParam("limit") int limit,
-            @PathVariable(value = "searchWord", required = false) HeaderInfoDto headerInfoDto
+            @PathVariable(value = "searchWord", required = false) String searchWord
     ) {
-        Integer userId = getUserRegistrationService().getCurrentUserId();
+        Integer userId = getUserRegistrationService().getCurrentUserIdIncludingGuest();
         return new CountedBooksDto(
-                getBookService().getPageOfSearchResultBooks(headerInfoDto.getSearchQuery(), offset, limit, userId).getContent()
+                getBookService().getPageOfSearchResultBooks(searchWord, offset, limit, userId).getContent()
         );
     }
 }

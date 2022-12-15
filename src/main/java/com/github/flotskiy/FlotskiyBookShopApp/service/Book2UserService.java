@@ -85,8 +85,4 @@ public class Book2UserService {
     public void removeBook2UserEntry(Integer bookId, Integer userId) {
         book2UserRepository.deleteBook2UserEntityByBookIdAndUserId(bookId, userId);
     }
-
-    public void removeBook2UserEntry(Book2UserEntity book2UserEntity) {
-        book2UserRepository.delete(book2UserEntity);
-    }
 }

@@ -48,7 +48,7 @@ public class GenresPageController extends HeaderController {
     @GetMapping("/genres/{genreSlug}")
     public String genresPage(@PathVariable("genreSlug") String genreSlug, Model model) {
         GenreDto genreDto = genreService.findGenre(genreSlug, genreService.getGenreDtoList());
-        Integer userId = getUserRegistrationService().getCurrentUserId();
+        Integer userId = getUserRegistrationService().getCurrentUserIdIncludingGuest();
         List<BookDto> bookDtos =
                 getBookService().getPageOfBooksByGenreId(genreDto.getId(), offset, limit, userId).getContent();
         GenreDto parentDto = genreService.findParentGenre(genreDto);
@@ -68,7 +68,7 @@ public class GenresPageController extends HeaderController {
             @RequestParam("offset") Integer offset,
             @RequestParam("limit") Integer limit
     ) {
-        Integer userId = getUserRegistrationService().getCurrentUserId();
+        Integer userId = getUserRegistrationService().getCurrentUserIdIncludingGuest();
         return new CountedBooksDto(getBookService().getPageOfBooksByGenreId(genreId, offset, limit, userId).getContent());
     }
 }

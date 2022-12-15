@@ -56,7 +56,7 @@
             <div th:if="${not #strings.equals(pageName, 'genre')}">
                 <a class="btn btn_primary" href="#" data-refreshshow="recent"
                    data-refreshoffset="0" data-refreshlimit="2" data-refreshid="1"
-                   th:attr="data-refreshshow=${pageName},
+                   th:attr="data-refreshshow=${pageName},data-refreshid=${obj.id},
                    data-refreshoffset=${@environment.getProperty('initial.offset')},
                    data-refreshlimit=${@environment.getProperty('page.limit')}"
                    th:text="#{button.more}">More</a>

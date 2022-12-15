@@ -20,7 +20,7 @@
     </div>
     <div class="wrap">
       <main class="Middle-main">
-        <h2 class="Middle-title" th:text="#{menu.profile}">Мой профиль</h2>
+        <h2 class="Middle-title" th:text="#{menu.profile}">My profile</h2>
         <h2 class="Middle-title" th:if="${#strings.equals(token, 'expired')}"
             th:text="#{menu.profile.token.expired}">token expired</h2>
         <h2 class="Middle-title" th:if="${#strings.equals(token, 'success')}"
@@ -29,9 +29,9 @@
             th:text="#{menu.profile.token.error}">error occurred while saving user's data</h2>
         <div class="Tabs Tabs_default">
           <div class="Tabs-links">
-            <a class="Tabs-link Tabs-link_ACTIVE" href="#basic" th:text="#{page.profile.basic}">Основные сведения</a>
-            <a class="Tabs-link" href="#transactions" th:text="#{page.profile.transaction}">История транзакций</a>
-            <a class="Tabs-link" href="#topup" th:text="#{page.profile.replenish}">Пополнить счет</a>
+            <a class="Tabs-link Tabs-link_ACTIVE" href="#basic" th:text="#{page.profile.basic}">Basic info</a>
+            <a class="Tabs-link" href="#transactions" th:text="#{page.profile.transaction}">Transaction history</a>
+            <a class="Tabs-link" href="#topup" th:text="#{page.profile.replenish}">Replenish account</a>
           </div>
           <div class="Tabs-wrap">
             <div class="Tabs-block" id="basic">
@@ -41,7 +41,7 @@
                     <div th:if="${curUser.password.equals('')}">
                       <div class="row-block">
                         <div class="form-group">
-                          <label class="form-label" for="name" th:text="#{page.profile.name}">Имя</label>
+                          <label class="form-label" for="name" th:text="#{page.profile.name}">Name</label>
                           <div class="form-input" th:text="${curUser.name}">User name</div>
                         </div>
                         <div class="form-group">
@@ -53,8 +53,7 @@
                     <div th:if="${not curUser.password.equals('')}">
                       <div class="row-block">
                         <div class="form-group">
-                          <label class="form-label" for="name" th:text="#{page.profile.name}">Имя
-                          </label>
+                          <label class="form-label" for="name" th:text="#{page.profile.name}">Name</label>
                           <input class="form-input" id="name" name="name" type="text"
                                  value="User name" th:value="${curUser.name}"/>
                         </div>
@@ -64,19 +63,16 @@
                           <input class="form-input" id="mail" name="mail" type="text"
                                  value="flotskiy@book.shop" th:value="${curUser.contact}" data-validate="require mail"/>
                           <div class="Profile-btn Profile-btn_confirm">
-                            <button class="btn btn_primary" type="button" th:text="#{button.confirm}">Подтвердить
-                            </button>
+                            <button class="btn btn_primary" type="button" th:text="#{button.confirm}">Confirm</button>
                           </div>
                         </div>
                         <div class="form-group" th:if="${not curUser.contact.contains('@')}">
-                          <label class="form-label" for="phone" th:text="#{page.profile.phone}">Телефон
-                          </label>
+                          <label class="form-label" for="phone" th:text="#{page.profile.phone}">Phone</label>
                           <input class="form-input" id="phone" name="phone" type="text"
                                  value="+70000000000" th:value="${curUser.contact}"
                                  data-mask="+7 (999) 999-99-99" data-validate="require"/>
                           <div class="Profile-btn Profile-btn_confirm">
-                            <button class="btn btn_primary" type="button" th:text="#{button.confirm}">Подтвердить
-                            </button>
+                            <button class="btn btn_primary" type="button" th:text="#{button.confirm}">Confirm</button>
                           </div>
                         </div>
                       </div>
@@ -87,25 +83,23 @@
                     <div th:if="${not curUser.password.equals('')}">
                       <div class="row-block">
                         <div class="form-group">
-                          <label class="form-label" for="password" th:text="#{page.profile.password}">Пароль
-                          </label>
+                          <label class="form-label" for="password" th:text="#{page.profile.password}">Password</label>
                           <input class="form-input" id="password" name="password" type="password"
                                  placeholder="Тут можно изменить пароль" th:placeholder="#{page.profile.password.placeholder}"/>
                         </div>
                         <div class="form-group">
                           <label class="form-label" for="passwordReply" th:text="#{page.profile.password.confirm}">
-                            Подтверждение пароля
+                            Password confirmation
                           </label>
                           <input class="form-input" id="passwordReply" name="passwordReply" type="password"
-                                 placeholder="Введите пароль повторно"
+                                 placeholder="Enter password again"
                                  th:placeholder="#{page.profile.password.confirm.placeholder}"/>
                         </div>
                         <div class="form-group">
                           <div class="Profile-btn">
 <!--                            <button class="btn btn_danger" type="button" th:text="#{button.cancel}">Отменить-->
 <!--                            </button>-->
-                            <button class="btn btn_primary" type="submit" th:text="#{button.save}">Сохранить
-                            </button>
+                            <button class="btn btn_primary" type="submit" th:text="#{button.save}">Save</button>
                           </div>
                           <div class="Profile-success" th:if="${#strings.equals(changeResult, 'pass')}"
                                th:text="#{page.profile.success.pass}">Password changed successfully</div>
@@ -124,13 +118,21 @@
             </div>
             <div class="Tabs-block" id="transactions">
               <div class="Transactions">
+                <form action="/profile" th:if="${sort.equals('asc')}">
+                  <input type="hidden" name="sort" value="desc" />
+                  <input class="btn btn_primary" type="submit" value="sort" th:value="#{page.profile.sort.desc}"/>
+                </form>
+                <form action="/profile" th:if="${sort.equals('desc')}">
+                  <input type="hidden" name="sort" value="asc" />
+                  <input class="btn btn_primary" type="submit" value="sort" th:value="#{page.profile.sort.asc}"/>
+                </form>
                 <div class="tableWrap">
                   <table class="table table_noMargin">
                     <thead>
                       <tr>
-                        <th th:text="#{page.profile.date}">Дата и время</th>
-                        <th th:text="#{page.profile.amount}">Сумма</th>
-                        <th th:text="#{page.profile.description}">Описание</th>
+                        <th th:text="#{page.profile.date}">Date and time</th>
+                        <th th:text="#{page.profile.amount}">Amount</th>
+                        <th th:text="#{page.profile.description}">Description</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -156,23 +158,23 @@
                      th:if="${transactionsCount > transactions.size()}">
                   <a class="btn btn_primary Transactions-get" id="butmore" href="#" data-transactionoffset="0"
                      data-transactionlimit="50" data-transactionsort="desc"
-                     th:attr="data-transactioncount=${transactionsCount}" th:text="#{button.more}">Показать еще</a>
+                     th:attr="data-transactioncount=${transactionsCount}, data-transactionsort=${sort}"
+                     th:text="#{button.more}">More</a>
                 </div>
               </div>
             </div>
             <div class="Tabs-block" id="topup">
               <form class="form Topup" action="#" method="post"
-                    data-hash="34534535" th:attr="data-id=${curUser.id}">
+                    data-id="34534535" th:attr="data-id=${curUser.id}">
                 <div class="Topup-wrap">
-                  <strong class="Topup-title" th:text="#{page.profile.replenish.amount}">Введите сумму</strong>
+                  <strong class="Topup-title" th:text="#{page.profile.replenish.amount}">Enter amount</strong>
                   <div class="form-group form-group_row Topup-group">
                     <input class="form-input" id="sum" name="sum" type="text"/>
                     <span>₽</span>
                   </div>
                   <div class="form-group">
                     <div class="Topup-btn">
-                      <button class="btn btn_primary" th:text="#{button.replenish}">Пополнить
-                      </button>
+                      <button class="btn btn_primary" th:text="#{button.replenish}">Replenish</button>
                     </div>
                   </div>
                 </div>

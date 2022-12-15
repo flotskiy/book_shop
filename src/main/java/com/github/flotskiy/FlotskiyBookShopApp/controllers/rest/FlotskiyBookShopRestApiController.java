@@ -70,7 +70,7 @@ public class FlotskiyBookShopRestApiController {
     @GetMapping("/books/by-author")
     @ApiOperation("Receiving List of Books with Specified Author's Name")
     public ResponseEntity<List<BookDto>> booksByAuthor(@RequestParam("author") String authorName) {
-        int currentUserId = userRegistrationService.getCurrentUserId();
+        int currentUserId = userRegistrationService.getCurrentUserIdIncludingGuest();
         return ResponseEntity.ok(bookService.getBooksByAuthor(authorName, currentUserId));
     }
 
@@ -78,7 +78,7 @@ public class FlotskiyBookShopRestApiController {
     @ApiOperation("Receiving List of Books with Specified Book's Title")
     public ResponseEntity<ApiResponse<BookDto>> booksByTitle(@RequestParam("title") String title) {
         ApiResponse<BookDto> response = new ApiResponse<>();
-        int currentUserId = userRegistrationService.getCurrentUserId();
+        int currentUserId = userRegistrationService.getCurrentUserIdIncludingGuest();
         try {
             List<BookDto> data = bookService.getBooksByTitle(title, currentUserId);
             response.setDebugMessage("Successful request: /api/books/by-title");
@@ -97,21 +97,21 @@ public class FlotskiyBookShopRestApiController {
     @GetMapping("/books/by-price-range")
     @ApiOperation("Receiving List of Books with Specified Range of Prices")
     public ResponseEntity<List<BookDto>> priceRangeBooks(@RequestParam("min") int min, @RequestParam("max") int max) {
-        int currentUserId = userRegistrationService.getCurrentUserId();
+        int currentUserId = userRegistrationService.getCurrentUserIdIncludingGuest();
         return ResponseEntity.ok(bookService.getBooksWithPriceBetween(min, max, currentUserId));
     }
 
     @GetMapping("/books/with-max-discount")
     @ApiOperation("Receiving List of Books with Maximum Discount Value")
     public ResponseEntity<List<BookDto>> maxDiscountBooks() {
-        int currentUserId = userRegistrationService.getCurrentUserId();
+        int currentUserId = userRegistrationService.getCurrentUserIdIncludingGuest();
         return ResponseEntity.ok(bookService.getBooksWithMaxDiscount(currentUserId));
     }
 
     @GetMapping("/books/bestsellers")
     @ApiOperation("Receiving List of Books which are Bestsellers (if field 'is_bestseller' has value = 1)")
     public ResponseEntity<List<BookDto>> bestsellerBooks() {
-        int currentUserId = userRegistrationService.getCurrentUserId();
+        int currentUserId = userRegistrationService.getCurrentUserIdIncludingGuest();
         return ResponseEntity.ok(bookService.getBestsellers(currentUserId));
     }
 
@@ -211,7 +211,7 @@ public class FlotskiyBookShopRestApiController {
             @RequestParam("limit") Integer limit
     ) {
         try {
-            int currentUserId = userRegistrationService.getCurrentUserId();
+            int currentUserId = userRegistrationService.getCurrentUserIdIncludingGuest();
             CountedBooksDto countedBooksDto = new CountedBooksDto(
                     bookService.getPageOfBooksByGenreId(genreId, offset, limit, currentUserId)
                             .getContent()
@@ -237,7 +237,7 @@ public class FlotskiyBookShopRestApiController {
             @RequestParam("limit") Integer limit
     ) {
         try {
-            int currentUserId = userRegistrationService.getCurrentUserId();
+            int currentUserId = userRegistrationService.getCurrentUserIdIncludingGuest();
             CountedBooksDto countedBooksDto = new CountedBooksDto(
                     bookService.getPageOfBooksByAuthorId(authorId, offset, limit, currentUserId).getContent()
             );
@@ -277,7 +277,7 @@ public class FlotskiyBookShopRestApiController {
             @RequestParam("limit") Integer limit
     ) {
         try {
-            int currentUserId = userRegistrationService.getCurrentUserId();
+            int currentUserId = userRegistrationService.getCurrentUserIdIncludingGuest();
             CountedBooksDto countedBooksDto = new CountedBooksDto(
                     bookService.getPageOfBooksByTag(tagId, offset, limit, currentUserId).getContent()
             );
@@ -301,7 +301,7 @@ public class FlotskiyBookShopRestApiController {
     ) {
         HashMap<String, Object> result = new HashMap<>();
         try {
-            int currentUserId = userRegistrationService.getCurrentUserId();
+            int currentUserId = userRegistrationService.getCurrentUserIdIncludingGuest();
             CountedBooksDto countedBooksDto =
                     new CountedBooksDto(bookService.getPageOfSearchResultBooks(searchWord, offset, limit, currentUserId)
                             .getContent());
@@ -323,7 +323,7 @@ public class FlotskiyBookShopRestApiController {
     ) {
         HashMap<String, Object> result = new HashMap<>();
         try {
-            int currentUserId = userRegistrationService.getCurrentUserId();
+            int currentUserId = userRegistrationService.getCurrentUserIdIncludingGuest();
             if (currentUserId == -1) {
                 throw new UsernameNotFoundException("User is not authorized");
             }
@@ -347,7 +347,7 @@ public class FlotskiyBookShopRestApiController {
     ) {
         HashMap<String, Object> result = new HashMap<>();
         try {
-            int currentUserId = userRegistrationService.getCurrentUserId();
+            int currentUserId = userRegistrationService.getCurrentUserIdIncludingGuest();
             if (currentUserId == -1) {
                 throw new UsernameNotFoundException("User is not authorized");
             }
@@ -371,7 +371,7 @@ public class FlotskiyBookShopRestApiController {
     ) {
         HashMap<String, Object> result = new HashMap<>();
         try {
-            int currentUserId = userRegistrationService.getCurrentUserId();
+            int currentUserId = userRegistrationService.getCurrentUserIdIncludingGuest();
             if (currentUserId == -1) {
                 throw new UsernameNotFoundException("User is not authorized");
             }
@@ -396,7 +396,7 @@ public class FlotskiyBookShopRestApiController {
             @RequestParam("limit") Integer limit
     ) {
         try {
-            Integer currentUserId = userRegistrationService.getCurrentUserId();
+            Integer currentUserId = userRegistrationService.getCurrentUserIdIncludingGuest();
             if (currentUserId == -1) {
                 throw new UsernameNotFoundException("User is not authorized");
             }
@@ -425,7 +425,7 @@ public class FlotskiyBookShopRestApiController {
         try {
             if (!userRegistrationService.isAuthenticated()) {
                 throw new AuthenticationException("Not allowed to replenish for not authenticated user");
-            } else if (userRegistrationService.getCurrentUserId() != Integer.parseInt(id)) {
+            } else if (userRegistrationService.getCurrentUserIdIncludingGuest() != Integer.parseInt(id)) {
                 throw new AuthenticationException("Authenticated user id and id of user to replenish are different");
             }
             PaymentDto payload = new PaymentDto();

@@ -18,8 +18,8 @@ public class GlobalExceptionHandlerController {
     @ExceptionHandler(EmptySearchQueryException.class)
     public String handleEmptySearchQueryException(EmptySearchQueryException exception, RedirectAttributes attributes) {
         logger.warning(exception.getLocalizedMessage());
-        attributes.addFlashAttribute("searchError", exception);
-        return "redirect:/";
+        attributes.addFlashAttribute("searchError", true);
+        return "redirect:/search";
     }
 
     @ExceptionHandler(AccessDeniedException.class)

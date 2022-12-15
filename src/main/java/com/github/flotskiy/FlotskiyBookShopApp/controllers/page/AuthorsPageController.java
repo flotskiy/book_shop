@@ -50,9 +50,9 @@ public class AuthorsPageController extends HeaderController {
     @GetMapping("/authors/{authorSlug}")
     public String author(@PathVariable("authorSlug") String authorSlug, Model model) {
         AuthorDto authorDto = authorService.getAuthorBySlug(authorSlug);
-        int userId = getUserRegistrationService().getCurrentUserId();
+        int userId = getUserRegistrationService().getCurrentUserIdIncludingGuest();
         Page<BookDto> authorBooks = getBookService().getPageOfBooksByAuthorId(authorDto.getId(), offset, cardLimit, userId);
-        model.addAttribute("author", authorService.getAuthorBySlug(authorSlug));
+        model.addAttribute("author", authorDto);
         model.addAttribute("authorBooks", authorBooks);
         return "/authors/slug";
     }
@@ -60,9 +60,9 @@ public class AuthorsPageController extends HeaderController {
     @GetMapping("/books/authors/{authorSlug}")
     public String getAuthorBooksPage(@PathVariable("authorSlug") String authorSlug, Model model) {
         AuthorDto authorDto = authorService.getAuthorBySlug(authorSlug);
-        int userId = getUserRegistrationService().getCurrentUserId();
+        int userId = getUserRegistrationService().getCurrentUserIdIncludingGuest();
         Page<BookDto> authorBooks = getBookService().getPageOfBooksByAuthorId(authorDto.getId(), offset, limit, userId);
-                model.addAttribute("authorObj", authorDto);
+        model.addAttribute("authorObj", authorDto);
         model.addAttribute("authorBooksAll", authorBooks);
         return "/books/author";
     }
@@ -74,7 +74,7 @@ public class AuthorsPageController extends HeaderController {
             @RequestParam("offset") Integer offset,
             @RequestParam("limit") Integer limit
     ) {
-        int userId = getUserRegistrationService().getCurrentUserId();
+        int userId = getUserRegistrationService().getCurrentUserIdIncludingGuest();
         return new CountedBooksDto(getBookService().getPageOfBooksByAuthorId(authorId, offset, limit, userId).getContent());
     }
 

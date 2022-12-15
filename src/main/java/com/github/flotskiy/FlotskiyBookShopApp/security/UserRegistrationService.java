@@ -278,16 +278,16 @@ public class UserRegistrationService {
         return userDetails.getUserDto();
     }
 
-    public Integer getCurrentUserId() {
+    public Integer getCurrentUserIdIncludingGuest() {
         String guestSession = RequestContextHolder.currentRequestAttributes().getSessionId();
         if (isGuestKnown(guestSession)) {
             return userRepository.findUserEntityByUserContactEntity_Contact(guestSession).getId();
         }
-        return bookstoreUserDetailsService.gerCurrentUserId();
+        return bookstoreUserDetailsService.gerCurrentAuthenticatedUserId();
     }
 
     public UserDto getCurrentUserDto() {
-        int userId = bookstoreUserDetailsService.gerCurrentUserId();
+        int userId = bookstoreUserDetailsService.gerCurrentAuthenticatedUserId();
         if (userId < 1) {
             return new UserDto();
         }

@@ -29,7 +29,13 @@
               </div>
               <div class="Cart-block Cart-block_row">
                 <div class="Cart-block Cart-block_info">
-                  <div class="Cart-author" th:text="${bookPair.key.authors}">Author</div>
+                  <div class="Cart-author">
+                    <div th:if="${#lists.isEmpty(bookPair.value.authorList)}">Book has no author</div>
+                    <span th:each="author, iStat : ${bookPair.value.authorList}">
+                      <a th:href="|/authors/*{author.slug}|" th:text="*{author.name}">Author</a>
+                      <span th:unless="${iStat.last}">, </span>
+                    </span>
+                  </div>
                   <div class="Cart-title">
                     <a href="#" th:href="@{'/books/' + ${bookPair.key.slug}}" th:text="${bookPair.key.title}">Title</a>
                   </div>
@@ -43,7 +49,7 @@
                       <button class="btn btn_primary btn_outline" data-sendstatus="KEPT"
                               data-bookid="[1111]" data-alttext="Postponed"
                               data-btntype="check" data-btnradio="buyblock" data-check="false"
-                              th:attr="data-bookid = ${bookPair.value}, data-alttext = #{button.postponed}">
+                              th:attr="data-bookid = ${bookPair.value.bookIdList}, data-alttext = #{button.postponed}">
                         <span class="btn-icon">
                           <img src="/assets/img/icons/heart.svg" alt="heart.svg"/>
                         </span>
@@ -52,7 +58,7 @@
                     </div>
                     <div class="Cart-btn">
                       <button class="btn btn_danger btn_outline" data-sendstatus="UNLINK"
-                              data-bookid="[1111]" th:attr="data-bookid = ${bookPair.value}">
+                              data-bookid="[1111]" th:attr="data-bookid = ${bookPair.value.bookIdList}">
                         <span class="btn-icon">
                           <img src="/assets/img/icons/trash.svg" alt="trash.svg"/>
                         </span>
@@ -71,22 +77,24 @@
                   <div class="Cart-sale"
                        th:if="${bookPair.key.discountPrice} lt ${bookPair.key.price}" th:text="${'-' + bookPair.key.discount + '%'}">-1%
                   </div>
+                  <div class="Cart-sale" th:if="${bookPair.key.isBestseller}" th:text="#{card.bestseller}">Bestseller</div>
                 </div>
               </div>
             </div>
           </div>
           <div class="Cart-total" th:if="${not isCartEmpty}">
             <div class="Cart-block Cart-block_total">
-              <strong class="Cart-title" th:text="#{page.cart.total}">Итого:</strong>
+              <strong class="Cart-title" th:text="#{page.cart.total}">Total:</strong>
               <span class="Cart-price" th:text="${'₽' + #aggregates.sum(bookCart.![key.discountPrice])}">-1 р.</span>
               <span class="Cart-price_old" th:text="${'₽' + #aggregates.sum(bookCart.![key.price])}">-1 р.</span>
             </div>
+            <div></div>
             <div class="Cart-block">
               <div class="Profile-fail" th:if="${#strings.equals(pay, 'fail')}"
                    th:text="#{page.cart.pay.fail}">Paying failed</div>
               <br>
-              <a class="btn btn_success btn_md" href="/order.html" th:href="@{/books/pay}"
-                 th:text="#{button.buy}">Купить</a>
+              <a class="btn btn_success btn_md" href="/order.html" th:href="@{(${isAuthenticated} ? '/books/pay' : '/signin')}"
+                 th:text="#{button.buy}">Buy</a>
             </div>
           </div>
         </form>

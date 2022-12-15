@@ -190,6 +190,10 @@ public class BookService {
         return bookRepository.findBookEntityBySlug(slug);
     }
 
+    public BookEntity getBookEntityById(Integer bookId) {
+        return bookRepository.findById(bookId).get();
+    }
+
     public void saveBookEntity(BookEntity bookEntity) {
         bookRepository.save(bookEntity);
     }

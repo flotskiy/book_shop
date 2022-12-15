@@ -29,7 +29,7 @@ public class PostponedPageController extends HeaderController {
         return new ArrayList<>();
     }
 
-    @GetMapping("/books/postponed")
+    @GetMapping("/postponed")
     public String handlePostponedRequest(Model model) {
         if (!userBookService.isUserAuthenticated()) {
             userBookService.guestHandlePostponedRequest(model);

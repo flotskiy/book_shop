@@ -17,21 +17,22 @@
       <main class="Middle-main">
         <ul class="breadcrumbs">
           <li class="breadcrumbs-item">
-            <a href="/" th:href="@{/}" th:text="#{menu.main}">Главная</a>
+            <a href="/" th:href="@{/}" th:text="#{menu.main}">Main</a>
           </li>
           <li class="breadcrumbs-item">
-            <a href="/profile" th:href="@{/profile}" th:text="#{menu.profile}">Мой профиль</a>
+            <a href="/profile" th:href="@{/profile}" th:text="#{menu.profile}">My profile</a>
           </li>
           <li class="breadcrumbs-item breadcrumbs-item_current">
             <span th:text="#{menu.my}">Мои книги</span>
           </li>
         </ul>
+        <h1 class="Rating-title_success" th:if="${pay}" th:text="#{page.my.pay.success}">The payment was successful</h1>
         <div class="Section">
           <div class="Section-header">
-            <h1 class="Section-title" th:text="#{menu.my}">Мои книги</h1>
+            <h1 class="Section-title" th:text="#{menu.my}">My books</h1>
             <div class="Section-header-links">
-              <span class="Section-header-link Section-header-link_ACTIVE" th:text="#{menu.unread}">Непрочитанные</span>
-              <a class="Section-header-link" href="/myarchive" th:href="@{/myarchive}" th:text="#{menu.archive}">Архив</a>
+              <span class="Section-header-link Section-header-link_ACTIVE" th:text="#{menu.unread}">Unread</span>
+              <a class="Section-header-link" href="/myarchive" th:href="@{/myarchive}" th:text="#{menu.archive}">Archive</a>
             </div>
           </div>
           <h3 th:if="${isUnreadEmpty}" th:text="#{page.my.nothing}">No books found</h3>

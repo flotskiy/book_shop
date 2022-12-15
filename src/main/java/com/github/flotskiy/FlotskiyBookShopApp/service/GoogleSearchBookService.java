@@ -12,6 +12,7 @@ import org.springframework.web.client.RestTemplate;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Logger;
 
 @Service
 public class GoogleSearchBookService {
@@ -34,13 +35,18 @@ public class GoogleSearchBookService {
                 "&startIndex=" + offset +
                 "&maxResults=" + limit;
 
-        Root root = restTemplate.getForEntity(request_url, Root.class).getBody();
         List<BookDto> googleBooks = new ArrayList<>();
-        if (root != null) {
-            for (Item item : root.getItems()) {
-                BookDto bookDto = convertItemToBookDto(item);
-                googleBooks.add(bookDto);
+        try {
+            Root root = restTemplate.getForEntity(request_url, Root.class).getBody();
+
+            if (root != null) {
+                for (Item item : root.getItems()) {
+                    BookDto bookDto = convertItemToBookDto(item);
+                    googleBooks.add(bookDto);
+                }
             }
+        } catch (NullPointerException npe) {
+            Logger.getLogger(this.getClass().getSimpleName()).warning(npe.getMessage());
         }
         return googleBooks;
     }

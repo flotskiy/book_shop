@@ -21,21 +21,16 @@
         </h1>
         <div class="Section">
           <div class="search">
-            <form class="form form_search" action="#" method="post" data-searchlimit="5">
-              <input class="search-input" id="querypage" name="querypage" type="text"
-                     th:placeholder="#{header.placeholder}" th:value="${headerInfoDto.searchQuery}"/>
-              <button class="search-button" type="submit" name="searchpage" id="searchpage" th:text="#{menu.search}">Поиск
-              </button>
-            </form>
+            <span id="error" th:if="${searchError}" th:text="#{page.search.empty}"></span>
           </div>
         </div>
         <div class="Section Section_close">
           <header class="Section-header" th:if="${searchResultsSize > 0}">
-            <h2 class="Section-title Middle-searchHeader" th:text="|#{page.search.result}${searchResultsSize}|">Найдено книг</h2>
+            <h2 class="Section-title Middle-searchHeader" th:text="${searchResultMessage}">Books found info</h2>
           </header>
           <header class="Section-header" th:if="${searchResultsSize == 0}">
             <h2 class="Section-title Middle-searchHeader" th:text="#{page.search.nothing}">Nothing found</h2>
-            <h2 th:text="#{page.search.suggest}">See books here:</h2>
+            <h2 th:if="${not #lists.isEmpty(searchResults)}" th:text="#{page.search.suggest}">See books here:</h2>
           </header>
           <div class="Cards Cards_search Cards_refresh">
             <div class="Card" th:each="book : ${searchResults}">
@@ -69,13 +64,13 @@
                 </div>
               </div>
             </div>
-            <div class="Cards-footer Cards-footer_center">
+            <div class="Cards-footer Cards-footer_center" id="butmore">
               <a class="btn btn_primary" href="#"
                  data-refreshshow="search" data-refreshoffset="0" data-refreshlimit="5" data-refreshquery="Техника"
                  th:attr="data-refreshquery=${headerInfoDto.searchQuery},
                  data-refreshoffset=${@environment.getProperty('initial.offset')},
-                 data-refreshlimit=${@environment.getProperty('search.refresh.limit')}"
-                 th:text="#{button.more}" th:if="${searchResultsSize > 0}">More</a>
+                 data-refreshlimit=${@environment.getProperty('page.limit')}"
+                 th:text="#{button.more}" th:if="${searchResultsSize ge 20}">More</a>
             </div>
           </div>
         </div>

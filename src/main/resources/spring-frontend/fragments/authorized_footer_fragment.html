@@ -80,11 +80,11 @@
                            th:text="#{menu.my} + ' (' + *{myBooksCount} + ')'">Мои книги (-1)</a>
                     </li>
                     <li class="menu-item">
-                        <a class="menu-link" href="/cart" th:href="@{/books/cart}"
+                        <a class="menu-link" href="/cart" th:href="@{/cart}"
                            th:text="#{menu.cart} + ' (' + *{cartBooksCount} + ')'">Корзина (-1)</a>
                     </li>
                     <li class="menu-item">
-                        <a class="menu-link" href="/postponed" th:href="@{/books/postponed}"
+                        <a class="menu-link" href="/postponed" th:href="@{/postponed}"
                            th:text="#{menu.postponed} + ' (' + *{keptBooksCount} + ')'">Отложено (-1)</a>
                     </li>
                     <li class="menu-item">

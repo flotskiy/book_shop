@@ -32,11 +32,10 @@
                                 </form>
                             </div>
                         </div>
-                        <span id="error" th:if="${searchError}" th:text="${searchError.getLocalizedMessage()}"></span>
                     </div>
                     <div class="row-block Header-cart">
                         <div class="CartBlock">
-                            <a class="CartBlock-block" href="/postponed" th:href="@{/books/postponed}">
+                            <a class="CartBlock-block" href="/postponed" th:href="@{/postponed}">
                                 <svg class="CartBlock-img" xmlns="http://www.w3.org/2000/svg" height="23" width="23" viewBox="0 0 512 512">
                                     <g>
                                         <g>
@@ -46,7 +45,7 @@
                                 </svg>
                                 <span class="CartBlock-amount" th:text="*{keptBooksCount}">-1</span>
                             </a>
-                            <a class="CartBlock-block" href="/cart" th:href="@{/books/cart}">
+                            <a class="CartBlock-block" href="/cart" th:href="@{/cart}">
                                 <svg class="CartBlock-img" xmlns="http://www.w3.org/2000/svg" width="30" height="23" viewBox="0 0 30 23">
                                     <g>
                                         <g>

@@ -12,8 +12,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.context.request.RequestContextHolder;
 
-import javax.servlet.http.HttpServletRequest;
-
 @Controller
 public class HeaderController {
 
@@ -32,7 +30,7 @@ public class HeaderController {
     }
 
     @ModelAttribute("headerInfoDto")
-    public HeaderInfoDto headerInfoDto(HttpServletRequest request) {
+    public HeaderInfoDto headerInfoDto() {
         HeaderInfoDto headerInfoDto = new HeaderInfoDto();
 
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();

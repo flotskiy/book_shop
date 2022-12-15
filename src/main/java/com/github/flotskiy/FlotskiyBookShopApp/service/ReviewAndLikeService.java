@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -47,11 +48,7 @@ public class ReviewAndLikeService {
     public List<BookReviewDto> getBookReviewDtos(Integer bookId) {
         List<BookReviewEntity> bookReviewEntities = bookReviewRepository.findBookReviewEntitiesByBookId(bookId);
         List<BookReviewDto> result = convertBookReviewEntitiesListToBookReviewDtoList(bookReviewEntities);
-        result.sort((o1, o2) -> {
-            LocalDateTime t1 = LocalDateTime.parse(o1.getTime(), customStringHandler.getFormatter());
-            LocalDateTime t2 = LocalDateTime.parse(o2.getTime(), customStringHandler.getFormatter());
-            return t1.compareTo(t2);
-        });
+        result.sort(Comparator.comparing(BookReviewDto::getRating).reversed());
         return result;
     }
 

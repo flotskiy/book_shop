@@ -1,5 +1,6 @@
 package com.github.flotskiy.FlotskiyBookShopApp.service;
 
+import com.github.flotskiy.FlotskiyBookShopApp.exceptions.ReplenishException;
 import com.github.flotskiy.FlotskiyBookShopApp.exceptions.UserBalanceNotEnoughException;
 import com.github.flotskiy.FlotskiyBookShopApp.model.dto.book.BookDto;
 import com.github.flotskiy.FlotskiyBookShopApp.model.dto.payments.BalanceTransactionDto;
@@ -123,6 +124,9 @@ public class PaymentService {
     public void makeReplenish(PaymentDto payload) {
         int currentUserId = Integer.parseInt(payload.getId());
         int sumToReplenish = Integer.parseInt(payload.getSum());
+        if (sumToReplenish < 1) {
+            throw new ReplenishException("Amount is not positive");
+        }
         UserEntity currentUserEntity = userRepository.findById(currentUserId).get();
         int newBalance = currentUserEntity.getBalance() + sumToReplenish;
         currentUserEntity.setBalance(newBalance);

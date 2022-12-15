@@ -19,11 +19,11 @@
     <div class="wrap">
       <main class="Middle-main" th:object="${slugBook}">
         <ul class="breadcrumbs">
-          <li class="breadcrumbs-item"><a href="/" th:href="@{/}" th:text="#{menu.main}">Главная</a>
+          <li class="breadcrumbs-item"><a href="/" th:href="@{/}" th:text="#{menu.main}">Main</a>
           </li>
-          <li class="breadcrumbs-item"><a href="/genres" th:href="@{/genres}" th:text="#{menu.genres}">Жанры</a>
+          <li class="breadcrumbs-item"><a href="/genres" th:href="@{/genres}" th:text="#{menu.books}">Books</a>
           </li>
-          <li class="breadcrumbs-item breadcrumbs-item_current" th:text="*{title}"><span>Название книги</span>
+          <li class="breadcrumbs-item breadcrumbs-item_current" th:text="*{title}"><span>Title</span>
           </li>
         </ul>
         <div class="Product">
@@ -34,10 +34,10 @@
                 <div class="ProductCard-photo" id="uploadButton">
                   <img src="/assets/img/content/main/card.jpg" th:src="*{image}" alt="book cover"/>
                   <div th:if="${slugBook.discountPrice} lt ${slugBook.price}">
-                    <div class="Card-sale" th:text="|${slugBook.discount}% скидка|">Скидка</div>
+                    <div class="Card-sale" th:text="|${slugBook.discount}% #{card.discount}|">Discount</div>
                   </div>
                   <div th:if="${slugBook.isBestseller}">
-                    <div class="Card-ribbon"><span class="Card-ribbonText">Бестселлер</span>
+                    <div class="Card-ribbon"><span class="Card-ribbonText">Bestseller</span>
                     </div>
                   </div>
                 </div>
@@ -46,14 +46,16 @@
             </div>
             <div class="ProductCard-desc">
               <div class="ProductCard-header">
-                <h1 class="ProductCard-title" th:text="*{title}">Название книги</h1>
-                <div class="ProductCard-author"><span class="ProductCard-titleProp" th:text="#{page.book.author}">Автор:</span>
-                  <span th:each="author : *{authors}">
-                    <a th:href="|/authors/${author.slug}|" th:text="'&#32;' + ${author.name}">Имя автора</a>
+                <h1 class="ProductCard-title" th:text="*{title}">Title</h1>
+                <div class="ProductCard-author">
+                  <span class="ProductCard-titleProp" th:text="#{page.book.author}">Authors:</span>
+                  <span th:each="author, iStat : *{authors}">
+                    <a th:href="|/authors/${author.slug}|" th:text="${author.name}">Author</a>
+                    <span th:unless="${iStat.last}">, </span>
                   </span>
                 </div>
                 <div class="ProductCard-rating">
-                  <span class="ProductCard-titleProp" th:text="#{page.book.rating}">Рейтинг:</span>
+                  <span class="ProductCard-titleProp" th:text="#{page.book.rating}">Rating:</span>
                   <button class="trigger trigger_dropdown" type="button">
                     <div class="Rating Rating_noStyleLink">
                       <span th:replace="~{fragments/book_rating_fragment :: rating (${slugBook.rating})}"></span>
@@ -196,8 +198,8 @@
                     </div>
                   </button>
                 </div>
-                <div class="ProductCard-assessment">
-                  <span class="ProductCard-titleProp" th:text="#{page.book.rate}">Оцените книгу:</span>
+                <div class="ProductCard-assessment" th:if="${isRateBook}">
+                  <span class="ProductCard-titleProp" th:text="#{page.book.rate}">Rate book:</span>
                   <span class="Rating Rating_input" data-bookid="2121" th:attr="data-bookid=${slugBook.id}">
                     <span class="Rating-stars">
                       <span class="Rating-star">
@@ -285,7 +287,7 @@
                   </button>
                 </div>
                 <div class="ProductCard-cartElement" th:if="${#strings.equals(slugBook.status, 'CART')}">
-                  <button class="btn btn_primary btn_outline" data-sendstatus="/books/cart">
+                  <button class="btn btn_primary btn_outline" data-sendstatus="/cart">
                     <span class="btn-icon">
                       <img src="/assets/img/icons/shopping-basket.svg" alt="shopping-basket.svg"/>
                     </span>
@@ -406,7 +408,7 @@
                         </button>
                       </div>
                       <button class="Spoiler-trigger btn btn_primary btn_nr"
-                              type="button" data-showtext="Свернуть отзыв" data-hidetext="Показать отзыв полностью"
+                              type="button" data-showtext="Wrap review" data-hidetext="Show full review"
                               th:if="${review.textHide}"
                               th:attr="data-showtext=#{page.book.reviews.wrap},data-hidetext=#{page.book.reviews.full}">
                       </button>
@@ -417,19 +419,36 @@
             </div>
           </div>
           <br>
-          <strong class="Comments-title" th:text="#{page.book.review.new}">Написать отзыв</strong>
-          <div class="Comments-addComment">
-            <form class="form" action="#" method="post" data-bookid="1111" th:attr="data-bookid=${slugBook.id}">
-              <div class="form-group">
-                <textarea class="form-textarea Comments-review" name="review" id="review"
-                          placeholder="Текст отзыва" th:placeholder="#{page.book.review.text}" data-validate="require">
-                </textarea>
-              </div>
-              <div class="form-group Comments-sendReview">
-                <button class="btn btn_warning" type="submit" th:text="#{page.book.review.send}">Отправить отзыв
-                </button>
-              </div>
-            </form>
+          <div th:if="${isAuthenticated}">
+            <strong class="Comments-title" th:text="#{page.book.review.new}">Write a review</strong>
+            <div class="Comments-addComment">
+              <form class="form" action="#" method="post" data-bookid="1111" th:attr="data-bookid=${slugBook.id}">
+                <div class="form-group">
+                  <textarea class="form-textarea Comments-review" name="review" id="review"
+                            placeholder="Текст отзыва" th:placeholder="#{page.book.review.text}" data-validate="require"></textarea>
+                </div>
+                <div class="form-group Comments-sendReview">
+                  <button class="btn btn_warning" type="submit" th:text="#{page.book.review.send}">Send feedback</button>
+                </div>
+              </form>
+            </div>
+          </div>
+          <div th:class="form-group_center" th:unless="${isAuthenticated}">
+            <div>
+              <br>
+              <strong class="Comments-title" th:text="#{page.book.review.unauthorized}">
+                Only authorized users can leave reviews
+              </strong>
+            </div>
+            <div>
+              <form action="/signin" target="_blank">
+                <input class="btn btn_primary" type="submit" value="Sign in" th:value="#{menu.signin}"/>
+              </form>
+              <span th:text="#{page.signin.or}">or</span>
+              <form action="/signup" target="_blank">
+                <input class="btn btn_primary" type="submit" value="Sign up" th:value="#{menu.signup}"/>
+              </form>
+            </div>
           </div>
         </div>
       </main>

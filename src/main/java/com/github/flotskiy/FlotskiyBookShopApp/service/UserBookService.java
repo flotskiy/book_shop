@@ -3,8 +3,11 @@ package com.github.flotskiy.FlotskiyBookShopApp.service;
 import com.github.flotskiy.FlotskiyBookShopApp.exceptions.ChangeBookStatusException;
 import com.github.flotskiy.FlotskiyBookShopApp.exceptions.ChangeBookStatusRedirectionException;
 import com.github.flotskiy.FlotskiyBookShopApp.exceptions.RegisteredUserChangeBookStatusException;
+import com.github.flotskiy.FlotskiyBookShopApp.model.dto.book.AuthorDto;
 import com.github.flotskiy.FlotskiyBookShopApp.model.dto.book.BookDto;
+import com.github.flotskiy.FlotskiyBookShopApp.model.dto.book.page.BookDtoExtension;
 import com.github.flotskiy.FlotskiyBookShopApp.model.dto.user.UserDto;
+import com.github.flotskiy.FlotskiyBookShopApp.model.entity.book.BookEntity;
 import com.github.flotskiy.FlotskiyBookShopApp.model.entity.book.links.Book2UserEntity;
 import com.github.flotskiy.FlotskiyBookShopApp.security.UserRegistrationService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,11 +47,20 @@ public class UserBookService {
 
     private final Book2UserService book2UserService;
     private final UserRegistrationService userRegistrationService;
+    private final BookService bookService;
+    private final AuthorService authorService;
 
     @Autowired
-    public UserBookService(Book2UserService book2UserService, UserRegistrationService userRegistrationService) {
+    public UserBookService(
+            Book2UserService book2UserService,
+            UserRegistrationService userRegistrationService,
+            BookService bookService,
+            AuthorService authorService
+    ) {
         this.book2UserService = book2UserService;
         this.userRegistrationService = userRegistrationService;
+        this.bookService = bookService;
+        this.authorService = authorService;
     }
 
     public boolean isUserAuthenticated() {
@@ -133,7 +145,7 @@ public class UserBookService {
     @Transactional
     public void changeBookStatus(List<Integer> bookIdList, String status)
             throws RegisteredUserChangeBookStatusException {
-        int userId = userRegistrationService.getCurrentUserId();
+        int userId = userRegistrationService.getCurrentUserIdIncludingGuest();
         if (isUserAuthenticated()) {
             registeredUserChangeBookStatus(bookIdList, status, userId);
         } else {
@@ -143,7 +155,7 @@ public class UserBookService {
 
     public void registeredUserChangeBookStatus(List<Integer> bookIdList, String newStatus, Integer userId) {
         Book2UserEntity book2UserEntity = null;
-        if (newStatus.equals("/books/cart")) {
+        if (newStatus.equals("/cart")) {
             throw new ChangeBookStatusRedirectionException("Book status change cancelled, redirected to: " + newStatus);
         }
         for (Integer bookId : bookIdList) {
@@ -181,13 +193,18 @@ public class UserBookService {
         String guestSession = RequestContextHolder.currentRequestAttributes().getSessionId();
         int guestUserId = userRegistrationService.handleGuestSession(guestSession);
         registeredUserChangeBookStatus(bookIdList, status, guestUserId);
-
     }
 
-    private Map<BookDto, List<Integer>> convertListOfBooksToMap(List<BookDto> bookDtoList) {
-        Map<BookDto, List<Integer>> cartBooksMap = new HashMap<>();
+    private Map<BookDto, BookDtoExtension> convertListOfBooksToMap(List<BookDto> bookDtoList) {
+        Map<BookDto, BookDtoExtension> cartBooksMap = new HashMap<>();
         for (BookDto bookDto : bookDtoList) {
-            cartBooksMap.put(bookDto, List.of(bookDto.getId()));
+            BookEntity bookEntity = bookService.getBookEntityById(bookDto.getId());
+            List<AuthorDto> authorDtoList = bookEntity.getAuthorEntities().stream()
+                    .map(authorService::convertAuthorEntityToAuthorDtoShort).collect(Collectors.toList());
+            BookDtoExtension bookDtoExtension = new BookDtoExtension();
+            bookDtoExtension.setBookIdList(List.of(bookDto.getId()));
+            bookDtoExtension.setAuthorList(authorDtoList);
+            cartBooksMap.put(bookDto, bookDtoExtension);
         }
         return cartBooksMap;
     }

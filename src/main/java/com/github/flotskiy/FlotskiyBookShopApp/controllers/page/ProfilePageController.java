@@ -13,7 +13,9 @@ import com.github.flotskiy.FlotskiyBookShopApp.service.BookService;
 import com.github.flotskiy.FlotskiyBookShopApp.service.PaymentService;
 import com.github.flotskiy.FlotskiyBookShopApp.service.RegisteredUserChangeService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.context.annotation.PropertySource;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -25,7 +27,14 @@ import java.util.Map;
 import java.util.logging.Logger;
 
 @Controller
+@PropertySource("application-variables.properties")
 public class ProfilePageController extends HeaderController {
+
+    @Value("${initial.offset}")
+    private int offset;
+
+    @Value("${transactions.limit}")
+    private int transactionsLimit;
 
     private final PaymentService paymentService;
     private final RegisteredUserChangeService registeredUserChangeService;
@@ -46,14 +55,18 @@ public class ProfilePageController extends HeaderController {
     }
 
     @GetMapping("/profile")
-    public String handleProfile(Model model) {
-        handleModelForProfilePage(model);
+    public String handleProfile(@RequestParam(value = "sort", required = false) String sort, Model model) {
+        handleModelForProfilePage(sort, model);
         return "/profile";
     }
 
     @PostMapping("/profile")
-    public String handleProfilePostRequest(ChangeUserDataConfirmPayload payload, Model model) {
-        UserDto currentUser = handleModelForProfilePage(model);
+    public String handleProfilePostRequest(
+            @RequestParam(value = "sort", required = false) String sort,
+            ChangeUserDataConfirmPayload payload,
+            Model model
+    ) {
+        UserDto currentUser = handleModelForProfilePage(sort, model);
         String result = registeredUserChangeService.changeUserData(payload, currentUser);
         if (result.equals("phone")) {
             registeredUserChangeService.handleDataForPhoneUser(payload, currentUser);
@@ -67,15 +80,19 @@ public class ProfilePageController extends HeaderController {
     }
 
     @GetMapping("/confirmDataChange")
-    public String confirmEmailChangeData(@RequestParam("token") String token, Model model) {
-        handleModelForProfilePage(model);
+    public String confirmEmailChangeData(
+            @RequestParam(value = "sort", required = false) String sort,
+            @RequestParam("token") String token,
+            Model model
+    ) {
+        handleModelForProfilePage(sort, model);
         VerificationTokenDto verificationTokenDto = registeredUserChangeService.getVerificationTokenDto(token);
         if (!verificationTokenDto.isValid()) {
             model.addAttribute("token", "expired");
         } else {
             try {
                 registeredUserChangeService.changeAllUserData(verificationTokenDto);
-                handleModelForProfilePage(model);
+                handleModelForProfilePage(sort, model);
                 model.addAttribute("token", "success");
             } catch (Throwable throwable) {
                 Logger.getLogger(this.getClass().getSimpleName()).warning(throwable.getMessage());
@@ -92,7 +109,7 @@ public class ProfilePageController extends HeaderController {
             @RequestParam("offset") Integer offset,
             @RequestParam("limit") Integer limit
     ) {
-        Integer currentUserId = getUserRegistrationService().getCurrentUserId();
+        Integer currentUserId = getUserRegistrationService().getCurrentUserIdIncludingGuest();
         try {
             List<BalanceTransactionDto> balanceTransactionDtoList =
                     paymentService.getBalanceTransactions(currentUserId, offset, limit, sort).getContent();
@@ -128,13 +145,17 @@ public class ProfilePageController extends HeaderController {
         }
     }
 
-    private UserDto handleModelForProfilePage(Model model) {
+    private UserDto handleModelForProfilePage(String sort, Model model) {
+        if (sort == null || !sort.equalsIgnoreCase("asc")) {
+            sort = "desc";
+        }
         UserDto userDto = getUserRegistrationService().getCurrentUserDto();
         int currentUserId = userDto.getId();
         UserEntity currentUserEntity = getUserRegistrationService().getCurrentUserEntity(currentUserId);
         List<BalanceTransactionDto> transactionDtoList =
-                paymentService.getBalanceTransactions(currentUserId, 0, 50, "desc").getContent();
+                paymentService.getBalanceTransactions(currentUserId, offset, transactionsLimit, sort).getContent();
         int count = paymentService.getNumberOfTransactionsOfUser(currentUserEntity);
+        model.addAttribute("sort", sort);
         model.addAttribute("curUser", userDto);
         model.addAttribute("transactions", transactionDtoList);
         model.addAttribute("transactionsCount", count);

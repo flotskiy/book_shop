@@ -193,4 +193,9 @@ public class BooksRatingAndPopularityService {
     public List<Integer> getFirst30bookIdsWithMaxUsersRatingMoreOrEquals4() {
         return bookRatingRepository.getFirst30bookIdsWithMaxUsersRatingMoreOrEquals4();
     }
+
+    public boolean isRateBookPossible(Integer bookId, Integer userId) {
+        BookRatingEntity bookRatingEntity = bookRatingRepository.findBookRatingEntityByBookIdAndUserId(bookId, userId);
+        return bookRatingEntity == null;
+    }
 }

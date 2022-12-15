@@ -37,7 +37,7 @@ public class CartPageController extends HeaderController {
         return new ArrayList<>();
     }
 
-    @GetMapping("/books/cart")
+    @GetMapping("/cart")
     public String handleCartRequest(Model model) {
         if (!userBookService.isUserAuthenticated()) {
             userBookService.guestHandleCartRequest(model);
@@ -52,10 +52,11 @@ public class CartPageController extends HeaderController {
         UserDto currentUser = getUserRegistrationService().getCurrentUserDto();
         try {
             paymentService.pay(currentUser);
-            return "redirect:/my";
+            request.setAttribute("pay", true);
+            return "forward:/my";
         } catch (RuntimeException runtimeException) {
             request.setAttribute("pay", "fail");
-            return "forward:/books/cart";
+            return "forward:/cart";
         }
     }
 }

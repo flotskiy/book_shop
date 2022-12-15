@@ -53,11 +53,16 @@ public class BookPageController extends HeaderController {
 
     @GetMapping("/{slug}")
     public String bookPage(@PathVariable("slug") String slug, Model model) {
-        BookSlugDto bookSlugDto = getBookService().getBookSlugBySlug(slug, getUserRegistrationService().getCurrentUserId());
+        Integer userId = getUserRegistrationService().getCurrentUserIdIncludingGuest();
+        BookSlugDto bookSlugDto = getBookService().getBookSlugBySlug(slug, userId);
+        boolean rateBookPossible =
+                isAuthenticated() && booksRatingAndPopularityService.isRateBookPossible(bookSlugDto.getId(), userId);
         model.addAttribute("slugBook", bookSlugDto);
         model.addAttribute("idList", List.of(bookSlugDto.getId()));
         model.addAttribute("detailedRating",
                 booksRatingAndPopularityService.getDetailedRatingDto(bookSlugDto.getId()));
+        model.addAttribute("isRateBook", rateBookPossible);
+        model.addAttribute("isAuthenticated", isAuthenticated());
         return "/books/slug";
     }
 
@@ -112,7 +117,7 @@ public class BookPageController extends HeaderController {
     public Map<String, Object> rateBook(@RequestBody RateBookDto payload) {
         Map<String, Object> result = new HashMap<>();
         try {
-            Integer userId = getUserRegistrationService().getCurrentUserId();
+            Integer userId = getUserRegistrationService().getCurrentUserIdIncludingGuest();
             booksRatingAndPopularityService
                     .setRatingToBookByUser(payload.getBookId(), userId, Integer.parseInt(payload.getValue()));
             result.put("result", true);
@@ -129,7 +134,7 @@ public class BookPageController extends HeaderController {
     public Map<String, Object> rateBookReview(@RequestBody RateBookReviewDto payload) {
         Map<String, Object> result = new HashMap<>();
         try {
-            Integer userId = getUserRegistrationService().getCurrentUserId();
+            Integer userId = getUserRegistrationService().getCurrentUserIdIncludingGuest();
             booksRatingAndPopularityService.rateBookReview(payload.getReviewId(), userId, payload.getValue());
             result.put("result", true);
         } catch (Throwable throwable) {
@@ -145,7 +150,7 @@ public class BookPageController extends HeaderController {
     public Map<String, Object> bookReview(@RequestBody BookReviewDto payload) {
         Map<String, Object> result = new HashMap<>();
         try {
-            Integer userId = getUserRegistrationService().getCurrentUserId();
+            Integer userId = getUserRegistrationService().getCurrentUserIdIncludingGuest();
             reviewAndLikeService.bookReview(payload.getBookId(), userId, payload.getText());
             result.put("result", true);
         } catch (Throwable throwable) {

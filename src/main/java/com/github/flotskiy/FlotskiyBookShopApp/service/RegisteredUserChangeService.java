@@ -98,7 +98,7 @@ public class RegisteredUserChangeService {
 
     @Transactional
     public void changeAllUserData(VerificationTokenDto verificationTokenDto) {
-        int currentUserId = bookstoreUserDetailsService.gerCurrentUserId();
+        int currentUserId = bookstoreUserDetailsService.gerCurrentAuthenticatedUserId();
         UserEntity currentUser = userRepository.findById(currentUserId).get();
         currentUser.setHash(verificationTokenDto.getHash());
         currentUser.setName(verificationTokenDto.getName());

@@ -71,7 +71,7 @@ public class BookstoreUserDetailsService implements UserDetailsService {
         }
     }
 
-    public int gerCurrentUserId() {
+    public int gerCurrentAuthenticatedUserId() {
         Object userObject = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         BookstoreUserDetails userDetails = null;
         if (userObject instanceof BookstoreUserDetails) {

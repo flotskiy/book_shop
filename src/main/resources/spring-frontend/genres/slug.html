@@ -18,9 +18,9 @@
     <div class="wrap">
       <main class="Middle-main">
         <ul class="breadcrumbs">
-          <li class="breadcrumbs-item"><a href="/" th:href="@{/}" th:text="#{menu.books}">Books</a>
+          <li class="breadcrumbs-item"><a href="/" th:href="@{/}" th:text="#{menu.main}">Main</a>
           </li>
-          <li class="breadcrumbs-item"><a href="/genres" th:href="@{/genres}" th:text="#{menu.genres}">Genres</a>
+          <li class="breadcrumbs-item"><a href="/genres" th:href="@{/genres}" th:text="#{menu.books}">Books</a>
           </li>
           <li class="breadcrumbs-item" th:if="${rootGenreObject}">
             <a href="/genres" th:href="${rootGenreObject.slug}" th:text="${rootGenreObject.name}">Root genre</a>

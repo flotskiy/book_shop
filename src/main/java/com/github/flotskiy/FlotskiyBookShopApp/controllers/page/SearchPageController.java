@@ -48,9 +48,8 @@ public class SearchPageController extends HeaderController {
     }
 
     @GetMapping(value = {"/search", "/search/{searchWord}"})
-    public String getSearchResults(
-            @PathVariable(value = "searchWord", required = false) String searchWord, Model model
-    ) throws EmptySearchQueryException {
+    public String getSearchResults(@PathVariable(value = "searchWord", required = false) String searchWord, Model model)
+            throws EmptySearchQueryException {
         if (searchWord == null && model.getAttribute("searchError") == null) {
             throw new EmptySearchQueryException("Search with null query parameter is Impossible");
         }

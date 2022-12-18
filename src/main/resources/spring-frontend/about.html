@@ -18,31 +18,20 @@
     <div class="wrap">
       <main class="Middle-main">
         <ul class="breadcrumbs">
-          <li class="breadcrumbs-item"><a href="/index.html" th:text="#{menu.main}">Главная</a>
+          <li class="breadcrumbs-item">
+            <a href="/index" th:href="@{/}" th:text="#{menu.main}">Main</a>
           </li>
-          <li class="breadcrumbs-item breadcrumbs-item_current"><span th:text="#{menu.about}">О компании</span>
+          <li class="breadcrumbs-item breadcrumbs-item_current"><span th:text="#{menu.about}">About</span>
           </li>
         </ul>
-        <h1 class="Middle-title" th:text="#{menu.about}">О компании
-        </h1>
+        <h1 class="Middle-title" th:text="#{menu.about}">About</h1>
         <article class="Article">
           <div class="sdf">
           </div>
-          <div class="pict pict_left"><img src="/assets/img/content/documents/1.jpg" alt="1.jpg"/>
+          <div class="pict pict_left">
+            <img src="/assets/img/content/documents/information.png" alt="information image"/>
           </div>
-          <p th:text="#{page.about1}">В течение многих лет компания BOOKSTORE является бессменным лидером российского ИТ-рынка, что отражено в рейтингах ведущих отраслевых изданий
-          </p>
-          <p th:text="#{page.about2}">Основанная в 1992 году, сегодня компания BOOKSTORE является крупнейшим широкопрофильным дистрибьютором на российском рынке. Компания успешно развивает такие сегменты дистрибуции, как: компьютерная, цифровая и бытовая техника, канцелярские принадлежности, офисная мебель, подарки для бизнеса. Кроме этого, особое внимание уделяется развитию VAD дистрибуции – как оборудования, так и программного обеспечения.
-          </p>
-          <p th:text="#{page.about3}">Репутация надежного, ответственного и опытного партнера, всегда выполняющего свои обязательства, позволила компании BOOKSTORE построить прочные отношения с большинством ведущих мировых производителей – в портфеле компании BOOKSTORE свыше 670 брендов,
-          </p>
-          <p th:text="#{page.about4}">более 400 прямых дистрибьюторских соглашений. Партнерская сеть BOOKSTORE насчитывает более 8000 компаний во всех регионах России и странах СНГ. Офисы продаж находятся в Москве, Самаре, Санкт-Петербурге, Нижнем Новгороде, Екатеринбурге, Новосибирске, Ростове-на-Дону.
-          </p>
-          <blockquote th:text="#{page.about5}">BOOKSTORE сегодня — это тысячи профессионалов, которые развивают национальный дистрибуторский рынок в нескольких сегментах и делают высокотехнологичные продукты доступными для каждого жителя России.</blockquote>
-          <p th:text="#{page.about6}">Хотите присоединиться к команде BOOKSTORE? Ознакомьтесь с открытыми вакансиями на нашем сайте «Работа в компании BOOKSTORE».
-          </p>
-          <p th:text="#{page.about7}">Компания BOOKSTORE входит в число крупнейших компаний России, что отражено в рейтингах ведущих деловых изданий. Среди немногих российских ИТ-компаний — участниц рейтингов, BOOKSTORE из года в год подтверждает свои лидирующие позиции.
-          </p>
+          <div th:utext="${about}">Info about bookshop</div>
         </article>
       </main>
     </div>

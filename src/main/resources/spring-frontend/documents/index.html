@@ -17,29 +17,19 @@
   <div class="Middle">
     <div class="wrap">
       <main class="Middle-main">
-        <h1 class="Middle-title" th:text="#{menu.documents}">Документы
-        </h1>
+        <h1 class="Middle-title" th:text="#{menu.documents}">Documents</h1>
         <div class="Section">
           <div class="Documents">
-            <div class="Documents-wrap"><a class="Documents-item" href="/documents/slug.html">
-                <div class="Documents-image"><img src="/assets/img/content/documents/1.jpg" alt="1.jpg"/>
+            <div class="Documents-wrap" th:each="doc : ${docList}">
+              <a class="Documents-item" href="/documents/slug" th:href="'/documents/' + *{doc.slug}">
+                <div class="Documents-image">
+                    <img src="/assets/img/content/documents/document.png" alt="document image"/>
                 </div>
                 <div class="Documents-content">
-                  <strong class="Documents-title" th:text="#{page.documents.offer.title}">Публичная оферта
-                  </strong>
-                  <p th:text="#{page.documents.offer.text1}">Согласно закону, публичная оферта – это предложение, которое, во-первых, адресовано неопределенному кругу лиц, во-вторых, содержит все существенные условия договора, и, в-третьих, достаточно определенно выражает намерение предприятия-оферента считать себя заключившим договор с любым
-                  </p>
-                  <p th:text="#{page.documents.offer.text2}">Согласно закону, публичная оферта – это предложение, которое, во-первых, адресовано неопределенному кругу лиц, во-вторых, содержит все существенные условия договора, и, в-третьих, достаточно определенно выражает намерение предприятия-оферента считать себя заключившим договор с любым
-                  </p>
-                </div></a><a class="Documents-item" href="/documents/slug.html">
-                <div class="Documents-image"><img src="/assets/img/content/documents/2.jpg" alt="2.jpg"/>
+                  <strong class="Documents-title" th:text="*{doc.title}">Document title</strong>
+                  <div th:utext="*{doc.description}">Text</div>
                 </div>
-                <div class="Documents-content">
-                  <strong class="Documents-title" th:text="#{page.documents.policy.title}">Политика обработки персональных данных
-                  </strong>
-                  <p th:text="#{page.documents.policy.text}">Согласно закону, публичная оферта – это предложение, которое, во-первых, адресовано неопределенному кругу лиц, во-вторых, содержит все существенные условия договора, и, в-третьих, достаточно определенно выражает намерение предприятия-оферента считать себя заключившим договор с любым
-                  </p>
-                </div></a>
+              </a>
             </div>
           </div>
         </div>

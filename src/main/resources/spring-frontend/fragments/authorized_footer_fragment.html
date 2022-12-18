@@ -49,7 +49,7 @@
                     </li>
                 </ul>
                 <p>
-                    <span th:text="#{menu.lang}">Выбор языка</span>
+                    <span th:text="#{menu.lang}">Lang selection</span>
                     <select id="locales">
                         <option value=" "></option>
                         <option value="en">English</option>
@@ -60,16 +60,16 @@
             <div class="row-block">
                 <ul class="menu menu_vt Footer-menu">
                     <li class="menu-item">
-                        <a class="menu-link" href="/genres/index" th:href="@{/genres}" th:text="#{menu.genres}">Жанры</a>
+                        <a class="menu-link" href="/genres/index" th:href="@{/genres}" th:text="#{menu.genres}">Genres</a>
                     </li>
                     <li class="menu-item">
-                        <a class="menu-link" href="/books/recent" th:href="@{/books/recent}" th:text="#{menu.recent}">Новинки</a>
+                        <a class="menu-link" href="/books/recent" th:href="@{/books/recent}" th:text="#{menu.recent}">Recent</a>
                     </li>
                     <li class="menu-item">
-                        <a class="menu-link" href="/books/popular" th:href="@{/books/popular}" th:text="#{menu.popular}">Популярное</a>
+                        <a class="menu-link" href="/books/popular" th:href="@{/books/popular}" th:text="#{menu.popular}">Popular</a>
                     </li>
                     <li class="menu-item">
-                        <a class="menu-link" href="/authors/index" th:href="@{/authors}" th:text="#{menu.authors}">Авторы</a>
+                        <a class="menu-link" href="/authors/index" th:href="@{/authors}" th:text="#{menu.authors}">Authors</a>
                     </li>
                 </ul>
             </div>
@@ -77,35 +77,35 @@
                 <ul class="menu menu_vt Footer-menu" th:object="${headerInfoDto}">
                     <li class="menu-item">
                         <a class="menu-link" href="/my" th:href="@{/my}"
-                           th:text="#{menu.my} + ' (' + *{myBooksCount} + ')'">Мои книги (-1)</a>
+                           th:text="#{menu.my} + ' (' + *{myBooksCount} + ')'">My books (-1)</a>
                     </li>
                     <li class="menu-item">
                         <a class="menu-link" href="/cart" th:href="@{/cart}"
-                           th:text="#{menu.cart} + ' (' + *{cartBooksCount} + ')'">Корзина (-1)</a>
+                           th:text="#{menu.cart} + ' (' + *{cartBooksCount} + ')'">Cart (-1)</a>
                     </li>
                     <li class="menu-item">
                         <a class="menu-link" href="/postponed" th:href="@{/postponed}"
-                           th:text="#{menu.postponed} + ' (' + *{keptBooksCount} + ')'">Отложено (-1)</a>
+                           th:text="#{menu.postponed} + ' (' + *{keptBooksCount} + ')'">Postponed (-1)</a>
                     </li>
                     <li class="menu-item">
                         <a class="menu-link" href="/profile" th:href="@{/profile}"
-                           th:text="#{menu.profile}">Мой профиль</a>
+                           th:text="#{menu.profile}">My profile</a>
                     </li>
                 </ul>
             </div>
             <div class="row-block">
                 <ul class="menu menu_vt Footer-menu">
                     <li class="menu-item">
-                        <a class="menu-link" href="/documents/index" th:href="@{/documents}" th:text="#{menu.documents}">Документы</a>
+                        <a class="menu-link" href="/documents/index" th:href="@{/documents}" th:text="#{menu.documents}">Documents</a>
                     </li>
                     <li class="menu-item">
-                        <a class="menu-link" href="/about" th:href="@{/about}" th:text="#{menu.about}">О компании</a>
+                        <a class="menu-link" href="/about" th:href="@{/about}" th:text="#{menu.about}">About</a>
                     </li>
                     <li class="menu-item">
-                        <a class="menu-link" href="/faq" th:href="@{/faq}" th:text="#{menu.faq}">Помощь</a>
+                        <a class="menu-link" href="/faq" th:href="@{/faq}" th:text="#{menu.faq}">FAQ</a>
                     </li>
                     <li class="menu-item">
-                        <a class="menu-link" href="/contacts" th:href="@{/contacts}" th:text="#{menu.contacts}">Контакты</a>
+                        <a class="menu-link" href="/contacts" th:href="@{/contacts}" th:text="#{menu.contacts}">Contacts</a>
                     </li>
                 </ul>
             </div>

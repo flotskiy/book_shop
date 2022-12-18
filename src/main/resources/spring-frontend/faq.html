@@ -18,69 +18,32 @@
     <div class="wrap">
       <main class="Middle-main">
         <ul class="breadcrumbs">
-          <li class="breadcrumbs-item"><a href="/index.html" th:text="#{menu.main}">Главная</a>
+          <li class="breadcrumbs-item">
+            <a href="/index" th:href="@{/}" th:text="#{menu.main}">Main</a>
           </li>
-          <li class="breadcrumbs-item breadcrumbs-item_current"><span th:text="#{menu.faq}">Помощь</span>
+          <li class="breadcrumbs-item breadcrumbs-item_current">
+            <span th:text="#{menu.faq}">Help</span>
           </li>
         </ul>
-        <h1 class="Middle-title" th:text="#{menu.faq}">Помощь
+        <h1 class="Middle-title" th:text="#{menu.faq}">Help
         </h1>
-        <div class="FAQ">
-          <strong class="FAQ-title" th:text="#{page.faq.faq}">Наиболее частые вопросы:
+        <div class="FAQ" >
+          <strong class="FAQ-title" th:text="#{page.faq.faq}">FAQ:
           </strong>
-          <div class="HideBlock FAQ-block">
+          <div class="HideBlock FAQ-block" th:each="faq : ${faqList}">
             <header class="HideBlock-header HideBlock-trigger">
-              <strong class="HideBlock-title" th:text="#{page.faq.question1}">Что делать, если я не нашел нужный товар
+              <strong class="HideBlock-title" th:text="*{faq.question}">Why
               </strong>
               <button class="HideBlock-btn" type="button">
               </button>
             </header>
-            <div class="HideBlock-content">
-              <p th:text="#{page.faq.answer1_1}">Если вы ввели в строке поиска название товара и увидели сообщение «Простите, по вашему запросу товаров сейчас нет», это значит, что такого товара у нас в ассортименте пока нет.
-              </p>
-              <p th:text="#{page.faq.answer1_2}">В этом случае, вы можете добавить ссылку на искомый товар, нажав Не нашли, что искали?. Мы передадим информацию менеджерам соответствующей категории и постараемся добавить товар в ассортимент.
-              </p>
-            </div>
-          </div>
-          <div class="HideBlock FAQ-block">
-            <header class="HideBlock-header HideBlock-trigger">
-              <strong class="HideBlock-title" th:text="#{page.faq.question2}">Товара нет в наличии
-              </strong>
-              <button class="HideBlock-btn" type="button">
-              </button>
-            </header>
-            <div class="HideBlock-content">
-              <p th:text="#{page.faq.answer2}">Мы регулярно пополняем запасы товаров на складах. Чтобы узнать о поступлении товара, подпишитесь на уведомления, нажав кнопку Узнать о поступлении.
-              </p>
-            </div>
-          </div>
-          <div class="HideBlock FAQ-block">
-            <header class="HideBlock-header HideBlock-trigger">
-              <strong class="HideBlock-title" th:text="#{page.faq.question3}">У товара слишком высокая цена
-              </strong>
-              <button class="HideBlock-btn" type="button">
-              </button>
-            </header>
-            <div class="HideBlock-content">
-              <p th:text="#{page.faq.answer3}">Вы можете дождаться скидки на интересующий товар. Чтобы не пропустить снижение цены, нажмите кнопку Это дорого? на карточке товара. Когда цена снизится, мы пришлем вам уведомление.
-              </p>
-            </div>
-          </div>
-          <div class="HideBlock FAQ-block">
-            <header class="HideBlock-header HideBlock-trigger">
-              <strong class="HideBlock-title" th:text="#{page.faq.question4}">У меня есть вопрос про товар продавца
-              </strong>
-              <button class="HideBlock-btn" type="button">
-              </button>
-            </header>
-            <div class="HideBlock-content">
-              <p th:text="#{page.faq.answer4}">С некоторыми продавцами можно связаться через чат. Чтобы задать интересующий вас вопрос, на карточке товара под его фотографиями нажмите Спросить продавца о товаре, далее введите ваше сообщение и дождитесь ответа.
-              </p>
+            <div class="HideBlock-content" th:utext="*{faq.answer}">
+              <p>The reason is</p>
             </div>
           </div>
           <div class="FAQ-footer">
-            <p class="FAQ-link"><span th:text="#{page.faq.or}">Или&#32;</span>
-              <a href="/contacts.html" th:text="#{page.faq.contact}">свяжитесь с нами</a>
+            <p class="FAQ-link"><span th:text="#{page.faq.or}">Or&#32;</span>
+              <a href="/contacts" th:href="@{/contacts}" th:text="#{page.faq.contact}">contact us</a>
             </p>
           </div>
         </div>

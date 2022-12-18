@@ -17,60 +17,73 @@
   <div class="Middle">
     <div class="Middle-top">
       <div class="wrap">
-        <h1 class="Middle-title" th:text="#{menu.contacts}">Контакты
-        </h1>
+        <h1 class="Middle-title" th:text="#{menu.contacts}">Contacts</h1>
       </div>
     </div>
     <div class="wrap">
       <main class="Middle-main">
         <ul class="breadcrumbs">
-          <li class="breadcrumbs-item"><a href="/index.html" th:text="#{menu.main}">Главная</a>
+          <li class="breadcrumbs-item">
+            <a href="/index" th:href="@{/}" th:text="#{menu.main}">Main</a>
           </li>
-          <li class="breadcrumbs-item breadcrumbs-item_current"><span th:text="#{menu.contacts}">Контакты</span>
+          <li class="breadcrumbs-item breadcrumbs-item_current">
+            <span th:text="#{menu.contacts}">Contacts</span>
           </li>
         </ul>
         <div class="Contacts">
           <div class="row">
             <div class="row-block">
-              <h2 th:text="#{menu.contacts}">Контакты
-              </h2>
+              <h2 th:text="#{menu.contacts}">Contacts</h2>
               <div class="Contacts-prop">
-                <strong class="Contacts-propTitle" th:text="#{page.contacts.phone}">Телефон:
-                </strong><span class="Contacts-propContent">8 (800) 484-48-48</span>
+                <strong class="Contacts-propTitle" th:text="#{page.contacts.phone}">Phone:
+                </strong><span class="Contacts-propContent">8 (000) 000-00-00</span>
               </div>
               <div class="Contacts-prop">
                 <strong class="Contacts-propTitle">E-mail:
-                </strong><span class="Contacts-propContent">test@test.ru</span>
+                </strong><span class="Contacts-propContent">test@flotskiybookshop.net</span>
               </div>
               <div class="Contacts-prop">
-                <strong class="Contacts-propTitle" th:text="#{page.contacts.telegram}">Телеграм-бот:
-                </strong><span class="Contacts-propContent">@testBookShop</span>
+                <strong class="Contacts-propTitle" th:text="#{page.contacts.telegram}">TG:
+                </strong><span class="Contacts-propContent">@flotskiybookshop</span>
               </div>
             </div>
             <div class="row-block">
               <div class="Contacts-form">
-                <h2 th:text="#{page.contacts.contact}">Напишите нам:
-                </h2>
+                <h2 th:text="#{page.contacts.contact}">Contact us:</h2>
                 <form class="form" action="#" method="post">
                   <div class="form-group">
-                    <input class="form-input" id="name" name="name" type="text" placeholder="Введите Имя" th:placeholder="#{page.contacts.enter.name}" data-validate="require"/>
+                    <input class="form-input" th:if="${not isAuthenticated}"
+                           id="name" name="name" type="text" placeholder="Enter name" data-validate="require"
+                           th:placeholder="#{page.contacts.enter.name}" th:value="${form} ? ${form.name}"/>
                   </div>
                   <div class="form-group">
-                    <input class="form-input form-input_mail" id="mail" name="mail" type="text" placeholder="Введите e-mail" th:placeholder="#{page.contacts.enter.mail}" data-validate="mail require"/>
+                    <input class="form-input form-input_mail" th:if="${not isAuthenticated}"
+                           id="mail" name="mail" type="text" placeholder="Enter e-mail" data-validate="mail require"
+                           th:placeholder="#{page.contacts.enter.mail}" th:value="${form} ? ${form.mail}"/>
                   </div>
                   <div class="form-group">
-                    <input class="form-input" id="topic" name="topic" type="text" placeholder="Введите тему" th:placeholder="#{page.contacts.enter.theme}" data-validate="require"/>
+                    <input class="form-input" id="topic" name="topic" type="text" placeholder="Enter theme"
+                           th:placeholder="#{page.contacts.enter.theme}" th:value="${form} ? ${form.topic}"
+                           data-validate="require"/>
                   </div>
                   <div class="form-group">
-                    <textarea class="form-textarea Contacts-message" name="message" id="message" placeholder="Введите сообщение" th:placeholder="#{page.contacts.enter.message}" data-validate="require"></textarea>
+                    <textarea class="form-textarea Contacts-message" name="message" id="message"
+                              placeholder="Enter message" data-validate="require" th:text="${form} ? ${form.message}"
+                              th:placeholder="#{page.contacts.enter.message}"></textarea>
                   </div>
                   <div class="form-group">
-                    <button class="btn btn_primary form-btn" type="submit" name="sendMessage" id="sendMessage" th:text="#{button.send}">Отправить
+                    <button class="btn btn_primary form-btn" type="submit" id="sendMessage" th:text="#{button.send}">Send
                     </button>
                   </div>
                 </form>
               </div>
             </div>
+          </div>
+          <br><br>
+          <div class="Topup-fail" th:if="${#strings.equals(fail, 'true')}"
+               th:text="#{page.contacts.fail}">Fail</div>
+          <div class="Topup-success" th:if="${#strings.equals(fail, 'false')}"
+               th:text="#{page.contacts.success}">Success
           </div>
         </div>
       </main>

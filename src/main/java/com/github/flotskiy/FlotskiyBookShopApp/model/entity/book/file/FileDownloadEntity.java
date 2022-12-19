@@ -7,7 +7,7 @@ import javax.persistence.*;
 public class FileDownloadEntity {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private int id;
 
     @Column(name = "user_id", columnDefinition = "INT NOT NULL")

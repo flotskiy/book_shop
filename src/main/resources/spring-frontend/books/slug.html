@@ -347,9 +347,19 @@
                 </div>
               </div>
               <div id="myPopup">
-                <p>Ссылки для скачивания</p>
-                <div th:each="bookFile : ${slugBook.bookFileDtos}">
-                  <a href="#" th:href="${'/books/download/' + bookFile.hash}" th:text="${bookFile.getBookFileExtensionString()}"></a>
+                <div th:if="${slugBook.bookFileDtos}">
+                  <p th:text="#{page.book.links}">Download links</p>
+                  <div th:each="bookFile : ${slugBook.bookFileDtos}">
+                    <a href="#" th:href="${'/download/' + bookFile.hash}" th:text="${bookFile.name}"></a>
+                    <span th:text="${', ' + bookFile.description + ', size:&nbsp;' + bookFile.size}"></span>
+                    <br><br>
+                  </div>
+                </div>
+                <div th:unless="${slugBook.bookFileDtos}">
+                  <br><br><br>
+                  <span th:text="#{page.book.limit.violation}">Limit violation. </span>
+                  <a hrer="#" th:href="@{/contacts}" th:text="#{page.book.limit.support}">Contact technical support</a>
+                  <span th:text="#{page.book.limit.again}"> if you want to download the book again</span>
                 </div>
                 <span id="myPopup__close" class="close">X</span>
               </div>
@@ -358,8 +368,8 @@
           </div>
           <div class="Product-comments">
             <div class="Product-comments-header">
-              <h3 class="Product-comments-title" th:text="#{page.book.reviews}">Отзывы
-              </h3><span class="Product-comments-amount" th:text="${#lists.size(slugBook.bookReviewDtos)}">-1</span>
+              <h3 class="Product-comments-title" th:text="#{page.book.reviews}">Reviews</h3>
+              <span class="Product-comments-amount" th:text="${#lists.size(slugBook.bookReviewDtos)}">-1</span>
             </div>
           </div>
           <div class="Comments" th:each="review : ${slugBook.bookReviewDtos}">

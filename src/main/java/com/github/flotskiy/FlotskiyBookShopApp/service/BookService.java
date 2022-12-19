@@ -12,6 +12,7 @@ import com.github.flotskiy.FlotskiyBookShopApp.model.entity.author.AuthorEntity;
 import com.github.flotskiy.FlotskiyBookShopApp.model.entity.book.BookEntity;
 import com.github.flotskiy.FlotskiyBookShopApp.model.entity.book.BookTagEntity;
 import com.github.flotskiy.FlotskiyBookShopApp.model.entity.book.file.BookFileEntity;
+import com.github.flotskiy.FlotskiyBookShopApp.model.entity.book.file.BookFileTypeEntity;
 import com.github.flotskiy.FlotskiyBookShopApp.repository.Book2AuthorRepository;
 import com.github.flotskiy.FlotskiyBookShopApp.repository.Book2GenreRepository;
 import com.github.flotskiy.FlotskiyBookShopApp.repository.BookRepository;
@@ -20,6 +21,7 @@ import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -44,6 +46,7 @@ public class BookService {
     private final BookTag2BookRepository bookTag2BookRepository;
     private final Book2GenreRepository book2GenreRepository;
     private final Book2AuthorRepository book2AuthorRepository;
+    private final ResourceStorageService resourceStorageService;
 
     @Autowired
     public BookService(
@@ -55,7 +58,8 @@ public class BookService {
             Book2UserService book2UserService,
             BookTag2BookRepository bookTag2BookRepository,
             Book2GenreRepository book2GenreRepository,
-            Book2AuthorRepository book2AuthorRepository
+            Book2AuthorRepository book2AuthorRepository,
+            ResourceStorageService resourceStorageService
     ) {
         this.bookRepository = bookRepository;
         this.booksRatingAndPopularityService = booksRatingAndPopularityService;
@@ -66,6 +70,7 @@ public class BookService {
         this.bookTag2BookRepository = bookTag2BookRepository;
         this.book2GenreRepository = book2GenreRepository;
         this.book2AuthorRepository = book2AuthorRepository;
+        this.resourceStorageService = resourceStorageService;
     }
 
     public List<BookDto> getListOfRecommendedBooks(Integer offset, Integer limit, UserDto userDto) {
@@ -203,12 +208,18 @@ public class BookService {
         BookSlugDto bookSlugDto = new BookSlugDto(convertBookEntityToBookDtoWithRatingValue(bookEntity, userId));
         bookSlugDto.setDescription(bookEntity.getDescription());
         Set<BookTagEntity> tagEntities = bookEntity.getBookTags();
+
         Set<AuthorDto> authorDtos = bookEntity.getAuthorEntities().stream()
                 .map(authorService::convertAuthorEntityToAuthorDtoShort).collect(Collectors.toSet());
         bookSlugDto.setAuthors(authorDtos);
         bookSlugDto.setTags(tagService.convertTagEntitySetToTagDtoSet(tagEntities));
-        Set<BookFileDto> bookFileDtos = bookEntity.getBookFileEntities().stream()
-                .map(this::convertBookFileEntityToBookFileDto).collect(Collectors.toSet());
+        List<BookFileDto> bookFileDtos = null;
+        if (resourceStorageService.isDownloadAllowed(bookEntity.getId(), userId)) {
+            bookFileDtos = bookEntity.getBookFileEntities().stream()
+                    .map(this::convertBookFileEntityToBookFileDto)
+                    .sorted(Comparator.comparing(BookFileDto::getName))
+                    .collect(Collectors.toList());
+        }
         bookSlugDto.setBookFileDtos(bookFileDtos);
         bookSlugDto.setBookReviewDtos(reviewAndLikeService.getBookReviewDtos(bookEntity.getId()));
         return bookSlugDto;
@@ -310,9 +321,18 @@ public class BookService {
 
     private BookFileDto convertBookFileEntityToBookFileDto(BookFileEntity bookFileEntity) {
         BookFileDto bookFileDto = new BookFileDto();
-        bookFileDto.setHash(bookFileEntity.getHash());
-        bookFileDto.setTypeId(bookFileEntity.getTypeId());
+        String hash = bookFileEntity.getHash();
+        bookFileDto.setHash(hash);
+        int typeId = bookFileEntity.getTypeId();
+        BookFileTypeEntity bookFileTypeEntity = resourceStorageService.getBookFileTypeEntityMap().get(typeId);
+        bookFileDto.setName(bookFileTypeEntity.getName());
+        if (LocaleContextHolder.getLocale().getLanguage().equals("ru")) {
+            bookFileDto.setDescription(bookFileTypeEntity.getDescription().split("/")[1]);
+        } else {
+            bookFileDto.setDescription(bookFileTypeEntity.getDescription().split("/")[0]);
+        }
         bookFileDto.setPath(bookFileEntity.getPath());
+        bookFileDto.setSize(resourceStorageService.getFileSize(hash));
         return bookFileDto;
     }
 

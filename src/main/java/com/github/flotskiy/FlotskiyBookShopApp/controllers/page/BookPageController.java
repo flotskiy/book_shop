@@ -1,6 +1,7 @@
 package com.github.flotskiy.FlotskiyBookShopApp.controllers.page;
 
 import com.github.flotskiy.FlotskiyBookShopApp.exceptions.ChangeBookStatusRedirectionException;
+import com.github.flotskiy.FlotskiyBookShopApp.exceptions.WrongBookStatusException;
 import com.github.flotskiy.FlotskiyBookShopApp.model.dto.book.page.BookSlugDto;
 import com.github.flotskiy.FlotskiyBookShopApp.model.dto.post.BookReviewDto;
 import com.github.flotskiy.FlotskiyBookShopApp.model.dto.post.BookStatusDto;
@@ -26,7 +27,6 @@ import java.util.*;
 import java.util.logging.Logger;
 
 @Controller
-@RequestMapping("/books")
 public class BookPageController extends HeaderController {
 
     private final UserBookService userBookService;
@@ -51,7 +51,7 @@ public class BookPageController extends HeaderController {
         this.storage = storage;
     }
 
-    @GetMapping("/{slug}")
+    @GetMapping("/books/{slug}")
     public String bookPage(@PathVariable("slug") String slug, Model model) {
         Integer userId = getUserRegistrationService().getCurrentUserIdIncludingGuest();
         BookSlugDto bookSlugDto = getBookService().getBookSlugBySlug(slug, userId);
@@ -66,7 +66,7 @@ public class BookPageController extends HeaderController {
         return "/books/slug";
     }
 
-    @PostMapping("/{slug}/img/save")
+    @PostMapping("/books/{slug}/img/save")
     public String saveNewBookImage(@RequestParam("file") MultipartFile file, @PathVariable("slug") String slug)
             throws IOException {
         String savedPath = storage.saveNewBookImage(file, slug);
@@ -76,26 +76,38 @@ public class BookPageController extends HeaderController {
         return "redirect:/books/" + slug;
     }
 
+    @Secured("ROLE_USER")
     @GetMapping("/download/{hash}")
-    public ResponseEntity<ByteArrayResource> bookFile(@PathVariable("hash") String hash) throws IOException {
-        Path path = storage.getBookFilePath(hash);
-        logger.info("Downloading book file path is: " + path);
+    public ResponseEntity<ByteArrayResource> bookFile(@PathVariable("hash") String hash) {
+        try {
+            Integer userId = getUserRegistrationService().getCurrentUserIdIncludingGuest();
+            Integer bookId = storage.getBookId(hash);
+            if (!storage.isStatusPaid(bookId, userId)) {
+                throw new WrongBookStatusException("Allowed to download books with 'PAID' status only");
+            }
+            Path path = storage.getBookFilePath(hash);
+            logger.info("Downloading book file path is: " + path);
 
-        MediaType mediaType = storage.getBookFileMime(hash);
-        logger.info("Downloading book file mime type is: " + mediaType);
+            MediaType mediaType = storage.getBookFileMime(hash);
+            logger.info("Downloading book file mime type is: " + mediaType);
 
-        byte[] data = storage.getBookFileByteArray(hash);
-        logger.info("Downloading book file data length: " + data.length);
+            byte[] data = storage.getBookFileByteArray(hash);
+            logger.info("Downloading book file data length: " + data.length);
 
-        return ResponseEntity.ok()
-                .header(HttpHeaders.CONTENT_DISPOSITION,
-                        "attachment; filename=\"" + path.getFileName().toString() + "\"")
-                .contentType(mediaType)
-                .contentLength(data.length)
-                .body(new ByteArrayResource(data));
+            storage.recordDownload(bookId, userId);
+            return ResponseEntity.ok()
+                    .header(HttpHeaders.CONTENT_DISPOSITION,
+                            "attachment; filename=\"" + path.getFileName().toString() + "\"")
+                    .contentType(mediaType)
+                    .contentLength(data.length)
+                    .body(new ByteArrayResource(data));
+        } catch (Throwable throwable) {
+            logger.warning("Failed to download book: " + throwable.getMessage());
+            return ResponseEntity.notFound().build();
+        }
     }
 
-    @PostMapping("/changeBookStatus/")
+    @PostMapping("/books/changeBookStatus/")
     @ResponseBody
     public Map<String, Object> handleChangeBookStatus(@RequestBody BookStatusDto payload) {
         Map<String, Object> result = new HashMap<>();
@@ -112,7 +124,7 @@ public class BookPageController extends HeaderController {
     }
 
     @Secured("ROLE_USER")
-    @PostMapping("/rateBook")
+    @PostMapping("/books/rateBook")
     @ResponseBody
     public Map<String, Object> rateBook(@RequestBody RateBookDto payload) {
         Map<String, Object> result = new HashMap<>();
@@ -129,7 +141,7 @@ public class BookPageController extends HeaderController {
     }
 
     @Secured("ROLE_USER")
-    @PostMapping("/rateBookReview")
+    @PostMapping("/books/rateBookReview")
     @ResponseBody
     public Map<String, Object> rateBookReview(@RequestBody RateBookReviewDto payload) {
         Map<String, Object> result = new HashMap<>();
@@ -145,7 +157,7 @@ public class BookPageController extends HeaderController {
     }
 
     @Secured("ROLE_USER")
-    @PostMapping("/bookReview")
+    @PostMapping("/books/bookReview")
     @ResponseBody
     public Map<String, Object> bookReview(@RequestBody BookReviewDto payload) {
         Map<String, Object> result = new HashMap<>();

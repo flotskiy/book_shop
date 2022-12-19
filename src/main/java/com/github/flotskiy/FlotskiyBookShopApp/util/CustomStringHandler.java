@@ -74,4 +74,19 @@ public class CustomStringHandler {
             return booksCount + " books found";
         }
     }
+
+    public String getFileSizeString(int size) {
+        char[] chars = {'B', 'K', 'M', 'G', 'T'};
+        double result = 0.;
+        for (int i = 0; i < chars.length; i++) {
+            result = size / Math.pow(1024, i);
+            if (result < 1024) {
+                if (i == 0) {
+                    return result + "\u00A0" + chars[i];
+                }
+                return String.format("%.1f\u00A0%sB", result, chars[i]);
+            }
+        }
+        return "";
+    }
 }

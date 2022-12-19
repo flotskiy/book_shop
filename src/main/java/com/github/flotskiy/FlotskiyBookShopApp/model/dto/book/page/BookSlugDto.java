@@ -25,7 +25,7 @@ public class BookSlugDto {
     private LocalDate pubDate;
     private String description;
     private Set<TagDto> tags;
-    private Set<BookFileDto> bookFileDtos;
+    private List<BookFileDto> bookFileDtos;
     private List<BookReviewDto> bookReviewDtos;
 
     public BookSlugDto(BookDto bookDto) {
@@ -154,11 +154,11 @@ public class BookSlugDto {
         this.tags = tags;
     }
 
-    public Set<BookFileDto> getBookFileDtos() {
+    public List<BookFileDto> getBookFileDtos() {
         return bookFileDtos;
     }
 
-    public void setBookFileDtos(Set<BookFileDto> bookFileDtos) {
+    public void setBookFileDtos(List<BookFileDto> bookFileDtos) {
         this.bookFileDtos = bookFileDtos;
     }
 

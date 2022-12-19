@@ -1,12 +1,12 @@
 package com.github.flotskiy.FlotskiyBookShopApp.model.dto.book.page;
 
-import com.github.flotskiy.FlotskiyBookShopApp.model.enums.BookFileType;
-
 public class BookFileDto {
 
     private String hash;
-    private Integer typeId;
+    private String name;
+    private String description;
     private String path;
+    private String size;
 
     public String getHash() {
         return hash;
@@ -16,12 +16,20 @@ public class BookFileDto {
         this.hash = hash;
     }
 
-    public Integer getTypeId() {
-        return typeId;
+    public String getName() {
+        return name;
     }
 
-    public void setTypeId(Integer typeId) {
-        this.typeId = typeId;
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 
     public String getPath() {
@@ -32,7 +40,11 @@ public class BookFileDto {
         this.path = path;
     }
 
-    public String getBookFileExtensionString(){
-        return BookFileType.getExtensionStringByTypeId(typeId);
+    public String getSize() {
+        return size;
+    }
+
+    public void setSize(String size) {
+        this.size = size;
     }
 }

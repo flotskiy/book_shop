@@ -53,10 +53,20 @@
                    data-refreshlimit=${@environment.getProperty('page.limit')}"
                    th:text="#{button.more}">More</a>
             </div>
-            <div th:if="${not #strings.equals(pageName, 'genre')}">
+            <div th:if="${not #strings.equals(pageName, 'genre') and
+                          not #strings.equals(pageName, 'recent') and
+                          not #strings.equals(pageName, 'popular')}">
                 <a class="btn btn_primary" href="#" data-refreshshow="recent"
                    data-refreshoffset="0" data-refreshlimit="2" data-refreshid="1"
                    th:attr="data-refreshshow=${pageName},data-refreshid=${obj.id},
+                   data-refreshoffset=${@environment.getProperty('initial.offset')},
+                   data-refreshlimit=${@environment.getProperty('page.limit')}"
+                   th:text="#{button.more}">More</a>
+            </div>
+            <div th:if="${#strings.equals(pageName, 'recent') or #strings.equals(pageName, 'popular')}">
+                <a class="btn btn_primary" href="#" data-refreshshow="recent"
+                   data-refreshoffset="0" data-refreshlimit="2" data-refreshid="1"
+                   th:attr="data-refreshshow=${pageName},
                    data-refreshoffset=${@environment.getProperty('initial.offset')},
                    data-refreshlimit=${@environment.getProperty('page.limit')}"
                    th:text="#{button.more}">More</a>

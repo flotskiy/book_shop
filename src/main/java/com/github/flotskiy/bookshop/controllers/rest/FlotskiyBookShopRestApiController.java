@@ -1,12 +1,13 @@
 package com.github.flotskiy.bookshop.controllers.rest;
 
+import com.github.flotskiy.bookshop.exceptions.*;
 import com.github.flotskiy.bookshop.model.dto.ApiResponse;
-import com.github.flotskiy.bookshop.exceptions.BookstoreApiWrongParameterException;
 import com.github.flotskiy.bookshop.model.dto.book.BookDto;
 import com.github.flotskiy.bookshop.model.dto.book.CountedBooksDto;
 import com.github.flotskiy.bookshop.model.dto.book.GenreDto;
 import com.github.flotskiy.bookshop.model.dto.book.page.TagDto;
 import com.github.flotskiy.bookshop.model.dto.payments.PaymentDto;
+import com.github.flotskiy.bookshop.model.dto.post.ContactConfirmPayloadDto;
 import com.github.flotskiy.bookshop.model.dto.user.CountedBalanceTransactionsDto;
 import com.github.flotskiy.bookshop.model.dto.user.UserDto;
 import com.github.flotskiy.bookshop.security.UserRegistrationService;
@@ -42,6 +43,7 @@ public class FlotskiyBookShopRestApiController {
     private final ReviewAndLikeService reviewAndLikeService;
     private final UserRegistrationService userRegistrationService;
     private final PaymentService paymentService;
+    private final CodeService codeService;
     private final CustomStringHandler customStringHandler;
 
     private static final String RESULT_KEY = "result";
@@ -58,6 +60,7 @@ public class FlotskiyBookShopRestApiController {
             ReviewAndLikeService reviewAndLikeService,
             UserRegistrationService userRegistrationService,
             PaymentService paymentService,
+            CodeService codeService,
             CustomStringHandler customStringHandler
     ) {
         this.bookService = bookService;
@@ -68,6 +71,7 @@ public class FlotskiyBookShopRestApiController {
         this.reviewAndLikeService = reviewAndLikeService;
         this.userRegistrationService = userRegistrationService;
         this.paymentService = paymentService;
+        this.codeService = codeService;
         this.customStringHandler = customStringHandler;
     }
 
@@ -464,6 +468,62 @@ public class FlotskiyBookShopRestApiController {
         } catch (Exception exception) {
             result.put(RESULT_KEY, false);
             result.put(ERROR_KEY, exception.getMessage());
+            return ResponseEntity.badRequest().body(result);
+        }
+    }
+
+    @RequestMapping(value = {"/requestContactConfirmation", "/requestEmailConfirmation"})
+    @ApiOperation("Checks the correctness of the transmitted contact and " +
+            "generates and sends a confirmation code to this contact. " +
+            "'contact' parameter contains the given user contact to handle and send code.")
+    public ResponseEntity<Map<String, Object>> requestContactConfirmation(@RequestParam("contact") String contact) {
+        Map<String, Object> result = new HashMap<>();
+        try {
+            result.put(RESULT_KEY, "true");
+            String code = codeService.getConfirmationCode(contact);
+            userRegistrationService
+                    .registerOrUpdateNewUserWithContactWhileRequestingContactConfirmation(contact, code);
+        } catch (AttemptsNumberExceededException | TimeoutMinutesRemainsConfirmationException timedException) {
+            result.put("secondsToWait", Integer.parseInt(timedException.getMessage()));
+            result.put(ERROR_KEY, timedException.getClass().getSimpleName());
+        } catch (ConfirmationException confirmationException) {
+            result.put(ERROR_KEY, confirmationException.getMessage());
+        } catch (Exception exception) {
+            result.put(RESULT_KEY, "false");
+            result.put(ERROR_KEY, exception.getMessage());
+            return ResponseEntity.badRequest().body(result);
+        }
+        return ResponseEntity.ok().body(result);
+    }
+
+    @RequestMapping("/approveContact")
+    @ApiOperation("Checks contact's confirmation code. The confirmation code may be expired, " +
+            "the number of attempts to enter it may be exceeded, and the code may be entered incorrectly. " +
+            "'contact' parameter contains the given user contact to approve, " +
+            "'code' parameter contains secret digits to approve contact")
+    public ResponseEntity<Map<String, Object>> handleApproveContact(
+            @RequestParam("contact") String contact, @RequestParam("code") String code
+    ) {
+        Map<String, Object> result = new HashMap<>();
+        try {
+            ContactConfirmPayloadDto payload = new ContactConfirmPayloadDto();
+            payload.setContact(contact);
+            payload.setCode(code);
+            codeService.verifyCode(payload);
+            result.put(RESULT_KEY, true);
+            return ResponseEntity.ok().body(result);
+        } catch (ExpiredCodeException | CodeTrailsLimitExceededException approveSpecificException) {
+            result.put(RESULT_KEY, false);
+            result.put("return", true);
+            result.put(ERROR_KEY, approveSpecificException.getMessage());
+            return ResponseEntity.status(403).body(result);
+        } catch (UserChangeException userChangeException) {
+            result.put(RESULT_KEY, false);
+            result.put(ERROR_KEY, userChangeException.getMessage());
+            return ResponseEntity.status(403).body(result);
+        } catch (Exception exception) {
+            result.put(RESULT_KEY, false);
+            result.put(ERROR_KEY, "Code is not approved");
             return ResponseEntity.badRequest().body(result);
         }
     }

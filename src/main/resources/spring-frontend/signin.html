@@ -26,11 +26,7 @@
           <div class="Login-ins">
             <div class="Login-step">
               <div class="form-group">
-                <label class="form-label Login-title" th:text="#{page.signin.info}">Введите e-mail или телефон</label>
-                <label class="form-label Login-title" th:if="${regOk}"
-                       th:text="#{page.signin.success}">Регистрация прошла успешно!</label>
-                <label class="form-label Login-title" th:if="${regOk} == false"
-                       th:text="#{page.signin.fail}">Регистрация завершилась неудачей!</label>
+                <label class="form-label Login-title" th:text="#{page.signin.info}">Enter e-mail or phone</label>
               </div>
               <div class="form-group">
                 <div class="row">
@@ -38,7 +34,7 @@
                     <label class="toggle Login-type">
                       <input type="radio" name="typeauth" value="phonetype" checked="checked"/>
                       <span class="toggle-box"></span>
-                      <span class="toggle-text" th:text="#{page.signin.phone}">Телефон</span>
+                      <span class="toggle-text" th:text="#{page.signin.phone}">Phone</span>
                     </label>
                   </div>
                   <div class="row-block">
@@ -60,7 +56,7 @@
               </div>
               <div class="form-group form-group_center">
                 <button class="btn btn_primary form-btn" type="button" name="sendauth" id="sendauth"
-                        data-type="phone" data-send="" th:text="#{button.next}">Далее
+                        data-type="phone" data-send="" th:text="#{button.next}">Next
                 </button>
               </div>
             </div>
@@ -76,7 +72,7 @@
               </div>
               <div class="form-group form-group_center">
                 <button class="btn btn_primary form-btn" type="button" name="toComeInPhone"
-                        id="toComeInPhone" data-send="" th:text="#{button.enter}">Войти
+                        id="toComeInPhone" data-send="" th:text="#{button.enter}">Enter
                 </button>
               </div>
             </div>
@@ -92,20 +88,16 @@
               </div>
               <div class="form-group form-group_center">
                 <button class="btn btn_primary form-btn" type="button" name="toComeInMail" id="toComeInMail"
-                        data-send="" th:text="#{button.enter}">Войти
+                        data-send="" th:text="#{button.enter}">Enter
                 </button>
               </div>
             </div>
             <div class="form-group form-group_center">
-              <a class="Login-reg" href="/signup.html" th:href="@{/signup}" th:text="#{menu.signup}">
-                Зарегистрироваться
-              </a>
+              <a class="Login-reg" href="/signup" th:href="@{/signup}" th:text="#{menu.signup}">Sign up</a>
             </div>
             <div class="form-group form-group_center">
-              <a class="Login-reg" href="/signup.html" th:href="@{/oauth2/authorization/google}"
-                 th:text="#{page.signin.google}">
-                Войти через Google
-              </a>
+              <a class="Login-reg" href="/signup" th:href="@{/oauth2/authorization/google}"
+                 th:text="#{page.signin.google}">Sign in via Google</a>
             </div>
           </div>
         </form>

@@ -17,12 +17,27 @@
   <div class="Middle Middle_form">
     <div class="Middle-top">
       <div class="wrap">
-        <h1 class="Middle-title" th:text="#{page.signup.registration}">Регистрация</h1>
+        <h1 class="Middle-title" th:text="#{page.signup.registration}">Registration</h1>
       </div>
     </div>
     <div class="wrap">
       <main class="Middle-main">
-        <form class="form Login Login_registration" th:object="${regForm}"
+        <div th:if="${regOk}">
+          <h1 class="form-label Login-title" th:text="#{page.signin.success}">Registration successful!</h1>
+          <div class="form-group form-group_center registration">
+            <button class="btn btn_primary form-btn" type="submit" name="continue" id="continue"
+                    th:text="#{page.signup.continue}">Continue</button>
+          </div>
+        </div>
+        <div th:if="${regOk} == false">
+          <h1 class="form-label Login-title" th:text="#{page.signin.fail}">Registration failed!!</h1>
+          <div class="form-group form-group_center registration">
+            <form action="/signup">
+              <input class="btn btn_primary form-btn" type="submit" value="Sign up" th:value="#{page.signup.again}"/>
+            </form>
+          </div>
+        </div>
+        <form class="form Login Login_registration" th:unless="${regOk} or ${regOk} == false" th:object="${regForm}"
               action="#" th:action="@{/reg}" method="post">
           <div class="Login-ins">
             <div class="Login-step">
@@ -41,12 +56,13 @@
               <div class="form-group form-group_row signup-phone" hidden>
                 <div class="form-group signup-phone" hidden>
                   <input class="form-input form-input_phone" id="phone" name="phone" type="text" th:field="*{phone}"
-                         placeholder="Введите телефон" th:placeholder="#{page.signin.phone.placeholder}"
+                         placeholder="Enter phone" th:placeholder="#{page.signin.phone.placeholder}"
                          data-mask="+7 (999) 999-99-99" data-validate="require"/>
                 </div>
                 <div class="form-group form-group_key signup-phone" hidden>
                   <input class="form-input form-input_code" id="phoneCode" name="phoneCode" type="text"
-                         placeholder="Код из СМС" th:placeholder="#{page.signup.code.sms}"/>
+                         placeholder="Code from call" th:placeholder="#{page.signup.code.sms}"
+                         data-validate="flash"/>
                 </div>
                 <div class="form-group signup-phone" hidden>
                   <button class="btn btn_success btn_sm form-btn" type="button" name="submitPhone"
@@ -57,12 +73,12 @@
               <div class="form-group form-group_row signup-mail" hidden>
                 <div class="form-group signup-mail" hidden>
                   <input class="form-input form-input_mail" id="mail" name="mail" type="text" th:field="*{email}"
-                         placeholder="Введите e-mail" th:placeholder="#{page.signin.mail.placeholder}"
+                         placeholder="Enter e-mail" th:placeholder="#{page.signin.mail.placeholder}"
                          data-validate="mail require"/>
                 </div>
                 <div class="form-group form-group_key signup-mail" hidden>
                   <input class="form-input form-input_code" id="mailCode" name="mailCode"
-                         type="text" placeholder="Код из письма" th:placeholder="#{page.signup.code.mail}"
+                         type="text" placeholder="Code from mail" th:placeholder="#{page.signup.code.mail}"
                          data-mask="999 999" data-validate="require key"/>
                 </div>
                 <div class="form-group signup-mail" hidden>

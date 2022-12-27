@@ -1,8 +1,6 @@
 package com.github.flotskiy.bookshop.controllers.page;
 
-import com.github.flotskiy.bookshop.exceptions.CodesNotEqualsException;
-import com.github.flotskiy.bookshop.exceptions.ExpiredCodeException;
-import com.github.flotskiy.bookshop.exceptions.UserContactEntityNotApproved;
+import com.github.flotskiy.bookshop.exceptions.*;
 import com.github.flotskiy.bookshop.model.dto.post.ContactConfirmPayloadDto;
 import com.github.flotskiy.bookshop.security.RegistrationForm;
 import com.github.flotskiy.bookshop.security.ContactConfirmationResponse;
@@ -10,7 +8,6 @@ import com.github.flotskiy.bookshop.security.UserRegistrationService;
 import com.github.flotskiy.bookshop.service.BookService;
 import com.github.flotskiy.bookshop.service.CodeService;
 import com.github.flotskiy.bookshop.service.UserBookService;
-import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -19,9 +16,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import javax.management.InstanceAlreadyExistsException;
-import javax.persistence.EntityNotFoundException;
 import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.HashMap;
 import java.util.Map;
@@ -29,6 +25,9 @@ import java.util.logging.Logger;
 
 @Controller
 public class SignInAndSignUpController extends HeaderController {
+
+    private static final String RESULT_KEY = "result";
+    private static final String ERROR_KEY = "error";
 
     private final UserBookService userBookService;
     private final CodeService codeService;
@@ -56,68 +55,71 @@ public class SignInAndSignUpController extends HeaderController {
         return "/signup";
     }
 
-    @PostMapping("/requestContactConfirmation")
+    @PostMapping("/requestContact")
     @ResponseBody
-    public ContactConfirmationResponse handleRequestContactConfirmation(@RequestBody ContactConfirmPayloadDto payload) {
-        ContactConfirmationResponse response = new ContactConfirmationResponse();
-        response.setResult("true");
-        try {
-            String code = codeService.generateSecretCodeForUserContactEntityPhone(payload.getContact());
-            getUserRegistrationService()
-                    .registerNewUserWithContactWhileRequestingContactConfirmation(payload.getContact(), code);
-        } catch (InstanceAlreadyExistsException existsException) {
-            response.setResult(null);
-            response.setError(existsException.getMessage());
-        }
-        return response;
+    public Map<String, Boolean> handleRequestContact(@RequestBody ContactConfirmPayloadDto payload) {
+        Map<String, Boolean> result = new HashMap<>();
+        boolean isApproved = codeService.isContactAlreadyRegisteredAndApproved(payload.getContact());
+        result.put(RESULT_KEY, isApproved);
+        return result;
     }
 
-    @PostMapping("/requestEmailConfirmation")
+    @PostMapping(value = {"/requestContactConfirmation", "/requestEmailConfirmation"})
     @ResponseBody
-    public ContactConfirmationResponse handleRequestEmailConfirmation(@RequestBody ContactConfirmPayloadDto payload) {
-        ContactConfirmationResponse response = new ContactConfirmationResponse();
-        String code = RandomStringUtils.random(6, false, true);
-        code = code.substring(0, 3) + " " + code.substring(3, 6);
-        codeService.sendEmailConfirmationCode(payload.getContact(), code);
+    public Map<String, Object> handleRequestContactConfirmation(@RequestBody ContactConfirmPayloadDto payload) {
+        Map<String, Object> result = new HashMap<>();
         try {
+            String contact = payload.getContact();
+            result.put(RESULT_KEY, "true");
+            String code = codeService.getConfirmationCode(contact);
             getUserRegistrationService()
-                    .registerNewUserWithContactWhileRequestingContactConfirmation(payload.getContact(), code);
-        } catch (InstanceAlreadyExistsException existsException) {
-            response.setResult(null);
-            response.setError(existsException.getMessage());
+                    .registerOrUpdateNewUserWithContactWhileRequestingContactConfirmation(contact, code);
+        } catch (AttemptsNumberExceededException | TimeoutMinutesRemainsConfirmationException timedException) {
+            result.put("secondsToWait", Integer.parseInt(timedException.getMessage()));
+            result.put(ERROR_KEY, timedException.getClass().getSimpleName());
+        } catch (ConfirmationException confirmationException) {
+            result.put(ERROR_KEY, confirmationException.getMessage());
+        } catch (Exception exception) {
+            result.put(RESULT_KEY, "false");
+            result.put(ERROR_KEY, exception.getMessage());
+            return result;
         }
-        response.setResult("true");
-        return response;
+        return result;
     }
 
     @PostMapping("/approveContact")
     @ResponseBody
-    public ContactConfirmationResponse handleApproveContact(@RequestBody ContactConfirmPayloadDto payload) {
-        ContactConfirmationResponse response = new ContactConfirmationResponse();
+    public Map<String, Object> handleApproveContact(@RequestBody ContactConfirmPayloadDto payload) {
+        Map<String, Object> result = new HashMap<>();
         try {
-            if (Boolean.TRUE.equals(codeService.verifyCode(payload))) {
-                response.setResult("true");
-            } else {
-                response.setResult("false");
-                response.setError("Exceeded the number of attempts to enter the code");
-            }
-        } catch (EntityNotFoundException | ExpiredCodeException | CodesNotEqualsException exception) {
-            response.setResult(null);
-            response.setError(exception.getMessage());
+            codeService.verifyCode(payload);
+            result.put(RESULT_KEY, true);
+        } catch (ExpiredCodeException | CodeTrailsLimitExceededException approveSpecificException) {
+            result.put(RESULT_KEY, false);
+            result.put("return", true);
+            result.put(ERROR_KEY, approveSpecificException.getMessage());
+        } catch (UserChangeException userChangeException) {
+            result.put(RESULT_KEY, false);
+            result.put(ERROR_KEY, userChangeException.getMessage());
+        } catch (Exception exception) {
+            result.put(RESULT_KEY, false);
+            result.put(ERROR_KEY, "Code is not approved");
         }
-        return response;
+        return result;
     }
 
     @PostMapping("/reg")
-    public String handleUserRegistrationForm(RegistrationForm registrationForm, Model model) {
+    public String handleUserRegistrationForm(RegistrationForm registrationForm, Model model, HttpServletRequest request) {
+        model.addAttribute("regForm", new RegistrationForm());
         try {
-            getUserRegistrationService().registerUserPassword(registrationForm);
+            String contact = getUserRegistrationService().registerUserPassword(registrationForm);
+            request.login(contact, registrationForm.getPass());
             model.addAttribute("regOk", true);
-        } catch (UserContactEntityNotApproved ex) {
-            Logger.getLogger(this.getClass().getSimpleName()).warning(ex.getMessage());
+        } catch (Exception exception) {
+            Logger.getLogger(this.getClass().getSimpleName()).warning(exception.getMessage());
             model.addAttribute("regOk", false);
         }
-        return "/signin";
+        return "/signup";
     }
 
     @PostMapping("/login")
@@ -130,10 +132,10 @@ public class SignInAndSignUpController extends HeaderController {
             ContactConfirmationResponse loginResponse = getUserRegistrationService().jwtLogin(payload);
             Cookie cookie = new Cookie("token", loginResponse.getResult());
             httpServletResponse.addCookie(cookie);
-            result.put("result", loginResponse.getResult());
+            result.put(RESULT_KEY, loginResponse.getResult());
         } catch (Exception exception) {
             String message = getUserRegistrationService().getExceptionInfo(exception);
-            result.put("error", message);
+            result.put(ERROR_KEY, message);
         }
         return result;
     }

@@ -1,5 +1,6 @@
 package com.github.flotskiy.bookshop.security;
 
+import com.github.flotskiy.bookshop.exceptions.UserChangeException;
 import com.github.flotskiy.bookshop.exceptions.UserContactEntityNotApproved;
 import com.github.flotskiy.bookshop.model.dto.post.ContactConfirmPayloadDto;
 import com.github.flotskiy.bookshop.model.dto.user.*;
@@ -72,17 +73,20 @@ public class UserRegistrationService {
         return userEntityOptional.get();
     }
 
-    public void registerNewUserWithContactWhileRequestingContactConfirmation(String contact, String codeString)
-            throws InstanceAlreadyExistsException {
+    public void registerOrUpdateNewUserWithContactWhileRequestingContactConfirmation(String contact, String codeString) {
         UserEntity userEntity = userRepository.findUserEntityByUserContactEntity_Contact(contact);
         if (userEntity == null) {
             userEntity = registerNewUserWhileRequestingContactConfirmation();
             registerNewUserContactWhileRequestingContactConfirmation(contact, codeString, userEntity);
         } else {
-            Optional<UserContactEntity> userContactEntityOptional = userContactRepository.findById(userEntity.getId());
-            if (userContactEntityOptional.isPresent() && userContactEntityOptional.get().getApproved() == 0) {
-                throw new InstanceAlreadyExistsException("Register new user with contact " +
-                        "while requesting contact confirmation failed");
+            UserContactEntity userContactEntity = userContactRepository.findUserContactEntityByContact(contact);
+            if (userContactEntity.getApproved() == 0) {
+                userContactEntity.setCode(codeString);
+                userContactEntity.setCodeTrails(0);
+                userContactEntity.setCodeTime(LocalDateTime.now());
+                userContactRepository.save(userContactEntity);
+            } else {
+                throw new UserChangeException("Re-confirmation prohibited");
             }
         }
     }
@@ -197,7 +201,7 @@ public class UserRegistrationService {
         return userContactEntity;
     }
 
-    public void registerUserPassword(RegistrationForm registrationForm) {
+    public String registerUserPassword(RegistrationForm registrationForm) {
         String contact = null;
         if (registrationForm.getPhone() != null) {
             contact = registrationForm.getPhone();
@@ -216,6 +220,7 @@ public class UserRegistrationService {
         } else {
             throw new UserContactEntityNotApproved("You have to approve contact to save the password");
         }
+        return contact;
     }
 
     // TODO: check this method usage
@@ -324,7 +329,7 @@ public class UserRegistrationService {
         if (exception instanceof JwtException) {
             return "Access denied! Try to sign in again!";
         } else if (exception instanceof BadCredentialsException) {
-            return "Wrong user name and/or password!";
+            return "Wrong password!";
         } else if (exception instanceof AuthenticationException) {
             return "Error during authentication occurred!";
         } else {

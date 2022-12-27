@@ -30,6 +30,11 @@ import java.util.logging.Logger;
 @PropertySource("application-variables.properties")
 public class ProfilePageController extends HeaderController {
 
+    private static final String RESULT_KEY = "result";
+    private static final String ERROR_KEY = "error";
+    private static final String TOKEN_KEY = "token";
+    private static final String PROFILE_PAGE = "/profile";
+
     @Value("${initial.offset}")
     private int offset;
 
@@ -39,11 +44,6 @@ public class ProfilePageController extends HeaderController {
     private final PaymentService paymentService;
     private final RegisteredUserChangeService registeredUserChangeService;
     private final ApplicationEventPublisher eventPublisher;
-
-    private static final String RESULT_KEY = "result";
-    private static final String ERROR_KEY = "error";
-    private static final String TOKEN_KEY = "token";
-    private static final String PROFILE_PAGE = "/profile";
 
     @Autowired
     public ProfilePageController(

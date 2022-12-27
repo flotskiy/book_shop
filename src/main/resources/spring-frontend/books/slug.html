@@ -358,7 +358,7 @@
                 <div th:unless="${slugBook.bookFileDtos}">
                   <br><br><br>
                   <span th:text="#{page.book.limit.violation}">Limit violation. </span>
-                  <a hrer="#" th:href="@{/contacts}" th:text="#{page.book.limit.support}">Contact technical support</a>
+                  <a href="#" th:href="@{/contacts}" th:text="#{page.book.limit.support}">Contact technical support</a>
                   <span th:text="#{page.book.limit.again}"> if you want to download the book again</span>
                 </div>
                 <span id="myPopup__close" class="close">X</span>
@@ -451,11 +451,11 @@
               </strong>
             </div>
             <div>
-              <form action="/signin" target="_blank">
+              <form action="/signin">
                 <input class="btn btn_primary" type="submit" value="Sign in" th:value="#{menu.signin}"/>
               </form>
               <span th:text="#{page.signin.or}">or</span>
-              <form action="/signup" target="_blank">
+              <form action="/signup">
                 <input class="btn btn_primary" type="submit" value="Sign up" th:value="#{menu.signup}"/>
               </form>
             </div>
